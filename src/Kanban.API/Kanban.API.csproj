@@ -9,4 +9,9 @@
     <DockerfileContext>..\..</DockerfileContext>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Kanban.Repository\Kanban.Repository.csproj" />
+    <ProjectReference Include="..\Kanban.Services\Kanban.Services.csproj" />
+  </ItemGroup>
+
 </Project>
