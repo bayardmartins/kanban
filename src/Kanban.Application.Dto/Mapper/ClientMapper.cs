@@ -9,7 +9,7 @@ public static class ClientMapper
     {
         return new Repo.ClientDto
         {
-            Id = client.Id,
+            _id = client.Id,
             Secret = client.Secret,
         };
     }

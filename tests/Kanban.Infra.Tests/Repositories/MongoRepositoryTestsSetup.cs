@@ -9,7 +9,8 @@ namespace Kanban.Infra.Tests.Repositories;
 
 public class MongoRepositoryTestsSetup : BeforeAfterTestAttribute
 {
-    public readonly KanbanDatabaseWorker worker;
+    public readonly KanbanDatabaseWorker cardWorker;
+    public readonly AuthDatabaseWorker authWorker;
     private readonly MongoRepository _repository;
     private readonly MongoSettings _setting;
     private readonly IEnumerable<IMongoClient> _clients;
@@ -27,6 +28,7 @@ public class MongoRepositoryTestsSetup : BeforeAfterTestAttribute
             Collections = new Collections
             {
                 Cards = "cards",
+                Clients = "clients",
             },
         };
         var kanbanSettings = MongoClientSettings.FromConnectionString(_setting.KanbanHost.Host);;
@@ -35,8 +37,8 @@ public class MongoRepositoryTestsSetup : BeforeAfterTestAttribute
         _clients = new List<IMongoClient> { client };
         _repository = new MongoRepository(_clients);
 
-        this.worker = new KanbanDatabaseWorker(_repository, _setting);
-
+        this.cardWorker = new KanbanDatabaseWorker(_repository, _setting);
+        this.authWorker = new AuthDatabaseWorker(_repository, _setting);
         this.Dispose();
     }
 
@@ -52,17 +54,23 @@ public class MongoRepositoryTestsSetup : BeforeAfterTestAttribute
 
     private void Migrate()
     {
-        IMongoCollection<CardDto> collection = _clients.ElementAt(_setting.KanbanHost.ClusterId).GetDatabase(_setting.KanbanHost.Database).GetCollection<CardDto>(_setting.Collections.Cards);
-        var cardOne = JsonConvert.DeserializeObject<CardDto>(CardMocks.SampleMockOne);
-        var cardTwo = JsonConvert.DeserializeObject<CardDto>(CardMocks.SampleMockTwo);
-        var cardThree = JsonConvert.DeserializeObject<CardDto>(CardMocks.SampleMockThree);
+        var cardCollection = _clients.ElementAt(_setting.KanbanHost.ClusterId).GetDatabase(_setting.KanbanHost.Database).GetCollection<CardDto>(_setting.Collections.Cards);
+        var cardOne = JsonConvert.DeserializeObject<CardDto>(Mocks.SampleMockOne);
+        var cardTwo = JsonConvert.DeserializeObject<CardDto>(Mocks.SampleMockTwo);
+        var cardThree = JsonConvert.DeserializeObject<CardDto>(Mocks.SampleMockThree);
         var list = new List<CardDto> { cardOne, cardTwo, cardThree };
-        collection.InsertMany(list);
+        cardCollection.InsertMany(list);
+        var clientCollection = _clients.ElementAt(_setting.KanbanHost.ClusterId).GetDatabase(_setting.KanbanHost.Database).GetCollection<ClientDto>(_setting.Collections.Clients);
+        var client = JsonConvert.DeserializeObject<ClientDto>(Mocks.ClientMock);
+        clientCollection.InsertOne(client);
     }
 
     public void Dispose()
     {
-        IMongoCollection<CardDto> collection = _clients.ElementAt(_setting.KanbanHost.ClusterId).GetDatabase(_setting.KanbanHost.Database).GetCollection<CardDto>(_setting.Collections.Cards);
+        var collection = _clients.ElementAt(_setting.KanbanHost.ClusterId).GetDatabase(_setting.KanbanHost.Database).GetCollection<CardDto>(_setting.Collections.Cards);
         collection.DeleteMany(Builders<CardDto>.Filter.Empty);
+
+        var clientCollection = _clients.ElementAt(_setting.KanbanHost.ClusterId).GetDatabase(_setting.KanbanHost.Database).GetCollection<ClientDto>(_setting.Collections.Clients);
+        clientCollection.DeleteMany(Builders<ClientDto>.Filter.Empty);
     }
 }
