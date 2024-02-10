@@ -1,9 +1,7 @@
-﻿using Kanban.Repository.Dto.Models;
-using Kanban.Repository.Repositories;
+﻿using Kanban.Repository.Repositories;
 using Kanban.Repository.Settings;
 using Kanban.Repository.Worker;
 using MongoDB.Driver;
-using Newtonsoft.Json;
 using System.Reflection;
 using Xunit.Sdk;
 
@@ -38,6 +36,8 @@ public class MongoRepositoryTestsSetup : BeforeAfterTestAttribute
         _repository = new MongoRepository(_clients);
 
         this.worker = new KanbanDatabaseWorker(_repository, _setting);
+
+        this.Dispose();
     }
 
     public override void Before(MethodInfo methodUnderTest)

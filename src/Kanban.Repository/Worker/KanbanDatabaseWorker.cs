@@ -34,4 +34,37 @@ public class KanbanDatabaseWorker : IKanbanDatabaseWorker
 
         return cards == null ? new List<CardDto>() : BsonSerializer.Deserialize<List<CardDto>>(cards.ToJson());
     }
+
+    public async Task<CardDto> InsertCard(CardDto card)
+    {
+        await _cardRepository.Insert(_mongoSettings.KanbanHost.ClusterId, _mongoSettings.KanbanHost.Database, _mongoSettings.Collections.Cards, card.ToBsonDocument());
+        return card;
+    }
+
+    public async Task<CardDto?> UpdateCard(CardDto card)
+    {
+        var filter = Builders<BsonDocument>.Filter.Eq(Constants.MongoDbId, ObjectId.Parse(card._id));
+        var update = Builders<BsonDocument>.Update
+                    .Set("Name", card.Name)
+                    .Set("Description", card.Description);
+        var options = new UpdateOptions
+        {
+            IsUpsert = false
+        };
+        var response = await _cardRepository.Update(_mongoSettings.KanbanHost.ClusterId, _mongoSettings.KanbanHost.Database, _mongoSettings.Collections.Cards, filter, update, options);
+        return response.ModifiedCount > 0 ? card : null;
+    }
+
+    public async Task<long> UpdateManyDescriptions(List<string> ids, string description)
+    {
+        var filter = Builders<BsonDocument>.Filter.In(Constants.MongoDbId, ids.ConvertAll(x => ObjectId.Parse(x)));
+        var update = Builders<BsonDocument>.Update
+                    .Set("Description", description);
+        var options = new UpdateOptions
+        {
+            IsUpsert = false
+        };
+        var response = await _cardRepository.UpdateMany(_mongoSettings.KanbanHost.ClusterId, _mongoSettings.KanbanHost.Database, _mongoSettings.Collections.Cards, filter, update, options);
+        return response.ModifiedCount;
+    }
 }
