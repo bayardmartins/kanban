@@ -13,7 +13,7 @@ public class CardService : ICardService
         this._kanbanDatabaseWorker = kanbanDatabaseWorker;
     }
 
-    public async Task<CardDto> GetCard(string id)
+    public async Task<CardDto> GetCardById(string id)
     {
         var card = await this._kanbanDatabaseWorker.GetCardById(id);
         return card is null ? new CardDto() : card.ToApplication();

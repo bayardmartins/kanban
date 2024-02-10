@@ -32,7 +32,7 @@ public class CardController : ControllerBase
     public async Task<ActionResult<CardResponseDto>> GetCard([FromRoute] string id)
     {
         this._logger.LogInformation($"{nameof(CardController)}.{nameof(GetCard)}: Start", new { id });
-        var card = await _cardService.GetCard(id);
+        var card = await _cardService.GetCardById(id);
         this._logger.LogInformation($"{nameof(CardController)}.{nameof(GetCard)}: Result", new { card });
         return card.ToPresentationResponse();
     }
