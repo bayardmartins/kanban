@@ -1,5 +1,6 @@
 using Kanban.API.Authentication;
 using Kanban.API.Configurations;
+using Kanban.CrossCutting;
 using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +12,7 @@ builder.AddRepository();
 builder.Services.AddSwagger();
 builder.Services.AddAuthentication()
     .AddScheme<AuthenticationSchemeOptions, CustomAuthenticationHandler>(
-        "Basic", null
+        Constants.Authentication, null
     );
 var app = builder.Build();
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using Kanban.CrossCutting;
+using Microsoft.OpenApi.Models;
 
 namespace Kanban.API.Configurations;
 
@@ -9,13 +10,13 @@ public static class ConfigureSwagger
         services.AddSwaggerGen(opt => 
         {
             opt.SwaggerDoc("v1", new OpenApiInfo { Title = "Kaban", Version = "v1" });
-            opt.AddSecurityDefinition("Basic", new OpenApiSecurityScheme
+            opt.AddSecurityDefinition(Constants.Authentication, new OpenApiSecurityScheme
             {
                 In = ParameterLocation.Header,
                 Description = "Basic Authorization Header",
                 Name = "Authorization",
                 Type = SecuritySchemeType.Http,
-                Scheme = "Basic"
+                Scheme = Constants.Authentication
             });
             opt.AddSecurityRequirement(new OpenApiSecurityRequirement
             {
@@ -25,10 +26,10 @@ public static class ConfigureSwagger
                         Reference = new OpenApiReference
                         {
                             Type=ReferenceType.SecurityScheme,
-                            Id="Basic"
+                            Id=Constants.Authentication,
                         },
                     },
-                    new string[]{ "Basic "}
+                    new string[]{ $"{Constants.Authentication} " }
                 }
             });
         });

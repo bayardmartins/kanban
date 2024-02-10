@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using Kanban.CrossCutting;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using System.Text;
@@ -21,12 +22,12 @@ namespace Kanban.API.Authentication
 
             var authrizationHeader = Request.Headers["Authorization"].ToString();
 
-            if (!authrizationHeader.StartsWith("Basic", StringComparison.OrdinalIgnoreCase))
+            if (!authrizationHeader.StartsWith(Constants.Authentication, StringComparison.OrdinalIgnoreCase))
             {
                 return Task.FromResult(AuthenticateResult.Fail("Authorization header mal formed"));
             }
 
-            var authBase64Decoded = Encoding.UTF8.GetString(Convert.FromBase64String(authrizationHeader.Replace("Basic ", "", StringComparison.OrdinalIgnoreCase)));
+            var authBase64Decoded = Encoding.UTF8.GetString(Convert.FromBase64String(authrizationHeader.Replace($"{Constants.Authentication} ", "", StringComparison.OrdinalIgnoreCase)));
 
             var authSplit = authBase64Decoded.Split(new[] {  ':'}, 2);
 
@@ -46,7 +47,7 @@ namespace Kanban.API.Authentication
 
             var client = new AuthenticationClient
             {
-                AuthenticationType = "Basic",
+                AuthenticationType = Constants.Authentication,
                 IsAuthenticated = true,
                 Name = clientId,
             };
