@@ -13,21 +13,21 @@ public class MongoRepository : IMongoRepository
         _mongoClients = mongoClients;
     }
 
-    public async Task<BsonDocument> FindOne(int host, string database, string collectionName, FilterDefinition<BsonDocument>? filter = null)
+    public async Task<BsonDocument> FindOne(int host, string database, string collectionName, FilterDefinition<BsonDocument>? filter)
     {
         IMongoCollection<BsonDocument> collection = _mongoClients.ElementAt(host).GetDatabase(database).GetCollection<BsonDocument>(collectionName);
 
 
-        return await collection.Find(filter ?? FilterDefinition<BsonDocument>.Empty)
+        return await collection.Find(filter)
             .FirstOrDefaultAsync()
             .ConfigureAwait(false);
     }
 
-    public async Task<List<BsonDocument>> FindMany(int host, string database, string collectionName, FilterDefinition<BsonDocument>? filter = null)
+    public async Task<List<BsonDocument>> FindMany(int host, string database, string collectionName)
     {
         IMongoCollection<BsonDocument> collection = _mongoClients.ElementAt(host).GetDatabase(database).GetCollection<BsonDocument>(collectionName);
 
-        return await collection.Find(filter ?? FilterDefinition<BsonDocument>.Empty)
+        return await collection.Find(FilterDefinition<BsonDocument>.Empty)
             .ToListAsync()
             .ConfigureAwait(false);
     }

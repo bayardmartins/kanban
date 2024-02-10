@@ -60,7 +60,7 @@ public class MongoRepositoryTestsSetup : BeforeAfterTestAttribute
         collection.InsertMany(list);
     }
 
-    private void Dispose()
+    public void Dispose()
     {
         IMongoCollection<CardDto> collection = _clients.ElementAt(_setting.KanbanHost.ClusterId).GetDatabase(_setting.KanbanHost.Database).GetCollection<CardDto>(_setting.Collections.Cards);
         collection.DeleteMany(Builders<CardDto>.Filter.Empty);
