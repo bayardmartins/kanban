@@ -5,6 +5,21 @@ VisualStudioVersion = 17.7.34024.191
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kanban.API", "src\Kanban.API\Kanban.API.csproj", "{7674C0A6-5822-44DB-BBE7-0191820FD198}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Items", "Items", "{E08AAF17-CF08-4FEE-B605-EE648B7EE827}"
+	ProjectSection(SolutionItems) = preProject
+		Dockerfile = Dockerfile
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kanban.Application", "src\Kanban.Services\Kanban.Application.csproj", "{1BAF0DCB-7039-4308-A055-232D3A732F79}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kanban.Repository", "src\Kanban.Repository\Kanban.Repository.csproj", "{8D0BE32F-02D3-4533-9755-C9D77726DB75}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kanban.API.Dto", "src\API.Dto\Kanban.API.Dto.csproj", "{DC363BB3-7574-485C-91D2-ECC9F148C2FB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kanban.Application.Dto", "src\Kanban.Application.Dto\Kanban.Application.Dto.csproj", "{65CCF79B-796D-4820-A352-48D8EFF2620F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kanban.Repository.Dto", "src\Kanban.Repository.Dto\Kanban.Repository.Dto.csproj", "{3F118892-E8F0-4DA8-9DC0-1BFF97320286}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +30,26 @@ Global
 		{7674C0A6-5822-44DB-BBE7-0191820FD198}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7674C0A6-5822-44DB-BBE7-0191820FD198}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7674C0A6-5822-44DB-BBE7-0191820FD198}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BAF0DCB-7039-4308-A055-232D3A732F79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BAF0DCB-7039-4308-A055-232D3A732F79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BAF0DCB-7039-4308-A055-232D3A732F79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BAF0DCB-7039-4308-A055-232D3A732F79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D0BE32F-02D3-4533-9755-C9D77726DB75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D0BE32F-02D3-4533-9755-C9D77726DB75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D0BE32F-02D3-4533-9755-C9D77726DB75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D0BE32F-02D3-4533-9755-C9D77726DB75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC363BB3-7574-485C-91D2-ECC9F148C2FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC363BB3-7574-485C-91D2-ECC9F148C2FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC363BB3-7574-485C-91D2-ECC9F148C2FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC363BB3-7574-485C-91D2-ECC9F148C2FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65CCF79B-796D-4820-A352-48D8EFF2620F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65CCF79B-796D-4820-A352-48D8EFF2620F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65CCF79B-796D-4820-A352-48D8EFF2620F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65CCF79B-796D-4820-A352-48D8EFF2620F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F118892-E8F0-4DA8-9DC0-1BFF97320286}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F118892-E8F0-4DA8-9DC0-1BFF97320286}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F118892-E8F0-4DA8-9DC0-1BFF97320286}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F118892-E8F0-4DA8-9DC0-1BFF97320286}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
