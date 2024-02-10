@@ -13,7 +13,7 @@ public class MongoRepository : IMongoRepository
         _mongoClients = mongoClients;
     }
 
-    public async Task<BsonDocument> FindOne(int host, string database, string collectionName, FilterDefinition<BsonDocument> filter = null)
+    public async Task<BsonDocument> FindOne(int host, string database, string collectionName, FilterDefinition<BsonDocument>? filter = null)
     {
         IMongoCollection<BsonDocument> collection = _mongoClients.ElementAt(host).GetDatabase(database).GetCollection<BsonDocument>(collectionName);
 
@@ -23,7 +23,7 @@ public class MongoRepository : IMongoRepository
             .ConfigureAwait(false);
     }
 
-    public async Task<List<BsonDocument>> FindMany(int host, string database, string collectionName, FilterDefinition<BsonDocument> filter = null)
+    public async Task<List<BsonDocument>> FindMany(int host, string database, string collectionName, FilterDefinition<BsonDocument>? filter = null)
     {
         IMongoCollection<BsonDocument> collection = _mongoClients.ElementAt(host).GetDatabase(database).GetCollection<BsonDocument>(collectionName);
 

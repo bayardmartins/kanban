@@ -1,0 +1,9 @@
+﻿namespace Kanban.CrossCutting
+{
+    public static class Constants
+    {
+        public const string MongoDbId = "_id";
+        public const string HostSetting = "MongoSettings:KanbanHost:Host";
+        public const string MongoSettings = "MongoSettings";
+    }
+}

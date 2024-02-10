@@ -4,6 +4,6 @@ namespace Kanban.Application.Interfaces;
 
 public interface ICardService
 {
-    public Task<CardDto> GetCard(string id);
+    public Task<CardDto> GetCardById(string id);
     public Task<List<CardDto>> GetCards();
 }

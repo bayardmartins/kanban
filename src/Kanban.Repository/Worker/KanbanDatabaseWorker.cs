@@ -4,6 +4,7 @@ using Kanban.Repository.Settings;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
+using Kanban.CrossCutting;
 
 namespace Kanban.Repository.Worker;
 
@@ -20,7 +21,7 @@ public class KanbanDatabaseWorker : IKanbanDatabaseWorker
 
     public async Task<CardDto?> GetCardById(string id)
     {
-        FilterDefinition<BsonDocument> filterDefinition = Builders<BsonDocument>.Filter.Eq("_id", ObjectId.Parse(id));
+        FilterDefinition<BsonDocument> filterDefinition = Builders<BsonDocument>.Filter.Eq(Constants.MongoDbId, ObjectId.Parse(id));
 
         var card = await _cardRepository.FindOne(_mongoSettings.KanbanHost.ClusterId, _mongoSettings.KanbanHost.Database, _mongoSettings.Collections.Cards, filterDefinition).ConfigureAwait(false);
 
