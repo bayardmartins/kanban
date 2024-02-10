@@ -30,7 +30,7 @@ public class CardController : ControllerBase
         return cards.ToPresentationResponse();
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id}"), CustomAuthentication]
     public async Task<ActionResult<CardResponseDto>> GetCard([FromRoute] string id)
     {
         this._logger.LogInformation($"{nameof(CardController)}.{nameof(GetCard)}: Start", new { id });

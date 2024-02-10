@@ -1,4 +1,7 @@
-﻿using Kanban.CrossCutting;
+﻿using Kanban.API.Dto.Auth;
+using Kanban.API.Mapper;
+using Kanban.Application.Interfaces;
+using Kanban.CrossCutting;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
@@ -9,8 +12,10 @@ namespace Kanban.API.Authentication
 {
     public class CustomAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
-        public CustomAuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) : base(options, logger, encoder, clock)
+        private readonly IAuthService _authService;
+        public CustomAuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock, IAuthService authService) : base(options, logger, encoder, clock)
         {
+            _authService = authService;
         }
 
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -27,37 +32,47 @@ namespace Kanban.API.Authentication
                 return Task.FromResult(AuthenticateResult.Fail("Authorization header mal formed"));
             }
 
-            var authBase64Decoded = Encoding.UTF8.GetString(Convert.FromBase64String(authrizationHeader.Replace($"{Constants.Authentication} ", "", StringComparison.OrdinalIgnoreCase)));
+            var isValidCredentials = TryGetAuthSplit(authrizationHeader, out var authSplit);
 
-            var authSplit = authBase64Decoded.Split(new[] {  ':'}, 2);
 
-            if(authSplit.Length != 2)
+            if(!isValidCredentials)
             {
                 return Task.FromResult(AuthenticateResult.Fail("Invalid authorization header format"));
             }
 
-            var clientId = authSplit[0];
-            var clientSecret = authSplit[1];
+            var client = new ClientDto
+            {
+                Id = authSplit[0],
+                Secret = authSplit[1],
+            };
 
-            // TODO: fetch in database
-            if (clientId == null || clientSecret == null)
+            if (!_authService.Login(client.ToApplication()).Result)
             {
                 return Task.FromResult(AuthenticateResult.Fail("Invalid id or secret"));
             }
 
-            var client = new AuthenticationClient
+            return Task.FromResult(AuthenticateResult.Success(new AuthenticationTicket(GetClaimsPrincipal(client.Id), Scheme.Name)));
+        }
+
+        public static ClaimsPrincipal GetClaimsPrincipal(string id)
+        {
+            var authClient = new AuthenticationClient
             {
                 AuthenticationType = Constants.Authentication,
                 IsAuthenticated = true,
-                Name = clientId,
+                Name = id,
             };
 
-            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(client, new[]
-            {
-                new Claim(ClaimTypes.Name, clientId),
-            }));
+            return new ClaimsPrincipal(new ClaimsIdentity(authClient, new[] { new Claim(ClaimTypes.Name, id), }));
+        }
 
-            return Task.FromResult(AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, Scheme.Name)));
+        public static bool TryGetAuthSplit(string authrizationHeader, out string[] authSplit)
+        {
+            var authBase64Decoded = Encoding.UTF8.GetString(Convert.FromBase64String(authrizationHeader.Replace($"{Constants.Authentication} ", "", StringComparison.OrdinalIgnoreCase)));
+
+            authSplit = authBase64Decoded.Split(new[] { ':' });
+
+            return authSplit.Length == 2;
         }
     }
 }

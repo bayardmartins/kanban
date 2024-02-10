@@ -26,4 +26,5 @@ public class MongoHost
 public class Collections
 {
     public string Cards { get; set; }
+    public string Clients { get; set; }
 }
