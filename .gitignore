@@ -1,0 +1,4 @@
+.vs
+*.cache
+src/Kanban.API/obj
+src/Kanban.API/bin
