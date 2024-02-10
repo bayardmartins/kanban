@@ -1,4 +1,5 @@
-﻿using Kanban.Repository.Repositories;
+﻿using Kanban.Repository.Interfaces;
+using Kanban.Repository.Repositories;
 using Kanban.Repository.Settings;
 using MongoDB.Driver;
 

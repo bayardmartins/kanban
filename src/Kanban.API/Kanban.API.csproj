@@ -10,8 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\API.Dto\Kanban.API.Dto.csproj" />
+    <ProjectReference Include="..\Kanban.Application.Dto\Kanban.Application.Dto.csproj" />
     <ProjectReference Include="..\Kanban.Repository\Kanban.Repository.csproj" />
-    <ProjectReference Include="..\Kanban.Services\Kanban.Services.csproj" />
+    <ProjectReference Include="..\Kanban.Services\Kanban.Application.csproj" />
   </ItemGroup>
 
 </Project>

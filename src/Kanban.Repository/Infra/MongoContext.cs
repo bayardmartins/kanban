@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using Kanban.Repository.Interfaces;
+using MongoDB.Driver;
 
 namespace Kanban.Repository.Infra;
 

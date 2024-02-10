@@ -1,9 +1,8 @@
-using Kanban.Repository.Models;
-using Kanban.Repository.Repositories;
-using Kanban.Repository.Settings;
+using Kanban.API.Dto.Card;
+using Kanban.Application.Interfaces;
+using Kanban.Application.Dto.Models;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson;
-using MongoDB.Driver;
+using Kanban.API.Mapper;
 
 namespace Kanban.API.Controllers;
 
@@ -12,21 +11,29 @@ namespace Kanban.API.Controllers;
 public class CardController : ControllerBase
 {
     private readonly ILogger<CardController> _logger;
-    private readonly IMongoRepository _cardRepository;
-    private readonly IMongoSettings _mongoSettings;
+    private readonly ICardService _cardService;
 
-    public CardController(ILogger<CardController> logger, IMongoRepository repository, IMongoSettings settings)
+    public CardController(ILogger<CardController> logger, ICardService cardService)
     {
         _logger = logger;
-        _cardRepository = repository;
-        _mongoSettings = settings;
+        _cardService = cardService;
     }
 
     [HttpGet]
-    public async Task<string> Get()
+    public async Task<ActionResult<CardResponseDto>> GetAllCards()
     {
-        var card = new Card { test = "testando" };
-        var test = await _cardRepository.Insert(_mongoSettings.KanbanHost.ClusterId, _mongoSettings.KanbanHost.Database, _mongoSettings.Collections.Cards, card.ToBsonDocument());
-        return "Hello World";
+        this._logger.LogInformation($"{nameof(CardController)}.{nameof(GetAllCards)}: Start");
+        var cards = await _cardService.GetCards();
+        this._logger.LogInformation($"{nameof(CardController)}.{nameof(GetAllCards)}: Result", new { cards });
+        return cards.ToPresentationResponse();
+    }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<CardResponseDto>> GetCard([FromRoute] string id)
+    {
+        this._logger.LogInformation($"{nameof(CardController)}.{nameof(GetCard)}: Start", new { id });
+        var card = await _cardService.GetCard(id);
+        this._logger.LogInformation($"{nameof(CardController)}.{nameof(GetCard)}: Result", new { card });
+        return card.ToPresentationResponse();
     }
 }

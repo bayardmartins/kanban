@@ -1,6 +1,6 @@
 ﻿using MongoDB.Driver;
 
-namespace Kanban.Repository.Infra;
+namespace Kanban.Repository.Interfaces;
 
 public interface IMongoContext : IDisposable
 {

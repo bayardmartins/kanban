@@ -7,11 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MongoDB.Driver" Version="2.23.1" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\Kanban.Application.Dto\Kanban.Application.Dto.csproj" />
     <ProjectReference Include="..\Kanban.Repository.Dto\Kanban.Repository.Dto.csproj" />
+    <ProjectReference Include="..\Kanban.Repository\Kanban.Repository.csproj" />
   </ItemGroup>
 
 </Project>
