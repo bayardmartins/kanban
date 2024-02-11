@@ -72,7 +72,7 @@ namespace Kanban.API.Authentication
 
             authSplit = authBase64Decoded.Split(new[] { ':' });
 
-            return authSplit.Length == 2;
+            return authSplit.Length == 2 && !string.IsNullOrEmpty(authSplit[0]) && !string.IsNullOrEmpty(authSplit[1]);
         }
     }
 }

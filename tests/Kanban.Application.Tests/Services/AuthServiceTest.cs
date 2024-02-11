@@ -78,4 +78,24 @@ public class AuthServiceTest
         // Assert
         result.Should().Be(false);
     }
+
+    [Fact]
+    public async void Login_ShouldNotLoginSuccessfully_WhenNonExistingClientIsGiven()
+    {
+        // Arrange
+        var repoClient = this.fixture.Create<Repo.ClientDto>();
+        var appClient = new App.ClientDto
+        {
+            Id = repoClient._id,
+            Secret = this.fixture.Create<string>(),
+        };
+        this.worker.Setup(x => x.GetClientById(repoClient._id))
+            .Verifiable();
+
+        // Act
+        var result = await this.cardService.Login(appClient);
+
+        // Assert
+        result.Should().Be(false);
+    }
 }

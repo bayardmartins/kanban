@@ -21,6 +21,6 @@ public class AuthService : IAuthService
     public async Task<bool> Login(ClientDto client)
     {
         var dbClient = await _databaseWorker.GetClientById(client.Id);
-        return dbClient is not null && dbClient.Secret is not null && dbClient.Secret == client.Secret;
+        return dbClient is not null && dbClient.Secret == client.Secret;
     }
 }
