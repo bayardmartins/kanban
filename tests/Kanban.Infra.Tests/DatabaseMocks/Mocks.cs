@@ -11,6 +11,8 @@ public static class Mocks
 
     public static string InsertMockObject = "{\"_id\":\"65c782127d5a911ae3d662dd\",\"Name\":\"Card Test Insert\", \"Description\":\"Card Insert Description\"}";
 
+    public static string UpdateMockObject = "{\"_id\":\"65c89bcd3adb8be079b61e88\",\"Name\":\"Card Test Update\", \"Description\":\"Card Update Description\"}";
+
     public static string NonexistingMockObject = "{\"_id\":\"65c806377d5a911ae3d662f0\",\"Name\":\"Card Test Update\", \"Description\":\"Card Update Description\"}";
 
     public static string SampleMockOneId = "65c6e255a03db52a8056230f";

@@ -1,9 +1,9 @@
 ﻿namespace Kanban.Infra.Tests.Repositories;
 
-public class CardRepositoryTests : MongoRepositoryTestsSetup
+public class ClientRepositoryTests : MongoRepositoryTestsSetup
 {
+
     [Fact]
-    [MongoRepositoryTestsSetup]
     public async Task GetById_ShouldReturnCard_WhenValidCardIsSearched()
     {
         // Act
@@ -15,7 +15,6 @@ public class CardRepositoryTests : MongoRepositoryTestsSetup
 
 
     [Fact]
-    [MongoRepositoryTestsSetup]
     public async Task GetById_ShouldNotReturnCard_WhenInvalidCardIsSearched()
     {
         // Act
@@ -26,7 +25,6 @@ public class CardRepositoryTests : MongoRepositoryTestsSetup
     }
 
     [Fact]
-    [MongoRepositoryTestsSetup]
     public async Task GetAll_ShouldReturnCards_WhenThereAreCardsInDatabase()
     {
         // Act
@@ -39,7 +37,6 @@ public class CardRepositoryTests : MongoRepositoryTestsSetup
     }
 
     [Fact]
-    [MongoRepositoryTestsSetup]
     public async Task GetAll_ShouldReturnNoCards_WhenThereAreNoCardsInDatabase()
     {
         // Assert
@@ -54,7 +51,6 @@ public class CardRepositoryTests : MongoRepositoryTestsSetup
     }
 
     [Fact]
-    [MongoRepositoryTestsSetup]
     public async Task Insert_ShouldInsertCard_WhenCardIsGiven()
     {
         // Arrange
@@ -69,11 +65,11 @@ public class CardRepositoryTests : MongoRepositoryTestsSetup
     }
 
     [Fact]
-    [MongoRepositoryTestsSetup]
     public async Task Update_ShouldUpdateCard_WhenValidCardIsGiven()
     {
         // Arrange
-        var card = JsonConvert.DeserializeObject<CardDto>(Mocks.SampleMockOne);
+        var card = JsonConvert.DeserializeObject<CardDto>(Mocks.UpdateMockObject);
+        await this.cardWorker.InsertCard(card);
         card.Name = "New Name";
 
         // Act
@@ -82,11 +78,10 @@ public class CardRepositoryTests : MongoRepositoryTestsSetup
         // Assert
         response.Should().NotBeNull();
         response._id.Should().Be(card._id);
-        updatedCard.Name.Should().Be(card.Name);
+        updatedCard.Name.Should().Be("New Name");
     }
 
     [Fact]
-    [MongoRepositoryTestsSetup]
     public async Task Update_ShouldNotUpdateCard_WhenNonExistingCardIsGiven()
     {
         // Arrange
@@ -100,7 +95,6 @@ public class CardRepositoryTests : MongoRepositoryTestsSetup
     }
 
     [Fact]
-    [MongoRepositoryTestsSetup]
     public async Task UpdateMany_ShouldUpdateManyCardDescriptions_WhenValidCardIdsAreGiven()
     {
         // Arrange
@@ -115,7 +109,6 @@ public class CardRepositoryTests : MongoRepositoryTestsSetup
     }
 
     [Fact]
-    [MongoRepositoryTestsSetup]
     public async Task Delete_ShouldDeleteCard_WhenValidCardIdIsGiven()
     {
         // Arrange
@@ -129,10 +122,11 @@ public class CardRepositoryTests : MongoRepositoryTestsSetup
         response.Should().Be(true);
         deletedCard.Should().BeNull();
         remainingCards.Count.Should().Be(2);
+        var card = JsonConvert.DeserializeObject<CardDto>(Mocks.SampleMockOne);
+        await this.cardWorker.InsertCard(card);
     }
 
     [Fact]
-    [MongoRepositoryTestsSetup]
     public async Task Delete_ShouldNotDeleteCard_WhenUnexistingCardIdIsGiven()
     {
         // Arrange
@@ -148,4 +142,39 @@ public class CardRepositoryTests : MongoRepositoryTestsSetup
         remainingCards.Count.Should().Be(3);
     }
 
+    [Fact]
+    public async Task GetById_ShouldGetClient_WhenValidIdAreSend()
+    {
+        // Act
+        var result = await this.authWorker.GetClientById("client");
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Secret.Should().Be("secret");
+    }
+
+    [Fact]
+    public async Task GetById_ShouldNotGetClient_WhenInvalidIdAreSend()
+    {
+        // Act
+        var result = await this.authWorker.GetClientById("fake_client");
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task Register_ShouldRegisterClient_WhenValidCredentialsAreSend()
+    {
+        // Arrange
+        var client = JsonConvert.DeserializeObject<ClientDto>(Mocks.NewClientMock);
+
+        // Act
+        await this.authWorker.RegisterClient(client);
+        var result = await this.authWorker.GetClientById(client._id);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Secret.Should().Be("newsecret");
+    }
 }

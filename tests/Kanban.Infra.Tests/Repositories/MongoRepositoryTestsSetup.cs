@@ -2,12 +2,10 @@
 using Kanban.Repository.Settings;
 using Kanban.Repository.Worker;
 using MongoDB.Driver;
-using System.Reflection;
-using Xunit.Sdk;
 
 namespace Kanban.Infra.Tests.Repositories;
 
-public class MongoRepositoryTestsSetup : BeforeAfterTestAttribute
+public class MongoRepositoryTestsSetup : IDisposable
 {
     public readonly KanbanDatabaseWorker cardWorker;
     public readonly AuthDatabaseWorker authWorker;
@@ -40,19 +38,10 @@ public class MongoRepositoryTestsSetup : BeforeAfterTestAttribute
         this.cardWorker = new KanbanDatabaseWorker(_repository, _setting);
         this.authWorker = new AuthDatabaseWorker(_repository, _setting);
         this.Dispose();
-    }
-
-    public override void Before(MethodInfo methodUnderTest)
-    {
         this.Migrate();
     }
 
-    public override void After(MethodInfo methodUnderTest)
-    {
-        this.Dispose();
-    }
-
-    private void Migrate()
+    public void Migrate()
     {
         var cardCollection = _clients.ElementAt(_setting.KanbanHost.ClusterId).GetDatabase(_setting.KanbanHost.Database).GetCollection<CardDto>(_setting.Collections.Cards);
         var cardOne = JsonConvert.DeserializeObject<CardDto>(Mocks.SampleMockOne);
