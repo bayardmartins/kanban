@@ -3,22 +3,26 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34024.191
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kanban.API", "src\Kanban.API\Kanban.API.csproj", "{7674C0A6-5822-44DB-BBE7-0191820FD198}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kanban.API", "src\Kanban.API\Kanban.API.csproj", "{7674C0A6-5822-44DB-BBE7-0191820FD198}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0 -Items", "0 -Items", "{E08AAF17-CF08-4FEE-B605-EE648B7EE827}"
 	ProjectSection(SolutionItems) = preProject
+		docker-compose.yaml = docker-compose.yaml
 		Dockerfile = Dockerfile
+		Kanban.postman_collection.json = Kanban.postman_collection.json
+		Makefile = Makefile
+		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kanban.Application", "src\Kanban.Services\Kanban.Application.csproj", "{1BAF0DCB-7039-4308-A055-232D3A732F79}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kanban.Application", "src\Kanban.Services\Kanban.Application.csproj", "{1BAF0DCB-7039-4308-A055-232D3A732F79}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kanban.Repository", "src\Kanban.Repository\Kanban.Repository.csproj", "{8D0BE32F-02D3-4533-9755-C9D77726DB75}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kanban.Repository", "src\Kanban.Repository\Kanban.Repository.csproj", "{8D0BE32F-02D3-4533-9755-C9D77726DB75}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kanban.API.Dto", "src\API.Dto\Kanban.API.Dto.csproj", "{DC363BB3-7574-485C-91D2-ECC9F148C2FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kanban.API.Dto", "src\API.Dto\Kanban.API.Dto.csproj", "{DC363BB3-7574-485C-91D2-ECC9F148C2FB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kanban.Application.Dto", "src\Kanban.Application.Dto\Kanban.Application.Dto.csproj", "{65CCF79B-796D-4820-A352-48D8EFF2620F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kanban.Application.Dto", "src\Kanban.Application.Dto\Kanban.Application.Dto.csproj", "{65CCF79B-796D-4820-A352-48D8EFF2620F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kanban.Repository.Dto", "src\Kanban.Repository.Dto\Kanban.Repository.Dto.csproj", "{3F118892-E8F0-4DA8-9DC0-1BFF97320286}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kanban.Repository.Dto", "src\Kanban.Repository.Dto\Kanban.Repository.Dto.csproj", "{3F118892-E8F0-4DA8-9DC0-1BFF97320286}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1 - API", "1 - API", "{48793681-C683-4734-A5F7-8BA6AE27C09C}"
 EndProject
@@ -28,13 +32,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3 - Infrastructure", "3 - I
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4 - Tests", "4 - Tests", "{E98514FF-0523-49B4-8564-8D196AE6B640}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kanban.Application.Tests", "tests\Kanban.Application.Tests\Kanban.Application.Tests.csproj", "{431B93E3-0CE4-4BDD-9447-04E09667A39E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kanban.Application.Tests", "tests\Kanban.Application.Tests\Kanban.Application.Tests.csproj", "{431B93E3-0CE4-4BDD-9447-04E09667A39E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kanban.Infra.Tests", "tests\Kanban.Infra.Tests\Kanban.Infra.Tests.csproj", "{1D651461-839D-4648-85B9-D651ABA1ABFD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kanban.Infra.Tests", "tests\Kanban.Infra.Tests\Kanban.Infra.Tests.csproj", "{1D651461-839D-4648-85B9-D651ABA1ABFD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5 - CrossCutting", "5 - CrossCutting", "{1B2FD9A9-A8CE-4AD4-AB94-61A6A49A5788}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kanban.CrossCutting", "src\Kanban.CrossCutting\Kanban.CrossCutting.csproj", "{7A7C34E6-02DC-448B-BA12-7E259E78FA70}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kanban.CrossCutting", "src\Kanban.CrossCutting\Kanban.CrossCutting.csproj", "{7A7C34E6-02DC-448B-BA12-7E259E78FA70}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
