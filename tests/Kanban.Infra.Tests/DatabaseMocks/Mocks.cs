@@ -9,7 +9,7 @@ public static class Mocks
     public static string SampleMockTwo = "{\"_id\":\"65c77ba67d5a911ae3d662db\",\"Name\":\"Card Test Two\", \"Description\":\"Card Two Description\"}";
     public static string SampleMockThree = "{\"_id\":\"65c77bbb7d5a911ae3d662dc\",\"Name\":\"Card Test Three\", \"Description\":\"Card Three Description\"}";
 
-    public static string InsertMockObject = "{\"_id\":\"65c782127d5a911ae3d662dd\",\"Name\":\"Card Test Insert\", \"Description\":\"Card Insert Description\"}";
+    public static string InsertMockObject = "{\"Name\":\"Card Test Insert\", \"Description\":\"Card Insert Description\"}";
 
     public static string UpdateMockObject = "{\"_id\":\"65c89bcd3adb8be079b61e88\",\"Name\":\"Card Test Update\", \"Description\":\"Card Update Description\"}";
 

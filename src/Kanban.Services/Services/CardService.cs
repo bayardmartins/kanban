@@ -24,4 +24,10 @@ public class CardService : ICardService
         var cards = await this._kanbanDatabaseWorker.GetAllCards();
         return cards is null ? new List<CardDto>() : cards.ToApplicationDto();
     }
+
+    public async Task<CardDto> CreateCard(CardDto card)
+    {
+        var createdCard = await this._kanbanDatabaseWorker.InsertCard(card.ToDatabase());
+        return createdCard.ToApplication();
+    }
 }
