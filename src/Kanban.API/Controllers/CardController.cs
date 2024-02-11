@@ -1,12 +1,14 @@
 using Kanban.API.Dto.Card;
 using Kanban.Application.Interfaces;
-using Kanban.Application.Dto.Models;
 using Microsoft.AspNetCore.Mvc;
 using Kanban.API.Mapper;
+using Microsoft.AspNetCore.Authorization;
+using Kanban.API.Authentication;
 
 namespace Kanban.API.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("[controller]")]
 public class CardController : ControllerBase
 {
@@ -19,7 +21,7 @@ public class CardController : ControllerBase
         _cardService = cardService;
     }
 
-    [HttpGet]
+    [HttpGet, CustomAuthentication]
     public async Task<ActionResult<CardResponseDto>> GetAllCards()
     {
         this._logger.LogInformation($"{nameof(CardController)}.{nameof(GetAllCards)}: Start");
@@ -28,7 +30,7 @@ public class CardController : ControllerBase
         return cards.ToPresentationResponse();
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id}"), CustomAuthentication]
     public async Task<ActionResult<CardResponseDto>> GetCard([FromRoute] string id)
     {
         this._logger.LogInformation($"{nameof(CardController)}.{nameof(GetCard)}: Start", new { id });
