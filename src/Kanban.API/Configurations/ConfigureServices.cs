@@ -11,6 +11,8 @@ public static class ConfigureServices
     {
         services.AddScoped<ICardService, CardService>();
         services.AddScoped<IKanbanDatabaseWorker, KanbanDatabaseWorker>();
+        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IAuthDatabaseWorker, AuthDatabaseWorker>();
         return services;
     }
 }
