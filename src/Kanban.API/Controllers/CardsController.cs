@@ -24,27 +24,54 @@ public class CardsController : ControllerBase
     [HttpGet, CustomAuthentication]
     public async Task<ActionResult<GetCardResponseDto>> GetAllCards()
     {
-        this._logger.LogInformation($"{nameof(CardsController)}.{nameof(GetAllCards)}: Start");
+        this.Log(nameof(GetAllCards),"Start", null);
         var cards = await _cardService.GetCards();
-        this._logger.LogInformation($"{nameof(CardsController)}.{nameof(GetAllCards)}: Result", new { cards });
+        this.Log(nameof(GetAllCards),"Result", cards);
         return cards.ToPresentationGetResponse();
     }
 
     [HttpGet("{id}"), CustomAuthentication]
     public async Task<ActionResult<GetCardResponseDto>> GetCard([FromRoute] string id)
     {
-        this._logger.LogInformation($"{nameof(CardsController)}.{nameof(GetCard)}: Start", new { id });
+        this.Log(nameof(GetCard), "Start",id);
         var card = await _cardService.GetCardById(id);
-        this._logger.LogInformation($"{nameof(CardsController)}.{nameof(GetCard)}: Result", new { card });
+        this.Log(nameof(GetCard),"Result", card);
         return card.ToPresentationGetResponse();
     }
 
     [HttpPost, CustomAuthentication]
     public async Task<ActionResult<CreateCardResponseDto>> CreateCard(CardDto card)
     {
-        this._logger.LogInformation($"{nameof(CardsController)}.{nameof(CreateCard)}: Start", new { card });
+        this.Log(nameof(CreateCard), "Start", card);
         var createdCard = await _cardService.CreateCard(card.ToApplication());
-        this._logger.LogInformation($"{nameof(CardsController)}.{nameof(GetCard)}: Result", new { card });
+        this.Log(nameof(CreateCard), "Result", createdCard);
         return createdCard.ToPresentationCreateResponse();
+    }
+
+    [HttpDelete, CustomAuthentication]
+    public async Task<ActionResult> DeleteCard(string id)
+    {
+        this.Log(nameof(CreateCard), "Start", id);
+        var result = await _cardService.DeleteCard(id);
+        this.Log(nameof(CreateCard), "Result", new { deleted = result });
+        if (result)
+            return new OkResult();
+        return new NotFoundResult();
+    }
+
+    [HttpPut, CustomAuthentication]
+    public async Task<ActionResult> UpdateCard(CardDto card)
+    {
+        this.Log(nameof(UpdateCard), "Start", card);
+        var result = await _cardService.UpdateCard(card.ToApplication());
+        this.Log(nameof(UpdateCard), "Result", result);
+        if (result is not null)
+            return new OkResult();
+        return new NotFoundResult();
+    }
+
+    private void Log(string methodName, string stage, object? data)
+    {
+        this._logger.LogInformation($"{methodName}: {stage}", () => new { data });
     }
 }

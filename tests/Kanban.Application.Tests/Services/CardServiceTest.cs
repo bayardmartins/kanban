@@ -117,5 +117,73 @@ public class CardServiceTest
         result.Name.Should().Be(card.Name);
         result.Description.Should().Be(card.Description);
     }
-    
+
+    [Fact]
+    public async void DeleteCard_ShouldDeleteCard_WhenAValidCardIdIsGiven()
+    {
+        // Arrange
+        var id = this.fixture.Create<string>();
+        this.worker.Setup(x => x.DeleteById(id))
+            .ReturnsAsync(true)
+            .Verifiable();
+
+        // Act
+        var result = await this.cardService.DeleteCard(id);
+
+        // Assert
+        result.Should().Be(true);
+    }
+
+    [Fact]
+    public async void UpdateCard_ShouldUpdateCard_WhenAValidCardIsGiven()
+    {
+        // Arrange
+        var card = this.fixture.Create<Repo.CardDto>();
+
+        this.worker.Setup(x => x.UpdateCard(It.Is<Repo.CardDto>
+            (x => x._id == card._id && x.Name == card.Name && x.Description == card.Description)))
+            .ReturnsAsync(card)
+            .Verifiable();
+
+        var appCard = new App.CardDto
+        {
+            Id = card._id,
+            Name = card.Name,
+            Description = card.Description,
+        };
+
+        // Act
+        var result = await this.cardService.UpdateCard(appCard);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Id.Should().Be(card._id);
+        result.Name.Should().Be(card.Name);
+        result.Description.Should().Be(card.Description);
+    }
+
+    [Fact]
+    public async void UpdateCard_ShouldNotUpdateCard_WhenAnInvalidCardIsGiven()
+    {
+        // Arrange
+        var card = this.fixture.Create<Repo.CardDto>();
+
+        this.worker.Setup(x => x.UpdateCard(It.Is<Repo.CardDto>
+            (x => x._id == card._id && x.Name == card.Name && x.Description == card.Description)))
+            .ReturnsAsync(card)
+            .Verifiable();
+
+        var appCard = new App.CardDto
+        {
+            Id = this.fixture.Create<string>(),
+            Name = card.Name,
+            Description = card.Description,
+        };
+
+        // Act
+        var result = await this.cardService.UpdateCard(appCard);
+
+        // Assert
+        result.Should().BeNull();
+    }
 }

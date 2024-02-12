@@ -27,7 +27,18 @@ public class CardService : ICardService
 
     public async Task<CardDto> CreateCard(CardDto card)
     {
-        var createdCard = await this._kanbanDatabaseWorker.InsertCard(card.ToDatabase());
+        var createdCard = await this._kanbanDatabaseWorker.InsertCard(card.ToDatabaseInsert());
         return createdCard.ToApplication();
+    }
+
+    public async Task<bool> DeleteCard(string id)
+    {
+        return await this._kanbanDatabaseWorker.DeleteById(id);
+    }
+
+    public async Task<CardDto?> UpdateCard(CardDto card)
+    {
+        var result = await this._kanbanDatabaseWorker.UpdateCard(card.ToDatabaseUpdate());
+        return result?.ToApplication();
     }
 }
