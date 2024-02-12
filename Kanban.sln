@@ -40,6 +40,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5 - CrossCutting", "5 - Cro
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kanban.CrossCutting", "src\Kanban.CrossCutting\Kanban.CrossCutting.csproj", "{7A7C34E6-02DC-448B-BA12-7E259E78FA70}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kanban.Integration.Tests", "tests\Kanban.Integration.Tests\Kanban.Integration.Tests.csproj", "{C41D0C1D-4400-408D-B45E-82251EF7E4A1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -82,6 +84,10 @@ Global
 		{7A7C34E6-02DC-448B-BA12-7E259E78FA70}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A7C34E6-02DC-448B-BA12-7E259E78FA70}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A7C34E6-02DC-448B-BA12-7E259E78FA70}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C41D0C1D-4400-408D-B45E-82251EF7E4A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C41D0C1D-4400-408D-B45E-82251EF7E4A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C41D0C1D-4400-408D-B45E-82251EF7E4A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C41D0C1D-4400-408D-B45E-82251EF7E4A1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -96,6 +102,7 @@ Global
 		{431B93E3-0CE4-4BDD-9447-04E09667A39E} = {E98514FF-0523-49B4-8564-8D196AE6B640}
 		{1D651461-839D-4648-85B9-D651ABA1ABFD} = {E98514FF-0523-49B4-8564-8D196AE6B640}
 		{7A7C34E6-02DC-448B-BA12-7E259E78FA70} = {1B2FD9A9-A8CE-4AD4-AB94-61A6A49A5788}
+		{C41D0C1D-4400-408D-B45E-82251EF7E4A1} = {E98514FF-0523-49B4-8564-8D196AE6B640}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {71789F54-6517-4F01-AE01-9A05A64BDC5B}
