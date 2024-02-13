@@ -2,6 +2,7 @@ using Kanban.API.Authentication;
 using Kanban.API.Configurations;
 using Kanban.CrossCutting;
 using Microsoft.AspNetCore.Authentication;
+using System.Diagnostics.CodeAnalysis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +17,6 @@ builder.Services.AddAuthentication()
     );
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -34,3 +34,6 @@ app.UseHttpsRedirection();
 app.MapControllers();
 
 app.Run();
+
+[ExcludeFromCodeCoverage]
+public partial class Program { }

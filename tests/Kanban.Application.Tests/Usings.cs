@@ -4,3 +4,6 @@ global using AutoFixture;
 global using Kanban.Application.Services;
 global using Kanban.Repository.Interfaces;
 global using FluentAssertions;
+using System.Diagnostics.CodeAnalysis;
+
+[assembly: ExcludeFromCodeCoverage]

@@ -37,8 +37,9 @@ public class KanbanDatabaseWorker : IKanbanDatabaseWorker
 
     public async Task<CardDto> InsertCard(CardDto card)
     {
-        await _cardRepository.Insert(_mongoSettings.KanbanHost.ClusterId, _mongoSettings.KanbanHost.Database, _mongoSettings.Collections.Cards, card.ToBsonDocument());
-        return card;
+        card._id = new ObjectId().ToString();
+        var document = await _cardRepository.Insert(_mongoSettings.KanbanHost.ClusterId, _mongoSettings.KanbanHost.Database, _mongoSettings.Collections.Cards, card.ToBsonDocument());
+        return BsonSerializer.Deserialize<CardDto>(document);
     }
 
     public async Task<CardDto?> UpdateCard(CardDto card)

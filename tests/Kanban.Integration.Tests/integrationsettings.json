@@ -1,0 +1,20 @@
+﻿{
+  "MongoSettings": {
+    "KanbanHost": {
+      "Host": "mongodb://localhost:27017",
+      "Database": "integration-tests",
+      "ClusterId": 0
+    },
+    "Collections": {
+      "Cards": "cards",
+      "Clients": "clients"
+    }
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*"
+}

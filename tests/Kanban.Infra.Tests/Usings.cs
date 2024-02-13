@@ -4,3 +4,6 @@ global using Kanban.Infra.Tests.DatabaseMocks;
 global using Kanban.Repository.Dto.Models;
 global using MongoDB.Bson;
 global using Newtonsoft.Json;
+using System.Diagnostics.CodeAnalysis;
+
+[assembly: ExcludeFromCodeCoverage]

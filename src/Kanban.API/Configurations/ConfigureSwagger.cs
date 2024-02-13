@@ -1,8 +1,10 @@
 ﻿using Kanban.CrossCutting;
 using Microsoft.OpenApi.Models;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Kanban.API.Configurations;
 
+[ExcludeFromCodeCoverage]
 public static class ConfigureSwagger
 {
     public static IServiceCollection AddSwagger(this IServiceCollection services)

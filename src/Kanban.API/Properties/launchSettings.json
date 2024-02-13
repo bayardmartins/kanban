@@ -10,6 +10,16 @@
       "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:7164;http://localhost:5283"
     },
+    "Integration": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Integration"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "https://localhost:7164;http://localhost:5283"
+    },
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
