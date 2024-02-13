@@ -6,13 +6,13 @@ namespace Kanban.Application.Tests.Services;
 public class CardServiceTest
 {
     private readonly Fixture fixture;
-    private readonly Mock<IKanbanDatabaseWorker> worker;
+    private readonly Mock<IBoardsDatabaseWorker> worker;
     private readonly CardService cardService;
 
     public CardServiceTest() 
     {
         this.fixture = new Fixture();
-        this.worker = new Mock<IKanbanDatabaseWorker>();
+        this.worker = new Mock<IBoardsDatabaseWorker>();
         this.cardService = new CardService(this.worker.Object);
     }
 

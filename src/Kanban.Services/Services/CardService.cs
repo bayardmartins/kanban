@@ -6,9 +6,9 @@ using Kanban.Repository.Interfaces;
 namespace Kanban.Application.Services;
 public class CardService : ICardService
 {
-    private readonly IKanbanDatabaseWorker _kanbanDatabaseWorker;
+    private readonly ICardsDatabaseWorker _kanbanDatabaseWorker;
 
-    public CardService(IKanbanDatabaseWorker kanbanDatabaseWorker)
+    public CardService(ICardsDatabaseWorker kanbanDatabaseWorker)
     {
         this._kanbanDatabaseWorker = kanbanDatabaseWorker;
     }

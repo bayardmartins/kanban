@@ -1,4 +1,3 @@
-using Kanban.API.Authentication;
 using Kanban.API.Configurations;
 using Kanban.CrossCutting;
 using Microsoft.AspNetCore.Authentication;

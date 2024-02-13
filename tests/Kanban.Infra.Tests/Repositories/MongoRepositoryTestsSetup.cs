@@ -7,7 +7,7 @@ namespace Kanban.Infra.Tests.Repositories;
 
 public class MongoRepositoryTestsSetup : IDisposable
 {
-    public readonly KanbanDatabaseWorker cardWorker;
+    public readonly CardsDatabaseWorker cardWorker;
     public readonly AuthDatabaseWorker authWorker;
     private readonly MongoRepository _repository;
     private readonly MongoSettings _setting;

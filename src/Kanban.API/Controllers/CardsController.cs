@@ -1,9 +1,5 @@
 using Kanban.Model.Dto.API.Card;
 using Kanban.Model.Mapper.Card;
-using Kanban.API.Authentication;
-using Kanban.Application.Interfaces;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
 using Kanban.CrossCutting;
 
 namespace Kanban.API.Controllers;
@@ -28,7 +24,7 @@ public class CardsController : ControllerBase
         this.Log(nameof(GetAllCards),"Start", null);
         var cards = await _cardService.GetCards();
         this.Log(nameof(GetAllCards),"Result", cards);
-        return cards.ToPresentationGetResponse();
+        return new OkObjectResult(cards.ToPresentationGetResponse());
     }
 
     [HttpGet("{id}"), CustomAuthentication]
@@ -37,7 +33,9 @@ public class CardsController : ControllerBase
         this.Log(nameof(GetCard), "Start",id);
         var card = await _cardService.GetCardById(id);
         this.Log(nameof(GetCard),"Result", card);
-        return card.ToPresentationGetResponse();
+        if(card is null)
+            return new NotFoundResult();
+        return new OkObjectResult(card.ToPresentationGetResponse());
     }
 
     [HttpPost, CustomAuthentication]
@@ -46,7 +44,7 @@ public class CardsController : ControllerBase
         this.Log(nameof(CreateCard), "Start", cardRequest.Card);
         var createdCard = await _cardService.CreateCard(cardRequest.Card.ToApplication());
         this.Log(nameof(CreateCard), "Result", createdCard);
-        return createdCard.ToPresentationCreateResponse();
+        return new OkObjectResult(createdCard.ToPresentationCreateResponse());
     }
 
     [HttpDelete("{id}"), CustomAuthentication]
