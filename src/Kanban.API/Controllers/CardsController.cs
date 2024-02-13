@@ -56,8 +56,8 @@ public class CardsController : ControllerBase
         var result = await _cardService.DeleteCard(id);
         this.Log(nameof(CreateCard), "Result", new { deleted = result });
         if (result)
-            return new OkResult();
-        return new NotFoundResult();
+            return new OkObjectResult(Constants.CardDeleted);
+        return new NotFoundObjectResult(Constants.CardNotFound);
     }
 
     [HttpPut("{id}"), CustomAuthentication]
@@ -69,8 +69,8 @@ public class CardsController : ControllerBase
         var result = await _cardService.UpdateCard(cardRequest.Card.ToApplication(id));
         this.Log(nameof(UpdateCard), "Result", result);
         if (result is not null)
-            return new OkResult();
-        return new NotFoundResult();
+            return new OkObjectResult(Constants.CardUpdated);
+        return new NotFoundObjectResult(Constants.CardNotFound);
     }
 
     private void Log(string methodName, string stage, object? data)
