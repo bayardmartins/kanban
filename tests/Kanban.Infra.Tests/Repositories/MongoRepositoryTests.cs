@@ -61,7 +61,7 @@ public class ClientRepositoryTests : MongoRepositoryTestsSetup
 
         // Assert
         response.Should().NotBeNull();
-        response._id.Should().Be(card._id);
+        response._id.Should().NotBe(card._id);
     }
 
     [Fact]
@@ -69,7 +69,7 @@ public class ClientRepositoryTests : MongoRepositoryTestsSetup
     {
         // Arrange
         var card = JsonConvert.DeserializeObject<CardDto>(Mocks.UpdateMockObject);
-        await this.cardWorker.InsertCard(card);
+        card = await this.cardWorker.InsertCard(card);
         card.Name = "New Name";
 
         // Act

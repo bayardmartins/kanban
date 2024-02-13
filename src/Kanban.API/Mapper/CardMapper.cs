@@ -6,19 +6,19 @@ namespace Kanban.API.Mapper
 {
     public static class CardMapper
     {
-        public static Api.CardResponseDto ToPresentationResponse(this App.CardDto appCard)
+        public static Api.GetCardResponseDto ToPresentationGetResponse(this App.CardDto appCard)
         {   
-            return new Api.CardResponseDto()
+            return new Api.GetCardResponseDto()
             {
-                cards = new List<Api.CardDto> { appCard.ToPresentationDto() }
+                Cards = new List<Api.CardDto> { appCard.ToPresentationDto() }
             };
         }
 
-        public static Api.CardResponseDto ToPresentationResponse(this List<App.CardDto> appCards)
+        public static Api.GetCardResponseDto ToPresentationGetResponse(this List<App.CardDto> appCards)
         {
-            var response = new Api.CardResponseDto()
+            var response = new Api.GetCardResponseDto()
             {
-                cards = appCards.ToPresentationDto(),
+                Cards = appCards.ToPresentationDto(),
             };
             return response;
         }
@@ -33,10 +33,34 @@ namespace Kanban.API.Mapper
             };
         }
 
-
         public static List<Api.CardDto> ToPresentationDto(this List<App.CardDto> appCards)
         {
             return appCards.Select(card => card.ToPresentationDto()).ToList();
+        }
+
+        public static App.CardDto ToApplication(this Api.CardDto card, string id = "")
+        {
+            var appCard = new App.CardDto
+            {
+                Name = card.Name,
+                Description = card.Description,
+            };
+            if (id != "")
+                appCard.Id = id;
+            return appCard;
+        }
+
+        public static Api.CreateCardResponseDto ToPresentationCreateResponse(this App.CardDto card)
+        {
+            return new Api.CreateCardResponseDto
+            {
+                CreatedCard = new Api.CardDto
+                {
+                    Id = card.Id,
+                    Name = card.Name,
+                    Description = card.Description,
+                }
+            };
         }
     }
 }

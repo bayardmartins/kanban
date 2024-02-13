@@ -37,6 +37,7 @@ public class MongoRepositoryTestsSetup : IDisposable
 
         this.cardWorker = new KanbanDatabaseWorker(_repository, _setting);
         this.authWorker = new AuthDatabaseWorker(_repository, _setting);
+
         this.Dispose();
         this.Migrate();
     }

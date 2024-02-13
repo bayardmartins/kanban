@@ -21,5 +21,25 @@ namespace Kanban.Application.Dto.Mapper
         {
             return cards.Select(card => card.ToApplication()).ToList();
         }
+
+        public static Repo.CardDto ToDatabaseInsert(this App.CardDto card)
+        {
+            return new Repo.CardDto
+            {
+                Name = card.Name,
+                Description = card.Description,
+            };
+        }
+
+
+        public static Repo.CardDto ToDatabaseUpdate(this App.CardDto card)
+        {
+            return new Repo.CardDto
+            {
+                _id = card.Id,
+                Name = card.Name,
+                Description = card.Description,
+            };
+        }
     }
 }
