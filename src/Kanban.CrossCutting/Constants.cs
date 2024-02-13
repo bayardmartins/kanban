@@ -18,5 +18,6 @@ namespace Kanban.CrossCutting
         public const string AuthorizationHeaderMalformed = "Authorization header malformed";
         public const string InvalidAuthorizationHeaderFormat = "Invalid authorization header format";
         public const string InvalidIdOrSecret = "Invalid id or secret";
+        public const string CardIdMissmatch = "Route Id don't match Card.Id";
     }
 }

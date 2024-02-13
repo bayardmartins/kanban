@@ -4,6 +4,7 @@ using Kanban.API.Authentication;
 using Kanban.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Kanban.CrossCutting;
 
 namespace Kanban.API.Controllers;
 
@@ -22,7 +23,7 @@ public class CardsController : ControllerBase
     }
 
     [HttpGet, CustomAuthentication]
-    public async Task<ActionResult<GetCardResponseDto>> GetAllCards()
+    public async Task<ActionResult<GetCardResponse>> GetAllCards()
     {
         this.Log(nameof(GetAllCards),"Start", null);
         var cards = await _cardService.GetCards();
@@ -31,7 +32,7 @@ public class CardsController : ControllerBase
     }
 
     [HttpGet("{id}"), CustomAuthentication]
-    public async Task<ActionResult<GetCardResponseDto>> GetCard([FromRoute] string id)
+    public async Task<ActionResult<GetCardResponse>> GetCard([FromRoute] string id)
     {
         this.Log(nameof(GetCard), "Start",id);
         var card = await _cardService.GetCardById(id);
@@ -40,10 +41,10 @@ public class CardsController : ControllerBase
     }
 
     [HttpPost, CustomAuthentication]
-    public async Task<ActionResult<CreateCardResponseDto>> CreateCard(CardDto card)
+    public async Task<ActionResult<CreateCardResponse>> CreateCard(CreateCardRequest cardRequest)
     {
-        this.Log(nameof(CreateCard), "Start", card);
-        var createdCard = await _cardService.CreateCard(card.ToApplication());
+        this.Log(nameof(CreateCard), "Start", cardRequest.Card);
+        var createdCard = await _cardService.CreateCard(cardRequest.Card.ToApplication());
         this.Log(nameof(CreateCard), "Result", createdCard);
         return createdCard.ToPresentationCreateResponse();
     }
@@ -60,10 +61,12 @@ public class CardsController : ControllerBase
     }
 
     [HttpPut("{id}"), CustomAuthentication]
-    public async Task<ActionResult> UpdateCard([FromRoute] string id, CardDto card)
+    public async Task<ActionResult> UpdateCard([FromRoute] string id, UpdateCardRequest cardRequest)
     {
-        this.Log(nameof(UpdateCard), "Start", card);
-        var result = await _cardService.UpdateCard(card.ToApplication(id));
+        this.Log(nameof(UpdateCard), "Start", cardRequest.Card);
+        if (cardRequest.Card.Id != id)
+            return new BadRequestObjectResult(Constants.CardIdMissmatch);
+        var result = await _cardService.UpdateCard(cardRequest.Card.ToApplication(id));
         this.Log(nameof(UpdateCard), "Result", result);
         if (result is not null)
             return new OkResult();

@@ -1,4 +1,5 @@
-﻿using Api = Kanban.Model.Dto.API.Card;
+﻿using Kanban.Model.Dto.API.Card;
+using Api = Kanban.Model.Dto.API.Card;
 using App = Kanban.Model.Dto.Application.Card;
 using Repo = Kanban.Model.Dto.Repository.Card;
 
@@ -6,17 +7,16 @@ namespace Kanban.Model.Mapper.Card;
 
 public static class CardMapper
 {
-    public static Api.GetCardResponseDto ToPresentationGetResponse(this App.CardDto appCard)
-    {   
-        return new Api.GetCardResponseDto()
-        {
-            Cards = new List<Api.CardDto> { appCard.ToPresentationDto() }
-        };
+    public static Api.GetCardResponse ToPresentationGetResponse(this App.CardDto? appCard)
+    {
+        return appCard is null ? 
+            new GetCardResponse { } : 
+            new GetCardResponse { Cards = new List<Api.CardDto> { appCard.ToPresentationDto(),} };
     }
 
-    public static Api.GetCardResponseDto ToPresentationGetResponse(this List<App.CardDto> appCards)
+    public static Api.GetCardResponse ToPresentationGetResponse(this List<App.CardDto> appCards)
     {
-        var response = new Api.GetCardResponseDto()
+        var response = new Api.GetCardResponse()
         {
             Cards = appCards.ToPresentationDto(),
         };
@@ -50,9 +50,9 @@ public static class CardMapper
         return appCard;
     }
 
-    public static Api.CreateCardResponseDto ToPresentationCreateResponse(this App.CardDto card)
+    public static Api.CreateCardResponse ToPresentationCreateResponse(this App.CardDto card)
     {
-        return new Api.CreateCardResponseDto
+        return new Api.CreateCardResponse
         {
             CreatedCard = new Api.CardDto
             {
