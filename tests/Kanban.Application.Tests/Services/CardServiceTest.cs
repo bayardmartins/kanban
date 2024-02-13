@@ -49,10 +49,7 @@ public class CardServiceTest
         var result = await this.cardService.GetCardById(nonexistentCardId);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Id.Should().Be(string.Empty);
-        result.Name.Should().Be(string.Empty);
-        result.Description.Should().Be(string.Empty);
+        result.Should().BeNull();
     }
 
     [Fact]

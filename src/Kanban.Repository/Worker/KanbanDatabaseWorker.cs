@@ -21,7 +21,10 @@ public class KanbanDatabaseWorker : IKanbanDatabaseWorker
 
     public async Task<CardDto?> GetCardById(string id)
     {
-        var filter = Builders<BsonDocument>.Filter.Eq(Constants.MongoDbId, ObjectId.Parse(id));
+        var validId = ObjectId.TryParse(id, out var parsedId);
+        if (!validId)
+            return null;
+        var filter = Builders<BsonDocument>.Filter.Eq(Constants.MongoDbId, parsedId);
 
         var card = await _cardRepository.FindOne(_mongoSettings.KanbanHost.ClusterId, _mongoSettings.KanbanHost.Database, _mongoSettings.Collections.Cards, filter).ConfigureAwait(false);
 
@@ -44,7 +47,10 @@ public class KanbanDatabaseWorker : IKanbanDatabaseWorker
 
     public async Task<CardDto?> UpdateCard(CardDto card)
     {
-        var filter = Builders<BsonDocument>.Filter.Eq(Constants.MongoDbId, ObjectId.Parse(card._id));
+        var validId = ObjectId.TryParse(card._id, out var parsedId);
+        if (!validId)
+            return null;
+        var filter = Builders<BsonDocument>.Filter.Eq(Constants.MongoDbId, parsedId);
         var update = Builders<BsonDocument>.Update
                     .Set(Constants.Name, card.Name)
                     .Set(Constants.Description, card.Description);
