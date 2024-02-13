@@ -1,5 +1,5 @@
-﻿using Kanban.Application.Dto.Mapper;
-using Kanban.Application.Dto.Models;
+﻿using Kanban.Model.Mapper.Auth;
+using Kanban.Model.Dto.Application.Client;
 using Kanban.Application.Interfaces;
 using Kanban.Repository.Interfaces;
 

@@ -15,9 +15,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\API.Dto\Kanban.API.Dto.csproj" />
-    <ProjectReference Include="..\Kanban.Application.Dto\Kanban.Application.Dto.csproj" />
     <ProjectReference Include="..\Kanban.CrossCutting\Kanban.CrossCutting.csproj" />
+    <ProjectReference Include="..\Kanban.Model\Kanban.Model.csproj" />
     <ProjectReference Include="..\Kanban.Repository\Kanban.Repository.csproj" />
     <ProjectReference Include="..\Kanban.Services\Kanban.Application.csproj" />
   </ItemGroup>
