@@ -1,11 +1,8 @@
 ﻿using Kanban.CrossCutting;
 using Kanban.Integration.Tests.DatabaseMocks;
 using Kanban.Repository.Dto.Models;
-using Kanban.Repository.Repositories;
 using Kanban.Repository.Settings;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 using MongoDB.Driver;
 using Newtonsoft.Json;
 
@@ -17,6 +14,8 @@ public class IntegrationTestsSetup : IClassFixture<ApiWebApplicationFactory>
     protected readonly HttpClient _client;
     private readonly MongoSettings _setting;
     private readonly IEnumerable<IMongoClient> _clients;
+    private static bool _migrated = false;
+    private static object _lock = new object();
 
     public IntegrationTestsSetup(ApiWebApplicationFactory fixture)
     {
@@ -28,8 +27,26 @@ public class IntegrationTestsSetup : IClassFixture<ApiWebApplicationFactory>
         kanbanSettings.SslSettings = new SslSettings { EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls12 };
         var client = new MongoClient(kanbanSettings);
         _clients = new List<IMongoClient> { client };
-        this.Dispose();
-        this.Migrate();
+        if (!_migrated)
+        {
+            lock (_lock)
+            {
+                if (!_migrated)
+                {
+                    this.Dispose();
+                    this.Migrate();
+                    _migrated = true;
+                }
+            }
+        }        
+    }
+
+    private void Dispose()
+    {
+        var collection = _clients.ElementAt(_setting.KanbanHost.ClusterId).GetDatabase(_setting.KanbanHost.Database).GetCollection<CardDto>(_setting.Collections.Cards);
+        collection.DeleteMany(Builders<CardDto>.Filter.Empty);
+        var clientCollection = _clients.ElementAt(_setting.KanbanHost.ClusterId).GetDatabase(_setting.KanbanHost.Database).GetCollection<ClientDto>(_setting.Collections.Clients);
+        clientCollection.DeleteMany(Builders<ClientDto>.Filter.Empty);
     }
 
     private void Migrate()
@@ -43,13 +60,5 @@ public class IntegrationTestsSetup : IClassFixture<ApiWebApplicationFactory>
         var clientCollection = _clients.ElementAt(_setting.KanbanHost.ClusterId).GetDatabase(_setting.KanbanHost.Database).GetCollection<ClientDto>(_setting.Collections.Clients);
         var client = JsonConvert.DeserializeObject<ClientDto>(Mocks.ClientMock);
         clientCollection.InsertOne(client);
-    }
-
-    private void Dispose()
-    {
-        var collection = _clients.ElementAt(_setting.KanbanHost.ClusterId).GetDatabase(_setting.KanbanHost.Database).GetCollection<CardDto>(_setting.Collections.Cards);
-        collection.DeleteMany(Builders<CardDto>.Filter.Empty);
-        var clientCollection = _clients.ElementAt(_setting.KanbanHost.ClusterId).GetDatabase(_setting.KanbanHost.Database).GetCollection<ClientDto>(_setting.Collections.Clients);
-        clientCollection.DeleteMany(Builders<ClientDto>.Filter.Empty);
     }
 }

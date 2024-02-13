@@ -12,6 +12,8 @@ public class ApiWebApplicationFactory : WebApplicationFactory<Program>
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.UseEnvironment("Integration");
+        
         builder.ConfigureAppConfiguration(config =>
         {
             Configuration = new ConfigurationBuilder()
@@ -19,8 +21,8 @@ public class ApiWebApplicationFactory : WebApplicationFactory<Program>
                   .Build();
 
             config.AddConfiguration(Configuration);
-
         });
+
 
         // If mock services are required
         //builder.ConfigureTestServices(services =>

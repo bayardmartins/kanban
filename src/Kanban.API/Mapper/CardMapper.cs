@@ -38,13 +38,16 @@ namespace Kanban.API.Mapper
             return appCards.Select(card => card.ToPresentationDto()).ToList();
         }
 
-        public static App.CardDto ToApplication(this Api.CardDto card)
+        public static App.CardDto ToApplication(this Api.CardDto card, string id = "")
         {
-            return new App.CardDto
+            var appCard = new App.CardDto
             {
                 Name = card.Name,
                 Description = card.Description,
             };
+            if (id != "")
+                appCard.Id = id;
+            return appCard;
         }
 
         public static Api.CreateCardResponseDto ToPresentationCreateResponse(this App.CardDto card)

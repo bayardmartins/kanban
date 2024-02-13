@@ -48,8 +48,8 @@ public class CardsController : ControllerBase
         return createdCard.ToPresentationCreateResponse();
     }
 
-    [HttpDelete, CustomAuthentication]
-    public async Task<ActionResult> DeleteCard(string id)
+    [HttpDelete("{id}"), CustomAuthentication]
+    public async Task<ActionResult> DeleteCard([FromRoute] string id)
     {
         this.Log(nameof(CreateCard), "Start", id);
         var result = await _cardService.DeleteCard(id);
@@ -59,11 +59,11 @@ public class CardsController : ControllerBase
         return new NotFoundResult();
     }
 
-    [HttpPut, CustomAuthentication]
-    public async Task<ActionResult> UpdateCard(CardDto card)
+    [HttpPut("{id}"), CustomAuthentication]
+    public async Task<ActionResult> UpdateCard([FromRoute] string id, CardDto card)
     {
         this.Log(nameof(UpdateCard), "Start", card);
-        var result = await _cardService.UpdateCard(card.ToApplication());
+        var result = await _cardService.UpdateCard(card.ToApplication(id));
         this.Log(nameof(UpdateCard), "Result", result);
         if (result is not null)
             return new OkResult();

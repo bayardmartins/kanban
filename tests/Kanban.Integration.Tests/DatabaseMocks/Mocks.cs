@@ -7,4 +7,6 @@ public class Mocks
     public static string SampleMockThree = "{\"_id\":\"65c77bbb7d5a911ae3d662dc\",\"Name\":\"Card Test Three\", \"Description\":\"Card Three Description\"}";
 
     public static string ClientMock = "{\"_id\":\"client\", \"secret\":\"secret\"}";
+
+    public static string InsertMockObject = "{\"Name\":\"Card Test Insert\", \"Description\":\"Card Insert Description\"}";
 }

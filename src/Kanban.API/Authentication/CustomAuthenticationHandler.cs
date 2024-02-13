@@ -18,18 +18,20 @@ namespace Kanban.API.Authentication
             _authService = authService;
         }
 
-        protected override Task<AuthenticateResult> HandleAuthenticateAsync()
+        protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            if (!Request.Headers.ContainsKey("Authorization"))
+            if (!Request.Headers.ContainsKey(Constants.Authorization))
             {
-                return Task.FromResult(AuthenticateResult.Fail("Missing Authorization Key"));
+                Context.Response.Body = new MemoryStream(Encoding.UTF8.GetBytes(Constants.MissingAuthorizationKey));
+                return AuthenticateResult.Fail(Constants.MissingAuthorizationKey);
             }
 
-            var authrizationHeader = Request.Headers["Authorization"].ToString();
+            var authrizationHeader = Request.Headers[Constants.Authorization].ToString();
 
             if (!authrizationHeader.StartsWith(Constants.Authentication, StringComparison.OrdinalIgnoreCase))
             {
-                return Task.FromResult(AuthenticateResult.Fail("Authorization header mal formed"));
+                Context.Response.Body = new MemoryStream(Encoding.UTF8.GetBytes(Constants.AuthorizationHeaderMalformed));
+                return AuthenticateResult.Fail(Constants.AuthorizationHeaderMalformed);
             }
 
             var isValidCredentials = TryGetAuthSplit(authrizationHeader, out var authSplit);
@@ -37,7 +39,8 @@ namespace Kanban.API.Authentication
 
             if(!isValidCredentials)
             {
-                return Task.FromResult(AuthenticateResult.Fail("Invalid authorization header format"));
+                Context.Response.Body = new MemoryStream(Encoding.UTF8.GetBytes(Constants.InvalidAuthorizationHeaderFormat));
+                return AuthenticateResult.Fail(Constants.InvalidAuthorizationHeaderFormat);
             }
 
             var client = new ClientDto
@@ -48,10 +51,11 @@ namespace Kanban.API.Authentication
 
             if (!_authService.Login(client.ToApplication()).Result)
             {
-                return Task.FromResult(AuthenticateResult.Fail("Invalid id or secret"));
+                Context.Response.Body = new MemoryStream(Encoding.UTF8.GetBytes(Constants.InvalidIdOrSecret));
+                return AuthenticateResult.Fail(Constants.InvalidIdOrSecret);
             }
 
-            return Task.FromResult(AuthenticateResult.Success(new AuthenticationTicket(GetClaimsPrincipal(client.Id), Scheme.Name)));
+            return AuthenticateResult.Success(new AuthenticationTicket(GetClaimsPrincipal(client.Id), Scheme.Name));
         }
 
         public static ClaimsPrincipal GetClaimsPrincipal(string id)

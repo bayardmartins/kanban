@@ -7,6 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kanban.API", "src\Kanban.AP
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0 -Items", "0 -Items", "{E08AAF17-CF08-4FEE-B605-EE648B7EE827}"
 	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
 		docker-compose.yaml = docker-compose.yaml
 		Dockerfile = Dockerfile
 		Kanban.postman_collection.json = Kanban.postman_collection.json
@@ -40,7 +41,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5 - CrossCutting", "5 - Cro
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kanban.CrossCutting", "src\Kanban.CrossCutting\Kanban.CrossCutting.csproj", "{7A7C34E6-02DC-448B-BA12-7E259E78FA70}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kanban.Integration.Tests", "tests\Kanban.Integration.Tests\Kanban.Integration.Tests.csproj", "{C41D0C1D-4400-408D-B45E-82251EF7E4A1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kanban.Integration.Tests", "tests\Kanban.Integration.Tests\Kanban.Integration.Tests.csproj", "{C41D0C1D-4400-408D-B45E-82251EF7E4A1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kanban.Presentation.Tests", "tests\Kanban.Presentation.Tests\Kanban.Presentation.Tests.csproj", "{292874FF-1ECC-4F19-BFB9-B047D26059C5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -88,6 +91,10 @@ Global
 		{C41D0C1D-4400-408D-B45E-82251EF7E4A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C41D0C1D-4400-408D-B45E-82251EF7E4A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C41D0C1D-4400-408D-B45E-82251EF7E4A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{292874FF-1ECC-4F19-BFB9-B047D26059C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{292874FF-1ECC-4F19-BFB9-B047D26059C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{292874FF-1ECC-4F19-BFB9-B047D26059C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{292874FF-1ECC-4F19-BFB9-B047D26059C5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -103,6 +110,7 @@ Global
 		{1D651461-839D-4648-85B9-D651ABA1ABFD} = {E98514FF-0523-49B4-8564-8D196AE6B640}
 		{7A7C34E6-02DC-448B-BA12-7E259E78FA70} = {1B2FD9A9-A8CE-4AD4-AB94-61A6A49A5788}
 		{C41D0C1D-4400-408D-B45E-82251EF7E4A1} = {E98514FF-0523-49B4-8564-8D196AE6B640}
+		{292874FF-1ECC-4F19-BFB9-B047D26059C5} = {E98514FF-0523-49B4-8564-8D196AE6B640}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {71789F54-6517-4F01-AE01-9A05A64BDC5B}
