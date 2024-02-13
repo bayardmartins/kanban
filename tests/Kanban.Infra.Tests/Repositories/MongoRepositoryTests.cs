@@ -4,7 +4,7 @@ namespace Kanban.Infra.Tests.Repositories;
 
 public class ClientRepositoryTests : MongoRepositoryTestsSetup
 {
-
+    #region Cards
     [Fact]
     public async Task GetById_ShouldReturnCard_WhenValidCardIsSearched()
     {
@@ -14,7 +14,6 @@ public class ClientRepositoryTests : MongoRepositoryTestsSetup
         // Assert
         response._id.Should().Be(Mocks.SampleMockOneId);
     }
-
 
     [Fact]
     public async Task GetById_ShouldNotReturnCard_WhenInvalidCardIsSearched()
@@ -144,6 +143,9 @@ public class ClientRepositoryTests : MongoRepositoryTestsSetup
         remainingCards.Count.Should().Be(3);
     }
 
+    #endregion
+
+    #region Auth
     [Fact]
     public async Task GetById_ShouldGetClient_WhenValidIdAreSend()
     {
@@ -179,4 +181,29 @@ public class ClientRepositoryTests : MongoRepositoryTestsSetup
         result.Should().NotBeNull();
         result.Secret.Should().Be("newsecret");
     }
+    #endregion
+
+    #region Boards
+    [Fact]
+    public async Task GetById_ShouldReturnBoard_WhenValidBoardIsSearched()
+    {
+        // Act
+        var response = await this.boardWorker.GetBoardById(Mocks.BoardId);
+
+        // Assert
+        response._id.Should().Be(Mocks.BoardId);
+    }
+
+    [Theory]
+    [InlineData("65c6e255a03db52a8056230f")]
+    [InlineData("65c6e255a03db52a80562")]
+    public async Task GetById_ShouldNotReturnBoard_WhenInvalidBoardIsSearched(string id)
+    {
+        // Act
+        var response = await this.boardWorker.GetBoardById(id);
+
+        // Assert
+        response.Should().BeNull();
+    }
+    #endregion
 }

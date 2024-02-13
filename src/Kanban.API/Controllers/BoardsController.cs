@@ -1,8 +1,11 @@
-﻿namespace Kanban.API.Controllers;
+﻿using Kanban.Model.Dto.API.Board;
+using Kanban.Model.Mapper.Board;
+
+namespace Kanban.API.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("[controller")]
+[Route("[controller]")]
 public class BoardsController
 {
     private readonly ILogger<BoardsController> _logger;
@@ -22,7 +25,7 @@ public class BoardsController
         this.Log(nameof(GetBoard), "Result", board);
         if (board is null)
             return new NotFoundResult();
-        return new OkObjectResult(board);
+        return new OkObjectResult(new GetBoardResponse { Board = board.ToPresentation() });
     }
 
     private void Log(string methodName, string stage, object? data)

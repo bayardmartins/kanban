@@ -4,5 +4,5 @@ namespace Kanban.Repository.Interfaces;
 
 public interface IBoardsDatabaseWorker
 {
-    public Task<BoardDto> GetBoardById(string id);
+    public Task<BoardDto?> GetBoardById(string id);
 }

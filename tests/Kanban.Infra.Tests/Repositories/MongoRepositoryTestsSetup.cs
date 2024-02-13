@@ -1,4 +1,5 @@
-﻿using Kanban.Repository.Repositories;
+﻿using Kanban.Model.Dto.Repository.Board;
+using Kanban.Repository.Repositories;
 using Kanban.Repository.Settings;
 using Kanban.Repository.Worker;
 using MongoDB.Driver;
@@ -8,6 +9,7 @@ namespace Kanban.Infra.Tests.Repositories;
 public class MongoRepositoryTestsSetup : IDisposable
 {
     public readonly CardsDatabaseWorker cardWorker;
+    public readonly BoardsDatabaseWorker boardWorker;
     public readonly AuthDatabaseWorker authWorker;
     private readonly MongoRepository _repository;
     private readonly MongoSettings _setting;
@@ -27,6 +29,7 @@ public class MongoRepositoryTestsSetup : IDisposable
             {
                 Cards = "cards",
                 Clients = "clients",
+                Boards =  "boards"
             },
         };
         var kanbanSettings = MongoClientSettings.FromConnectionString(_setting.KanbanHost.Host);;
@@ -35,8 +38,9 @@ public class MongoRepositoryTestsSetup : IDisposable
         _clients = new List<IMongoClient> { client };
         _repository = new MongoRepository(_clients);
 
-        this.cardWorker = new KanbanDatabaseWorker(_repository, _setting);
+        this.cardWorker = new CardsDatabaseWorker(_repository, _setting);
         this.authWorker = new AuthDatabaseWorker(_repository, _setting);
+        this.boardWorker = new BoardsDatabaseWorker(_repository, _setting);
 
         this.Dispose();
         this.Migrate();
@@ -53,6 +57,9 @@ public class MongoRepositoryTestsSetup : IDisposable
         var clientCollection = _clients.ElementAt(_setting.KanbanHost.ClusterId).GetDatabase(_setting.KanbanHost.Database).GetCollection<ClientDto>(_setting.Collections.Clients);
         var client = JsonConvert.DeserializeObject<ClientDto>(Mocks.ClientMock);
         clientCollection.InsertOne(client);
+        var boardCollection = _clients.ElementAt(_setting.KanbanHost.ClusterId).GetDatabase(_setting.KanbanHost.Database).GetCollection<BoardDto>(_setting.Collections.Boards);
+        var board = JsonConvert.DeserializeObject<BoardDto>(Mocks.BoardMock);
+        boardCollection.InsertOne(board);
     }
 
     public void Dispose()
@@ -62,5 +69,8 @@ public class MongoRepositoryTestsSetup : IDisposable
 
         var clientCollection = _clients.ElementAt(_setting.KanbanHost.ClusterId).GetDatabase(_setting.KanbanHost.Database).GetCollection<ClientDto>(_setting.Collections.Clients);
         clientCollection.DeleteMany(Builders<ClientDto>.Filter.Empty);
+
+        var boardCollection = _clients.ElementAt(_setting.KanbanHost.ClusterId).GetDatabase(_setting.KanbanHost.Database).GetCollection<BoardDto>(_setting.Collections.Boards);
+        boardCollection.DeleteMany(Builders<BoardDto>.Filter.Empty);
     }
 }

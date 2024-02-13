@@ -9,19 +9,12 @@ namespace Kanban.Integration.Tests.Tests;
 
 public class CardsIntegrationTests : IntegrationTestsSetup
 {
-    private string GetCredentials()
-    {
-        var client = JsonConvert.DeserializeObject< Model.Dto.Repository.Client.ClientDto>(Mocks.ClientMock);
-        return $"{client._id}:{client.Secret}";
-    }
 
-    public CardsIntegrationTests(ApiWebApplicationFactory fixture) : base(fixture)
-    {
-    }
+    public CardsIntegrationTests(ApiWebApplicationFactory fixture) : base(fixture) { }
 
     [Theory]
     [MemberData(nameof(GetGetParameters))]
-    public async Task GetCards_EndpointsReturnSuccessAndCorrectContent(string url, bool success)
+    public async Task GetCards_EndpointsReturnCorrectContent(string url, bool success)
     {
         // Arrange
         AuthenticationHelper.SetupAuthenticationHeader(_client, this.GetCredentials());
@@ -30,7 +23,7 @@ public class CardsIntegrationTests : IntegrationTestsSetup
         var response = await _client.GetAsync(url);
 
         // Assert
-        response.IsSuccessStatusCode.Should().BeTrue();
+        response.IsSuccessStatusCode.Should().Be(success);
         var content = JsonConvert.DeserializeObject<GetCardResponse>(response.Content.ReadAsStringAsync().Result);
         content.Should().NotBeNull();
         if (success) { content.Cards.Count.Should().NotBe(0); }

@@ -5,8 +5,6 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using Kanban.CrossCutting;
 using Kanban.Model.Dto.Repository.Card;
-using Kanban.Model.Dto.Repository.Board;
-using System.IO.IsolatedStorage;
 
 namespace Kanban.Repository.Worker;
 
@@ -88,17 +86,5 @@ public class CardsDatabaseWorker : ICardsDatabaseWorker
         var filter = Builders<BsonDocument>.Filter.Eq(Constants.MongoDbId, parsedId);
         var result = await _cardRepository.Delete(_mongoSettings.KanbanHost.ClusterId, _mongoSettings.KanbanHost.Database, _mongoSettings.Collections.Cards, filter);
         return result.DeletedCount == 1;
-    }
-
-    public async Task<BoardDto?> GetBoardById(string id)
-    {
-        var validId = ObjectId.TryParse(id, out var parsedId);
-        if (!validId)
-            return null;
-
-        var filter = Builders<BsonDocument>.Filter.Eq(Constants.MongoDbId, parsedId);
-        var board = await _boardRepository.FindOne(_mongoSettings.KanbanHost.ClusterId, _mongoSettings.KanbanHost.Database, _mongoSettings.Collections.Boards, filter).ConfigureAwait(false);
-
-        return board == null ? null : BsonSerializer.Deserialize<BoardDto>(board.ToJson());
     }
 }

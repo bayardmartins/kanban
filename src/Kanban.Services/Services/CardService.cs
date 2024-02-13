@@ -22,7 +22,7 @@ public class CardService : ICardService
     public async Task<List<CardDto>> GetCards()
     {
         var cards = await this._kanbanDatabaseWorker.GetAllCards();
-        return cards is null ? new List<CardDto>() : cards.ToApplicationDto();
+        return cards is null ? new List<CardDto>() : cards.ToApplication();
     }
 
     public async Task<CardDto> CreateCard(CardDto card)
