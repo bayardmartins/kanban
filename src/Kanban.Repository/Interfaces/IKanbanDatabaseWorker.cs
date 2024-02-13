@@ -1,4 +1,4 @@
-﻿using Kanban.Repository.Dto.Models;
+﻿using Kanban.Model.Dto.Repository.Card;
 
 namespace Kanban.Repository.Interfaces
 {

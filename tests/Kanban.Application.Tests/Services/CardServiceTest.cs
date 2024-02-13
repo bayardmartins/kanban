@@ -1,6 +1,5 @@
-﻿using Repo = Kanban.Repository.Dto.Models;
-using App = Kanban.Application.Dto.Models;
-using Kanban.Application.Dto.Mapper;
+﻿using Repo = Kanban.Model.Dto.Repository.Card;
+using App = Kanban.Model.Dto.Application.Card;
 
 namespace Kanban.Application.Tests.Services;
 

@@ -1,4 +1,4 @@
-﻿namespace Kanban.Application.Dto.Models;
+﻿namespace Kanban.Model.Dto.API.Card;
 
 public class CardDto
 {

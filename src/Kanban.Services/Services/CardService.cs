@@ -1,6 +1,6 @@
 ﻿using Kanban.Application.Interfaces;
-using Kanban.Application.Dto.Mapper;
-using Kanban.Application.Dto.Models;
+using Kanban.Model.Mapper.Card;
+using Kanban.Model.Dto.Application.Card;
 using Kanban.Repository.Interfaces;
 
 namespace Kanban.Application.Services;

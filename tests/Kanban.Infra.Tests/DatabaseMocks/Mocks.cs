@@ -1,7 +1,4 @@
-﻿using MongoDB.Bson.Serialization.Serializers;
-using System.Net.NetworkInformation;
-
-namespace Kanban.Infra.Tests.DatabaseMocks;
+﻿namespace Kanban.Infra.Tests.DatabaseMocks;
 
 public static class Mocks
 {

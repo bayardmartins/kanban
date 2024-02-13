@@ -1,7 +1,5 @@
-using Amazon.SecurityToken.Model;
 using FluentAssertions;
 using Kanban.API.Authentication;
-using Kanban.API.Dto.Auth;
 using Kanban.Application.Interfaces;
 using Kanban.CrossCutting;
 using Microsoft.AspNetCore.Authentication;
@@ -11,10 +9,9 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 using Moq;
-using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
-using App = Kanban.Application.Dto.Models;
+using App = Kanban.Model.Dto.Application.Client;
 
 namespace Kanban.Presentation.Tests;
 

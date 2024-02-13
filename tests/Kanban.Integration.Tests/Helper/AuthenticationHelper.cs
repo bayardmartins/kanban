@@ -1,7 +1,4 @@
 ﻿using Kanban.CrossCutting;
-using Kanban.Integration.Tests.DatabaseMocks;
-using Kanban.Repository.Dto.Models;
-using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Text;
 

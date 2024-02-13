@@ -1,9 +1,9 @@
-using Kanban.API.Dto.Card;
+using Kanban.Model.Dto.API.Card;
+using Kanban.Model.Mapper.Card;
+using Kanban.API.Authentication;
 using Kanban.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Kanban.API.Mapper;
 using Microsoft.AspNetCore.Authorization;
-using Kanban.API.Authentication;
 
 namespace Kanban.API.Controllers;
 

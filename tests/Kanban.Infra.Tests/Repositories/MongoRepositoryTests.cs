@@ -1,4 +1,6 @@
-﻿namespace Kanban.Infra.Tests.Repositories;
+﻿using Kanban.Model.Dto.Repository.Client;
+
+namespace Kanban.Infra.Tests.Repositories;
 
 public class ClientRepositoryTests : MongoRepositoryTestsSetup
 {
