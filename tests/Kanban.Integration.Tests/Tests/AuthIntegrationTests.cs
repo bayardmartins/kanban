@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Kanban.Integration.Tests.DatabaseMocks;
 using Kanban.Integration.Tests.Helper;
-using Kanban.Repository.Dto.Models;
+using Kanban.Model.Dto.Repository.Card;
 using Newtonsoft.Json;
 using System.Text;
 
@@ -39,7 +39,7 @@ public class AuthIntegrationTests : IntegrationTestsSetup
     public async Task Auth_ShouldAllowRequest_WhenValidCredentialsAreSent()
     {
         // Arrange
-        var client = new API.Dto.Auth.ClientDto
+        var client = new Model.Dto.API.Auth.ClientDto
         {
             Id = "client",
             Secret = "secret"
@@ -58,7 +58,7 @@ public class AuthIntegrationTests : IntegrationTestsSetup
     public async Task Register_ShouldRegisterNewClient_WhenValidCredentialsAreSent()
     {
         // Arrange
-        var client = new API.Dto.Auth.ClientDto
+        var client = new Model.Dto.API.Auth.ClientDto
         {
             Id = "new-client",
             Secret = "secret"

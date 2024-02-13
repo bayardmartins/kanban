@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Kanban.Application.Dto\Kanban.Application.Dto.csproj" />
+    <ProjectReference Include="..\..\src\Kanban.Model\Kanban.Model.csproj" />
     <ProjectReference Include="..\..\src\Kanban.Repository\Kanban.Repository.csproj" />
     <ProjectReference Include="..\..\src\Kanban.Services\Kanban.Application.csproj" />
   </ItemGroup>

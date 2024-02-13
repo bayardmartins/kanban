@@ -1,10 +1,10 @@
 ﻿using Kanban.Repository.Interfaces;
-using Kanban.Repository.Dto.Models;
 using Kanban.Repository.Settings;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using Kanban.CrossCutting;
+using Kanban.Model.Dto.Repository.Card;
 
 namespace Kanban.Repository.Worker;
 

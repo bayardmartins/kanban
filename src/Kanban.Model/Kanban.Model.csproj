@@ -7,8 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Kanban.Model\Kanban.Model.csproj" />
-    <ProjectReference Include="..\Kanban.Repository\Kanban.Repository.csproj" />
+    <PackageReference Include="MongoDB.Bson" Version="2.23.1" />
   </ItemGroup>
 
 </Project>

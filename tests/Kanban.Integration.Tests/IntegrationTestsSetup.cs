@@ -1,6 +1,7 @@
 ﻿using Kanban.CrossCutting;
 using Kanban.Integration.Tests.DatabaseMocks;
-using Kanban.Repository.Dto.Models;
+using Kanban.Model.Dto.Repository.Card;
+using Kanban.Model.Dto.Repository.Client;
 using Kanban.Repository.Settings;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;

@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using Kanban.API.Dto.Card;
+using Kanban.Model.Dto.API.Card;
 using Kanban.Integration.Tests.DatabaseMocks;
 using Kanban.Integration.Tests.Helper;
 using Newtonsoft.Json;
@@ -11,7 +11,7 @@ public class CardsIntegrationTests : IntegrationTestsSetup
 {
     private string GetCredentials()
     {
-        var client = JsonConvert.DeserializeObject<Repository.Dto.Models.ClientDto>(Mocks.ClientMock);
+        var client = JsonConvert.DeserializeObject< Model.Dto.Repository.Client.ClientDto>(Mocks.ClientMock);
         return $"{client._id}:{client.Secret}";
     }
 
