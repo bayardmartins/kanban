@@ -1,6 +1,6 @@
 ﻿namespace Kanban.Model.Dto.API.Card;
 
-public class CreateCardResponseDto
+public class CreateCardResponse
 {
     public CardDto? CreatedCard { get; set;}
 }

@@ -20,9 +20,8 @@ public class CardsIntegrationTests : IntegrationTestsSetup
     }
 
     [Theory]
-    [InlineData("Cards")]
-    [InlineData("Cards/65c6e255a03db52a8056230f")]
-    public async Task GetCards_EndpointsReturnSuccessAndCorrectContent(string url)
+    [MemberData(nameof(GetGetParameters))]
+    public async Task GetCards_EndpointsReturnSuccessAndCorrectContent(string url, bool success)
     {
         // Arrange
         AuthenticationHelper.SetupAuthenticationHeader(_client, this.GetCredentials());
@@ -32,9 +31,10 @@ public class CardsIntegrationTests : IntegrationTestsSetup
 
         // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
-        var content = JsonConvert.DeserializeObject<GetCardResponseDto>(response.Content.ReadAsStringAsync().Result);
+        var content = JsonConvert.DeserializeObject<GetCardResponse>(response.Content.ReadAsStringAsync().Result);
         content.Should().NotBeNull();
-        content.Cards.Count.Should().NotBe(0);
+        if (success) { content.Cards.Count.Should().NotBe(0); }
+        else { content.Cards.Count.Should().Be(0); }
     }
 
     [Fact]
@@ -42,7 +42,7 @@ public class CardsIntegrationTests : IntegrationTestsSetup
     {
         // Arrange
         AuthenticationHelper.SetupAuthenticationHeader(_client, this.GetCredentials());
-        var payload = JsonConvert.DeserializeObject<CardDto>(Mocks.InsertMockObject);
+        var payload = new CreateCardRequest { Card = JsonConvert.DeserializeObject<CardDto>(Mocks.InsertMockObject) };
         using StringContent jsonContent = new(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
 
         // Act
@@ -50,12 +50,12 @@ public class CardsIntegrationTests : IntegrationTestsSetup
 
         // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
-        var content = JsonConvert.DeserializeObject<CreateCardResponseDto>(response.Content.ReadAsStringAsync().Result);
+        var content = JsonConvert.DeserializeObject<CreateCardResponse>(response.Content.ReadAsStringAsync().Result);
         content.Should().NotBeNull();
         content.CreatedCard.Should().NotBeNull();
         content.CreatedCard.Id.Should().NotBeNullOrEmpty();
-        content.CreatedCard.Name.Should().Be(payload.Name);
-        content.CreatedCard.Description.Should().Be(payload.Description);
+        content.CreatedCard.Name.Should().Be(payload.Card.Name);
+        content.CreatedCard.Description.Should().Be(payload.Card.Description);
     }
 
     [Theory]
@@ -74,12 +74,12 @@ public class CardsIntegrationTests : IntegrationTestsSetup
 
     [Theory]
     [MemberData(nameof(GetUpdateParameters))]
-    public async Task UpdateCards_EndpointsReturnSuccessOrFail(string url, bool result)
+    public async Task UpdateCards_EndpointsReturnSuccessOrFail(string url, string mock, bool result)
     {
         // Arrange
         AuthenticationHelper.SetupAuthenticationHeader(_client, this.GetCredentials());
-        var payload = JsonConvert.DeserializeObject<CardDto>(Mocks.SampleMockTwo);
-        payload.Name = "new name";
+        var payload = new UpdateCardRequest { Card = JsonConvert.DeserializeObject<CardDto>(mock) };
+        payload.Card.Name = "new name";
         using StringContent jsonContent = new(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
 
         // Act
@@ -88,6 +88,12 @@ public class CardsIntegrationTests : IntegrationTestsSetup
         // Assert
         response.IsSuccessStatusCode.Should().Be(result);
     }
+        private static IEnumerable<object[]> GetGetParameters() => new List<object[]>
+    {
+        new object[] { "Cards", true },
+        new object[] { "Cards/65c77bbb7d5a911ae3d662dc", true },
+        new object[] { "Cards/65c6e255a03db52a8056", false },
+    };
 
     private static IEnumerable<object[]> GetDeleteParameters() => new List<object[]>
     {
@@ -97,7 +103,8 @@ public class CardsIntegrationTests : IntegrationTestsSetup
 
     private static IEnumerable<object[]> GetUpdateParameters() => new List<object[]>
     {
-        new object[] { "Cards/65c77ba67d5a911ae3d662db", true },
-        new object[] { "Cards/65c7c4ea7d5a911ae3d662e4", false },
+        new object[] { "Cards/65c77ba67d5a911ae3d662db", Mocks.UpdateMock, true },
+        new object[] { "Cards/65c7c4ea7d5a911ae3d662e4", Mocks.UpdateMock, false },
+        new object[] { "Cards/65c806377d5a911ae3d662f0", Mocks.NonexistingMockObject, false },
     };
 }

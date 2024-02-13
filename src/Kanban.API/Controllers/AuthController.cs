@@ -17,9 +17,9 @@ public class AuthController
     }
 
     [HttpPost("register")]
-    public async Task<ActionResult> Register(ClientDto client)
+    public async Task<ActionResult> Register(RegisterClientRequest clientrequest)
     {
-        await _authService.RegisterClient(client.ToApplication());
+        await _authService.RegisterClient(clientrequest.Client.ToApplication());
         return new OkObjectResult(Constants.ClientRegitered);
     }
 }

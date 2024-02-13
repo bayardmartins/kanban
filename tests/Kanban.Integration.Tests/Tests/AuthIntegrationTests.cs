@@ -58,17 +58,20 @@ public class AuthIntegrationTests : IntegrationTestsSetup
     public async Task Register_ShouldRegisterNewClient_WhenValidCredentialsAreSent()
     {
         // Arrange
-        var client = new Model.Dto.API.Auth.ClientDto
+        var clientRequest = new Model.Dto.API.Auth.RegisterClientRequest
         {
-            Id = "new-client",
-            Secret = "secret"
+            Client = new Model.Dto.API.Auth.ClientDto
+            {
+                Id = "new-client",
+                Secret = "secret"
+            }
         };
-        using StringContent jsonContent = new(JsonConvert.SerializeObject(client), Encoding.UTF8, "application/json");
+        using StringContent jsonContent = new(JsonConvert.SerializeObject(clientRequest), Encoding.UTF8, "application/json");
 
 
         // Act
         var registerResponse = await _client.PostAsync("auth/register", jsonContent);
-        AuthenticationHelper.SetupAuthenticationHeader(_client, $"{client.Id}:{client.Secret}");
+        AuthenticationHelper.SetupAuthenticationHeader(_client, $"{clientRequest.Client.Id}:{clientRequest.Client.Secret}");
         var getResponse = await _client.GetAsync("Cards");
 
         // Assert
