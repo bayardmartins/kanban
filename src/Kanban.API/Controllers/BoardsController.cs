@@ -7,7 +7,7 @@ namespace Kanban.API.Controllers;
 [ApiController]
 [Authorize]
 [Route("[controller]")]
-public partial class BoardsController
+public class BoardsController : ControllerBase
 {
     private readonly ILogger<BoardsController> _logger;
     private readonly IBoardService _boardService;

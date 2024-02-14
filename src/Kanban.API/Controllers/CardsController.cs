@@ -6,7 +6,7 @@ namespace Kanban.API.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("[controller]")]
+[Route("boards/{boardId}/column/{columnId}/cards")]
 public class CardsController : ControllerBase
 {
     private readonly ILogger<CardsController> _logger;
@@ -19,7 +19,7 @@ public class CardsController : ControllerBase
     }
 
     [HttpGet, CustomAuthentication]
-    public async Task<ActionResult<GetCardResponse>> GetAllCards()
+    public async Task<ActionResult<GetCardResponse>> GetAllCards([FromRoute] string boardId, string columnId)
     {
         this.Log(nameof(GetAllCards),"Start", null);
         var cards = await _cardService.GetCards();
@@ -28,7 +28,7 @@ public class CardsController : ControllerBase
     }
 
     [HttpGet("{id}"), CustomAuthentication]
-    public async Task<ActionResult<GetCardResponse>> GetCard([FromRoute] string id)
+    public async Task<ActionResult<GetCardResponse>> GetCard([FromRoute] string boardId, string columnId, string id)
     {
         this.Log(nameof(GetCard), "Start",id);
         var card = await _cardService.GetCardById(id);
@@ -39,7 +39,7 @@ public class CardsController : ControllerBase
     }
 
     [HttpPost, CustomAuthentication]
-    public async Task<ActionResult<CreateCardResponse>> CreateCard(CreateCardRequest cardRequest)
+    public async Task<ActionResult<CreateCardResponse>> CreateCard([FromRoute] string boardId, string columnId, CreateCardRequest cardRequest)
     {
         this.Log(nameof(CreateCard), "Start", cardRequest);
         var createdCard = await _cardService.CreateCard(cardRequest.ToApplication());
@@ -48,7 +48,7 @@ public class CardsController : ControllerBase
     }
 
     [HttpDelete("{id}"), CustomAuthentication]
-    public async Task<ActionResult> DeleteCard([FromRoute] string id)
+    public async Task<ActionResult> DeleteCard([FromRoute] string boardId, string columnId, string id)
     {
         this.Log(nameof(CreateCard), "Start", id);
         var result = await _cardService.DeleteCard(id);
@@ -59,7 +59,7 @@ public class CardsController : ControllerBase
     }
 
     [HttpPut, CustomAuthentication]
-    public async Task<ActionResult> UpdateCard(UpdateCardRequest cardRequest)
+    public async Task<ActionResult> UpdateCard([FromRoute] string boardId, string columnId, UpdateCardRequest cardRequest)
     {
         this.Log(nameof(UpdateCard), "Start", cardRequest.Card);
         var result = await _cardService.UpdateCard(cardRequest.Card.ToApplication());

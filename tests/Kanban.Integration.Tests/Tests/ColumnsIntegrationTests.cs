@@ -50,6 +50,7 @@ public class ColumnsIntegrationTests : IntegrationTestsSetup
 
         // Assert
         response.IsSuccessStatusCode.Should().BeFalse();
+        response.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
     }
 
     private static IEnumerable<object[]> GetUpdateParameters() => new List<object[]>

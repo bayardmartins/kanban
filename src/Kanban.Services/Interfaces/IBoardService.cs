@@ -8,5 +8,4 @@ public interface IBoardService
     public Task<BoardDto> CreateBoard(BoardDto board);
     public Task<BoardDto?> UpdateBoard(BoardDto board);
     public Task<bool> DeleteBoard(string id);
-    public Task<ColumnUpdateResponse> AddColumn(ColumnAddRequest request);
 }

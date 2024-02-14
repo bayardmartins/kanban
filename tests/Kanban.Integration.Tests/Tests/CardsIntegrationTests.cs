@@ -39,7 +39,7 @@ public class CardsIntegrationTests : IntegrationTestsSetup
         using StringContent jsonContent = new(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
 
         // Act
-        var response = await _client.PostAsync("Cards", jsonContent);
+        var response = await _client.PostAsync("Boards/65c6e255a03db52a8056230f/Column/65c6e255a03db52a8056230f/Cards", jsonContent);
 
         // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
@@ -83,20 +83,20 @@ public class CardsIntegrationTests : IntegrationTestsSetup
     }
         private static IEnumerable<object[]> GetGetParameters() => new List<object[]>
     {
-        new object[] { "Cards", true },
-        new object[] { "Cards/65c77bbb7d5a911ae3d662dc", true },
-        new object[] { "Cards/65c6e255a03db52a8056", false },
+        new object[] { "Boards/65c6e255a03db52a8056230f/Column/65c6e255a03db52a8056230f/Cards", true },
+        new object[] { "Boards/65c6e255a03db52a8056230f/Column/65c6e255a03db52a8056230f/Cards/65c77bbb7d5a911ae3d662dc", true },
+        new object[] { "Boards/65c6e255a03db52a8056230f/Column/65c6e255a03db52a8056230f/Cards/65c6e255a03db52a8056", false },
     };
 
     private static IEnumerable<object[]> GetDeleteParameters() => new List<object[]>
     {
-        new object[] { "Cards/65c6e255a03db52a8056230f", true },
-        new object[] { "Cards/65c7c4ea7d5a911ae3d662e4", false },
+        new object[] { "Boards/65c6e255a03db52a8056230f/Column/65c6e255a03db52a8056230f/Cards/65c6e255a03db52a8056230f", true },
+        new object[] { "Boards/65c6e255a03db52a8056230f/Column/65c6e255a03db52a8056230f/Cards/65c7c4ea7d5a911ae3d662e4", false },
     };
 
     private static IEnumerable<object[]> GetUpdateParameters() => new List<object[]>
     {
-        new object[] { "Cards", Mocks.UpdateMock, true },
-        new object[] { "Cards", Mocks.NonexistingMockObject, false },
+        new object[] { "Boards/65c6e255a03db52a8056230f/Column/65c6e255a03db52a8056230f/Cards", Mocks.UpdateMock, true },
+        new object[] { "Boards/65c6e255a03db52a8056230f/Column/65c6e255a03db52a8056230f/Cards", Mocks.NonexistingMockObject, false },
     };
 }
