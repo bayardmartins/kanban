@@ -1,6 +1,4 @@
-﻿using Kanban.Model.Dto.API.Auth;
-using Kanban.Model.Mapper.Auth;
-using Kanban.Application.Interfaces;
+﻿using Kanban.Model.Dto.Application.Client;
 using Kanban.CrossCutting;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
@@ -49,7 +47,9 @@ namespace Kanban.API.Authentication
                 Secret = authSplit[1],
             };
 
-            if (!_authService.Login(client.ToApplication()).Result)
+            var login = await _authService.Login(client);
+
+            if (!login)
             {
                 Context.Response.Body = new MemoryStream(Encoding.UTF8.GetBytes(Constants.InvalidIdOrSecret));
                 return AuthenticateResult.Fail(Constants.InvalidIdOrSecret);

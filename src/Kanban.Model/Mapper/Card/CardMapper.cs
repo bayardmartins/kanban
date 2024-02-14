@@ -7,18 +7,16 @@ namespace Kanban.Model.Mapper.Card;
 
 public static class CardMapper
 {
-    public static Api.GetCardResponse ToPresentationGetResponse(this App.CardDto? appCard)
+    public static Api.GetCardResponse ToPresentationGet(this App.CardDto? appCard)
     {
-        return appCard is null ? 
-            new GetCardResponse { } : 
-            new GetCardResponse { Cards = new List<Api.CardDto> { appCard.ToPresentationDto(),} };
+        return new GetCardResponse { Cards = new List<Api.CardDto> { appCard.ToPresentationDto(),} };
     }
 
-    public static Api.GetCardResponse ToPresentationGetResponse(this List<App.CardDto> appCards)
+    public static Api.GetCardResponse ToPresentationGet(this List<App.CardDto> appCards)
     {
         var response = new Api.GetCardResponse()
         {
-            Cards = appCards.ToPresentationDto(),
+            Cards = appCards.ToPresentation(),
         };
         return response;
     }
@@ -33,24 +31,31 @@ public static class CardMapper
         };
     }
 
-    public static List<Api.CardDto> ToPresentationDto(this List<App.CardDto> appCards)
+    public static List<Api.CardDto> ToPresentation(this List<App.CardDto> appCards)
     {
         return appCards.Select(card => card.ToPresentationDto()).ToList();
     }
 
-    public static App.CardDto ToApplication(this Api.CardDto card, string id = "")
+    public static App.CardDto ToApplication(this Api.CardDto card)
     {
-        var appCard = new App.CardDto
+        return new App.CardDto
         {
+            Id = card.Id,
             Name = card.Name,
             Description = card.Description,
         };
-        if (id != "")
-            appCard.Id = id;
-        return appCard;
     }
 
-    public static Api.CreateCardResponse ToPresentationCreateResponse(this App.CardDto card)
+    public static App.CardDto ToApplication(this Api.CreateCardRequest request)
+    {
+        return new App.CardDto
+        {
+            Name = request.Name,
+            Description = request.Description,
+        };
+    }
+
+    public static Api.CreateCardResponse ToPresentationCreate(this App.CardDto card)
     {
         return new Api.CreateCardResponse
         {
@@ -75,7 +80,7 @@ public static class CardMapper
         return appCard;
     }
 
-    public static List<App.CardDto> ToApplicationDto(this List<Repo.CardDto> cards)
+    public static List<App.CardDto> ToApplication(this List<Repo.CardDto> cards)
     {
         return cards.Select(card => card.ToApplication()).ToList();
     }

@@ -8,12 +8,12 @@ using Kanban.Model.Dto.Repository.Card;
 
 namespace Kanban.Repository.Worker;
 
-public class KanbanDatabaseWorker : IKanbanDatabaseWorker
+public class CardsDatabaseWorker : ICardsDatabaseWorker
 {
 
     private readonly IMongoRepository _cardRepository;
     private readonly IMongoSettings _mongoSettings;
-    public KanbanDatabaseWorker(IMongoRepository cardRepository, IMongoSettings mongoSettings)
+    public CardsDatabaseWorker(IMongoRepository cardRepository, IMongoSettings mongoSettings)
     {
         this._cardRepository = cardRepository;
         this._mongoSettings = mongoSettings;
@@ -64,6 +64,9 @@ public class KanbanDatabaseWorker : IKanbanDatabaseWorker
 
     public async Task<long> UpdateManyDescriptions(List<string> ids, string description)
     {
+        var validList = ids.ConvertAll(x => ObjectId.TryParse(x, out _));
+        if (validList.Any(x => x.Equals(false)))
+            return 0;
         var filter = Builders<BsonDocument>.Filter.In(Constants.MongoDbId, ids.ConvertAll(x => ObjectId.Parse(x)));
         var update = Builders<BsonDocument>.Update
                     .Set(Constants.Description, description);
@@ -77,7 +80,10 @@ public class KanbanDatabaseWorker : IKanbanDatabaseWorker
 
     public async Task<bool> DeleteById(string id)
     {
-        var filter = Builders<BsonDocument>.Filter.Eq(Constants.MongoDbId, ObjectId.Parse(id));
+        var validId = ObjectId.TryParse(id, out var parsedId);
+        if (!validId)
+            return false;
+        var filter = Builders<BsonDocument>.Filter.Eq(Constants.MongoDbId, parsedId);
         var result = await _cardRepository.Delete(_mongoSettings.KanbanHost.ClusterId, _mongoSettings.KanbanHost.Database, _mongoSettings.Collections.Cards, filter);
         return result.DeletedCount == 1;
     }

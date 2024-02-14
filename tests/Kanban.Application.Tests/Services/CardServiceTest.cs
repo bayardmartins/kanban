@@ -6,13 +6,13 @@ namespace Kanban.Application.Tests.Services;
 public class CardServiceTest
 {
     private readonly Fixture fixture;
-    private readonly Mock<IKanbanDatabaseWorker> worker;
+    private readonly Mock<ICardsDatabaseWorker> worker;
     private readonly CardService cardService;
 
     public CardServiceTest() 
     {
         this.fixture = new Fixture();
-        this.worker = new Mock<IKanbanDatabaseWorker>();
+        this.worker = new Mock<ICardsDatabaseWorker>();
         this.cardService = new CardService(this.worker.Object);
     }
 
@@ -127,7 +127,7 @@ public class CardServiceTest
         var result = await this.cardService.DeleteCard(id);
 
         // Assert
-        result.Should().Be(true);
+        result.Should().BeTrue();
     }
 
     [Fact]
