@@ -31,4 +31,9 @@ public class BoardService : IBoardService
         var result = await this._boardDatabaseWorker.UpdateBoard(board.ToDatabase());
         return result?.ToApplication();
     }
+
+    public async Task<bool> DeleteBoard(string id)
+    {
+        return await this._boardDatabaseWorker.DeleteById(id);
+    }
 }

@@ -1,4 +1,5 @@
-﻿using Kanban.Model.Dto.API.Board;
+﻿using Amazon.Runtime.Internal;
+using Kanban.Model.Dto.API.Board;
 using Kanban.Model.Mapper.Board;
 
 namespace Kanban.API.Controllers;
@@ -46,6 +47,17 @@ public class BoardsController
         if (board is not null)
             return new OkObjectResult(new UpdateBoardResponse { Board = board.ToPresentation() });
         return new NotFoundResult();
+    }
+
+    [HttpDelete("{id}"), CustomAuthentication]
+    public async Task<ActionResult> DeleteBoard([FromRoute] string id)
+    {
+        this.Log(nameof(DeleteBoard), "Start", id);
+        bool result = await _boardService.DeleteBoard(id);
+        this.Log(nameof(DeleteBoard), "Result", result);
+        if (result)
+            return new OkObjectResult("message");
+        return new NotFoundObjectResult("message");
     }
 
     private void Log(string methodName, string stage, object? data)

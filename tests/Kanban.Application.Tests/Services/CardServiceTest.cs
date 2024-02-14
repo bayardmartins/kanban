@@ -127,7 +127,7 @@ public class CardServiceTest
         var result = await this.cardService.DeleteCard(id);
 
         // Assert
-        result.Should().Be(true);
+        result.Should().BeTrue();
     }
 
     [Fact]

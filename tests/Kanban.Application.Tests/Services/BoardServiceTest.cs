@@ -122,4 +122,20 @@ public class BoardServiceTest
         // Assert
         result.Should().BeNull();
     }
+
+    [Fact]
+    public async void DeleteBoard_ShouldDeleteCard_WhenValidBoardIsGiven()
+    {
+        // Arrange
+        var id = this.fixture.Create<string>();
+        this.worker.Setup(x => x.DeleteById(id))
+            .ReturnsAsync(true)
+            .Verifiable();
+
+        // Act
+        var result = await this.boardService.DeleteBoard(id);
+
+        // Assert
+        result.Should().BeTrue();
+    }
 }

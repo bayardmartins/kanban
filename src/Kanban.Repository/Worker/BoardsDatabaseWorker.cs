@@ -53,4 +53,14 @@ public class BoardsDatabaseWorker : IBoardsDatabaseWorker
         var response = await _boardRepository.Update(_mongoSettings.KanbanHost.ClusterId, _mongoSettings.KanbanHost.Database, _mongoSettings.Collections.Boards, filter, update, options);
         return response.ModifiedCount > 0 ? board : null;
     }
+
+    public async Task<bool> DeleteById(string id)
+    {
+        var validId = ObjectId.TryParse(id, out var parsedId);
+        if (!validId)
+            return false;
+        var filter = Builders<BsonDocument>.Filter.Eq(Constants.MongoDbId, parsedId);
+        var result = await _boardRepository.Delete(_mongoSettings.KanbanHost.ClusterId, _mongoSettings.KanbanHost.Database, _mongoSettings.Collections.Boards, filter);
+        return result.DeletedCount == 1;
+    }
 }
