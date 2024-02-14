@@ -1,10 +1,8 @@
-﻿using Kanban.Model.Dto.Repository.Client;
-
-namespace Kanban.Infra.Tests.Repositories;
+﻿namespace Kanban.Infra.Tests.Repositories;
 
 public class ClientRepositoryTests : MongoRepositoryTestsSetup
 {
-
+    #region Cards
     [Fact]
     public async Task GetById_ShouldReturnCard_WhenValidCardIsSearched()
     {
@@ -14,7 +12,6 @@ public class ClientRepositoryTests : MongoRepositoryTestsSetup
         // Assert
         response._id.Should().Be(Mocks.SampleMockOneId);
     }
-
 
     [Fact]
     public async Task GetById_ShouldNotReturnCard_WhenInvalidCardIsSearched()
@@ -83,11 +80,13 @@ public class ClientRepositoryTests : MongoRepositoryTestsSetup
         updatedCard.Name.Should().Be("New Name");
     }
 
-    [Fact]
-    public async Task Update_ShouldNotUpdateCard_WhenNonExistingCardIsGiven()
+    [Theory]
+    [InlineData(Mocks.NonexistingMockObject)]
+    [InlineData(Mocks.InvalidMockObject)]
+    public async Task Update_ShouldNotUpdateCard_WhenNonExistingCardIsGiven(string mock)
     {
         // Arrange
-        var card = JsonConvert.DeserializeObject<CardDto>(Mocks.NonexistingMockObject);
+        var card = JsonConvert.DeserializeObject<CardDto>(mock);
 
         // Act
         var response = await this.cardWorker.UpdateCard(card);
@@ -111,39 +110,56 @@ public class ClientRepositoryTests : MongoRepositoryTestsSetup
     }
 
     [Fact]
+    public async Task UpdateMany_ShouldNotUpdateAnyCardDescriptions_WhenAnInvalidValidCardIdsIsGiven()
+    {
+        // Arrange
+        var ids = new List<string> { Mocks.SampleMockOneId, Mocks.SampleMockTwoId, Mocks.NonexistingMockObject };
+        var newDescription = "New Description";
+
+        // Act
+        var response = await this.cardWorker.UpdateManyDescriptions(ids, newDescription);
+
+        // Assert
+        response.Should().Be(0);
+    }
+
+    [Fact]
     public async Task Delete_ShouldDeleteCard_WhenValidCardIdIsGiven()
     {
         // Arrange
         var id = Mocks.SampleMockOneId;
 
         // Act
+        var cardBeforeDelete = await this.cardWorker.GetCardById(id);
         var response = await this.cardWorker.DeleteById(id);
         var deletedCard = await this.cardWorker.GetCardById(id);
-        var remainingCards = await this.cardWorker.GetAllCards();
+
         // Assert
-        response.Should().Be(true);
+        response.Should().BeTrue();
         deletedCard.Should().BeNull();
-        remainingCards.Count.Should().Be(2);
+        cardBeforeDelete.Should().NotBeNull();
         var card = JsonConvert.DeserializeObject<CardDto>(Mocks.SampleMockOne);
         await this.cardWorker.InsertCard(card);
     }
 
-    [Fact]
-    public async Task Delete_ShouldNotDeleteCard_WhenUnexistingCardIdIsGiven()
+    [Theory]
+    [InlineData(Mocks.NonExistingCardId)]
+    [InlineData(Mocks.InvalidId)]
+    public async Task Delete_ShouldNotDeleteCard_WhenInvalidCardIdIsGiven(string id)
     {
-        // Arrange
-        var id = Mocks.NonExistingCardId;
-
         // Act
         var response = await this.cardWorker.DeleteById(id);
         var deletedCard = await this.cardWorker.GetCardById(id);
         var remainingCards = await this.cardWorker.GetAllCards();
         // Assert
-        response.Should().Be(false);
+        response.Should().BeFalse();
         deletedCard.Should().BeNull();
         remainingCards.Count.Should().Be(3);
     }
 
+    #endregion
+
+    #region Auth
     [Fact]
     public async Task GetById_ShouldGetClient_WhenValidIdAreSend()
     {
@@ -179,4 +195,112 @@ public class ClientRepositoryTests : MongoRepositoryTestsSetup
         result.Should().NotBeNull();
         result.Secret.Should().Be("newsecret");
     }
+    #endregion
+
+    #region Boards
+    [Fact]
+    public async Task GetById_ShouldReturnBoard_WhenValidBoardIsSearched()
+    {
+        // Act
+        var response = await this.boardWorker.GetBoardById(Mocks.BoardOneId);
+
+        // Assert
+        response._id.Should().Be(Mocks.BoardOneId);
+    }
+
+    [Theory]
+    [InlineData("65c6e255a03db52a8056230f")]
+    [InlineData("65c6e255a03db52a80562")]
+    public async Task GetById_ShouldNotReturnBoard_WhenInvalidBoardIsSearched(string id)
+    {
+        // Act
+        var response = await this.boardWorker.GetBoardById(id);
+
+        // Assert
+        response.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task Insert_ShouldInsertBoard_WhenBoardIsGiven()
+    {
+        // Arrange
+        var board = JsonConvert.DeserializeObject<BoardDto>(Mocks.InsertBoardMockObject);
+
+        // Act
+        var response = await this.boardWorker.InsertBoard(board);
+
+        // Assert
+        response.Should().NotBeNull();
+        response.Name.Should().Be(board.Name);
+        response._id.Should().NotBe(board._id);
+        response.Columns.Length.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task Updade_ShouldUpdateBoard_WhenValidRequestIsGiven()
+    {
+        // Arrange
+        var board = JsonConvert.DeserializeObject<BoardDto>(Mocks.UpdateBoardMockObject);
+
+        // Act
+        var response = await this.boardWorker.UpdateBoard(board);
+
+        // Assert
+        response.Should().NotBeNull();
+        response.Name.Should().Be(board.Name);
+        response._id.Should().Be(board._id);
+        response.Columns.Length.Should().Be(0);
+    }
+
+    [Theory]
+    [InlineData(Mocks.InvalidUpdateBoardMockObject)]
+    [InlineData(Mocks.NonexistingBoardMockObject)]
+    public async Task Updade_ShouldNotUpdateBoard_WhenInvalidRequestIsGiven(string mock)
+    {
+        // Arrange
+        var board = JsonConvert.DeserializeObject<BoardDto>(mock);
+
+        // Act
+        var response = await this.boardWorker.UpdateBoard(board);
+
+        // Assert
+        response.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task Delete_ShouldDeleteBoard_WhenValidBoardIdIsGiven()
+    {
+        // Arrange
+        var id = Mocks.BoardTwoId;
+
+        // Act
+        var cardBeforeDelete = await this.boardWorker.GetBoardById(id);
+        var response = await this.boardWorker.DeleteById(id);
+        var deletedCard = await this.boardWorker.GetBoardById(id);
+
+        // Assert
+        cardBeforeDelete.Should().NotBeNull();
+        response.Should().BeTrue();
+        deletedCard.Should().BeNull();
+        var card = JsonConvert.DeserializeObject<BoardDto>(Mocks.SecondBoardMock);
+        await this.boardWorker.InsertBoard(card);
+    }
+
+    [Theory]
+    [InlineData(Mocks.NonexistingBoardId)]
+    [InlineData(Mocks.InvalidBoardId)]
+    public async Task Delete_ShouldNotDeleteBoard_WhenInvalidBoardIdIsGiven(string id)
+    {
+        // Act
+        var cardBeforeDelete = await this.boardWorker.GetBoardById(id);
+        var response = await this.boardWorker.DeleteById(id);
+        var deletedCard = await this.boardWorker.GetBoardById(id);
+
+        // Assert
+        cardBeforeDelete.Should().BeNull();
+        response.Should().BeFalse();
+        deletedCard.Should().BeNull();
+    }
+
+    #endregion
 }

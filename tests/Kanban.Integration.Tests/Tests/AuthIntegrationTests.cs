@@ -86,7 +86,7 @@ public class AuthIntegrationTests : IntegrationTestsSetup
             new object[] { "GET", "Cards" },
             new object[] { "POST","Cards" },
             new object[] { "DELETE", "Cards/65c6e255a03db52a8056230f" },
-            new object[] { "PUT", "Cards/65c6e255a03db52a8056230f" },
+            new object[] { "PUT", "Cards" },
         };
     }
 }

@@ -10,9 +10,11 @@ public static class ConfigureServices
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
         services.AddScoped<ICardService, CardService>();
-        services.AddScoped<IKanbanDatabaseWorker, KanbanDatabaseWorker>();
+        services.AddScoped<ICardsDatabaseWorker, CardsDatabaseWorker>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IAuthDatabaseWorker, AuthDatabaseWorker>();
+        services.AddScoped<IBoardService, BoardService>();
+        services.AddScoped<IBoardsDatabaseWorker, BoardsDatabaseWorker>();
         return services;
     }
 }

@@ -5,5 +5,8 @@ namespace Kanban.Model.Dto.API.Card;
 public class CreateCardRequest
 {
     [Required]
-    public CardDto Card { get; set; }
+    public string Name { get; set; }
+
+    [Required]
+    public string Description { get; set; }
 }

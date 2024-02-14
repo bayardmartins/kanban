@@ -1,5 +1,6 @@
 ﻿using Kanban.CrossCutting;
 using Kanban.Integration.Tests.DatabaseMocks;
+using Kanban.Model.Dto.Repository.Board;
 using Kanban.Model.Dto.Repository.Card;
 using Kanban.Model.Dto.Repository.Client;
 using Kanban.Repository.Settings;
@@ -48,6 +49,8 @@ public class IntegrationTestsSetup : IClassFixture<ApiWebApplicationFactory>
         collection.DeleteMany(Builders<CardDto>.Filter.Empty);
         var clientCollection = _clients.ElementAt(_setting.KanbanHost.ClusterId).GetDatabase(_setting.KanbanHost.Database).GetCollection<ClientDto>(_setting.Collections.Clients);
         clientCollection.DeleteMany(Builders<ClientDto>.Filter.Empty);
+        var boardCollection = _clients.ElementAt(_setting.KanbanHost.ClusterId).GetDatabase(_setting.KanbanHost.Database).GetCollection<BoardDto>(_setting.Collections.Boards);
+        boardCollection.DeleteMany(Builders<BoardDto>.Filter.Empty);
     }
 
     private void Migrate()
@@ -61,5 +64,14 @@ public class IntegrationTestsSetup : IClassFixture<ApiWebApplicationFactory>
         var clientCollection = _clients.ElementAt(_setting.KanbanHost.ClusterId).GetDatabase(_setting.KanbanHost.Database).GetCollection<ClientDto>(_setting.Collections.Clients);
         var client = JsonConvert.DeserializeObject<ClientDto>(Mocks.ClientMock);
         clientCollection.InsertOne(client);
+        var boardCollection = _clients.ElementAt(_setting.KanbanHost.ClusterId).GetDatabase(_setting.KanbanHost.Database).GetCollection<BoardDto>(_setting.Collections.Boards);
+        var board = JsonConvert.DeserializeObject<BoardDto>(Mocks.BoardMock);
+        boardCollection.InsertOne(board);
+    }
+
+    internal string GetCredentials()
+    {
+        var client = JsonConvert.DeserializeObject<Model.Dto.Repository.Client.ClientDto>(Mocks.ClientMock);
+        return $"{client._id}:{client.Secret}";
     }
 }

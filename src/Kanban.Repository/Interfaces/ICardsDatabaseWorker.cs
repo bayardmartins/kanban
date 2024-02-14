@@ -2,7 +2,7 @@
 
 namespace Kanban.Repository.Interfaces
 {
-    public interface IKanbanDatabaseWorker
+    public interface ICardsDatabaseWorker
     {
         public Task<CardDto?> GetCardById(string id);
         
