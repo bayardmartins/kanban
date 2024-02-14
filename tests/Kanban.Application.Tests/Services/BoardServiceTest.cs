@@ -68,4 +68,58 @@ public class BoardServiceTest
         result.Columns.Should().NotBeNull();
         result.Columns.Length.Should().Be(0);
     }
+
+    [Fact]
+    public async void UpdateBoard_ShouldUpdateBoard_WhenValidRequestIdMade()
+    {
+        // Arrange
+        var board = this.fixture.Build<Repo.BoardDto>()
+            .With(x => x.Columns, new Repo.ColumnDto[0])
+            .Create();
+
+        var appBoard = new App.BoardDto
+        {
+            Id = board._id,
+            Name = board.Name,
+        };
+
+        this.worker.Setup(x => x.UpdateBoard(It.Is<Repo.BoardDto>(x => x.Name == board.Name && x._id == board._id)))
+            .ReturnsAsync(board)
+            .Verifiable();
+
+        // Act
+        var result = await this.boardService.UpdateBoard(appBoard);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Id.Should().Be(board._id);
+        result.Name.Should().Be(board.Name);
+        result.Columns.Should().NotBeNull();
+        result.Columns.Length.Should().Be(0);
+    }
+
+    [Fact]
+    public async void UpdateBoard_ShouldNotUpdateBoard_WhenInalidRequestIdMade()
+    {
+        // Arrange
+        var board = this.fixture.Build<Repo.BoardDto>()
+            .With(x => x.Columns, new Repo.ColumnDto[0])
+            .Create();
+
+        var appBoard = new App.BoardDto
+        {
+            Id = this.fixture.Create<string>(),
+            Name = board.Name,
+        };
+
+        this.worker.Setup(x => x.UpdateBoard(It.Is<Repo.BoardDto>(x => x.Name == board.Name && x._id == board._id)))
+            .ReturnsAsync(board)
+            .Verifiable();
+
+        // Act
+        var result = await this.boardService.UpdateBoard(appBoard);
+
+        // Assert
+        result.Should().BeNull();
+    }
 }

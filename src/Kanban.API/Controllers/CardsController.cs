@@ -41,8 +41,8 @@ public class CardsController : ControllerBase
     [HttpPost, CustomAuthentication]
     public async Task<ActionResult<CreateCardResponse>> CreateCard(CreateCardRequest cardRequest)
     {
-        this.Log(nameof(CreateCard), "Start", cardRequest.Card);
-        var createdCard = await _cardService.CreateCard(cardRequest.Card.ToApplication());
+        this.Log(nameof(CreateCard), "Start", cardRequest);
+        var createdCard = await _cardService.CreateCard(cardRequest.ToApplication());
         this.Log(nameof(CreateCard), "Result", createdCard);
         return new OkObjectResult(createdCard.ToPresentationCreate());
     }
@@ -58,13 +58,11 @@ public class CardsController : ControllerBase
         return new NotFoundObjectResult(Constants.CardNotFound);
     }
 
-    [HttpPut("{id}"), CustomAuthentication]
-    public async Task<ActionResult> UpdateCard([FromRoute] string id, UpdateCardRequest cardRequest)
+    [HttpPut, CustomAuthentication]
+    public async Task<ActionResult> UpdateCard(UpdateCardRequest cardRequest)
     {
         this.Log(nameof(UpdateCard), "Start", cardRequest.Card);
-        if (cardRequest.Card.Id != id)
-            return new BadRequestObjectResult(Constants.CardIdMissmatch);
-        var result = await _cardService.UpdateCard(cardRequest.Card.ToApplication(id));
+        var result = await _cardService.UpdateCard(cardRequest.Card.ToApplication());
         this.Log(nameof(UpdateCard), "Result", result);
         if (result is not null)
             return new OkObjectResult(Constants.CardUpdated);

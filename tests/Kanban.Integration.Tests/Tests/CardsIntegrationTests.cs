@@ -35,7 +35,7 @@ public class CardsIntegrationTests : IntegrationTestsSetup
     {
         // Arrange
         AuthenticationHelper.SetupAuthenticationHeader(_client, this.GetCredentials());
-        var payload = new CreateCardRequest { Card = JsonConvert.DeserializeObject<CardDto>(Mocks.InsertMockObject) };
+        var payload = JsonConvert.DeserializeObject<CreateCardRequest>(Mocks.InsertMockObject);
         using StringContent jsonContent = new(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
 
         // Act
@@ -47,8 +47,8 @@ public class CardsIntegrationTests : IntegrationTestsSetup
         content.Should().NotBeNull();
         content.CreatedCard.Should().NotBeNull();
         content.CreatedCard.Id.Should().NotBeNullOrEmpty();
-        content.CreatedCard.Name.Should().Be(payload.Card.Name);
-        content.CreatedCard.Description.Should().Be(payload.Card.Description);
+        content.CreatedCard.Name.Should().Be(payload.Name);
+        content.CreatedCard.Description.Should().Be(payload.Description);
     }
 
     [Theory]
@@ -96,8 +96,7 @@ public class CardsIntegrationTests : IntegrationTestsSetup
 
     private static IEnumerable<object[]> GetUpdateParameters() => new List<object[]>
     {
-        new object[] { "Cards/65c77ba67d5a911ae3d662db", Mocks.UpdateMock, true },
-        new object[] { "Cards/65c7c4ea7d5a911ae3d662e4", Mocks.UpdateMock, false },
-        new object[] { "Cards/65c806377d5a911ae3d662f0", Mocks.NonexistingMockObject, false },
+        new object[] { "Cards", Mocks.UpdateMock, true },
+        new object[] { "Cards", Mocks.NonexistingMockObject, false },
     };
 }

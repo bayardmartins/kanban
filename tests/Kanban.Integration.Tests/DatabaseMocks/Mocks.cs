@@ -19,4 +19,7 @@ public class Mocks
     public const string BoardId = "65cbec3865a3b4fbed6945aa";
 
     public const string CreateBoardRequest = "{\"name\":\"Create Board\"}";
+
+    public const string UpdateBoardRequest = "{\"Id\":\"65cbec3865a3b4fbed6945aa\",\"name\":\"Update Board\"}";
+    public const string NonexistingUpdateBoardRequest = "{\"Id\":\"65cca89665a3b4fbed6945ae\",\"name\":\"Update Board\"}";
 }

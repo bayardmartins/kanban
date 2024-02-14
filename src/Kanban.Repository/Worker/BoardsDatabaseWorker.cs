@@ -37,4 +37,20 @@ public class BoardsDatabaseWorker : IBoardsDatabaseWorker
         var document = await _boardRepository.Insert(_mongoSettings.KanbanHost.ClusterId, _mongoSettings.KanbanHost.Database, _mongoSettings.Collections.Boards, board.ToBsonDocument());
         return BsonSerializer.Deserialize<BoardDto>(document.ToJson());
     }
+
+    public async Task<BoardDto?> UpdateBoard(BoardDto board)
+    {
+        var validId = ObjectId.TryParse(board._id, out var parsedId);
+        if (!validId)
+            return null;
+        var filter = Builders<BsonDocument>.Filter.Eq(Constants.MongoDbId, parsedId);
+        var update = Builders<BsonDocument>.Update
+                    .Set(Constants.Name, board.Name);
+        var options = new UpdateOptions
+        {
+            IsUpsert = false
+        };
+        var response = await _boardRepository.Update(_mongoSettings.KanbanHost.ClusterId, _mongoSettings.KanbanHost.Database, _mongoSettings.Collections.Boards, filter, update, options);
+        return response.ModifiedCount > 0 ? board : null;
+    }
 }

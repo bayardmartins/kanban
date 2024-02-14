@@ -36,16 +36,23 @@ public static class CardMapper
         return appCards.Select(card => card.ToPresentationDto()).ToList();
     }
 
-    public static App.CardDto ToApplication(this Api.CardDto card, string id = "")
+    public static App.CardDto ToApplication(this Api.CardDto card)
     {
-        var appCard = new App.CardDto
+        return new App.CardDto
         {
+            Id = card.Id,
             Name = card.Name,
             Description = card.Description,
         };
-        if (id != "")
-            appCard.Id = id;
-        return appCard;
+    }
+
+    public static App.CardDto ToApplication(this Api.CreateCardRequest request)
+    {
+        return new App.CardDto
+        {
+            Name = request.Name,
+            Description = request.Description,
+        };
     }
 
     public static Api.CreateCardResponse ToPresentationCreate(this App.CardDto card)

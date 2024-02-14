@@ -235,5 +235,36 @@ public class ClientRepositoryTests : MongoRepositoryTestsSetup
         response.Columns.Length.Should().Be(0);
     }
 
+    [Fact]
+    public async Task Updade_ShouldUpdateBoard_WhenValidRequestIsGiven()
+    {
+        // Arrange
+        var board = JsonConvert.DeserializeObject<BoardDto>(Mocks.UpdateBoardMockObject);
+
+        // Act
+        var response = await this.boardWorker.UpdateBoard(board);
+
+        // Assert
+        response.Should().NotBeNull();
+        response.Name.Should().Be(board.Name);
+        response._id.Should().Be(board._id);
+        response.Columns.Length.Should().Be(0);
+    }
+
+    [Theory]
+    [InlineData(Mocks.InvalidUpdateBoardMockObject)]
+    [InlineData(Mocks.NonexistingBoardMockObject)]
+    public async Task Updade_ShouldNotUpdateBoard_WhenInvalidRequestIsGiven(string mock)
+    {
+        // Arrange
+        var board = JsonConvert.DeserializeObject<BoardDto>(mock);
+
+        // Act
+        var response = await this.boardWorker.UpdateBoard(board);
+
+        // Assert
+        response.Should().BeNull();
+    }
+
     #endregion
 }

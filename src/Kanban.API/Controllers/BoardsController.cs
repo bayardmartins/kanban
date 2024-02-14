@@ -37,6 +37,17 @@ public class BoardsController
         return new OkObjectResult(board.ToPresentationCreate());
     }
 
+    [HttpPut, CustomAuthentication]
+    public async Task<ActionResult<UpdateBoardResponse>> UpdateBoard(UpdateBoardRequest request)
+    {
+        this.Log(nameof(UpdateBoard), "Start", request);
+        var board = await _boardService.UpdateBoard(request.ToApplicationUpdate());
+        this.Log(nameof(CreateBoard), "Result", board);
+        if (board is not null)
+            return new OkObjectResult(new UpdateBoardResponse { Board = board.ToPresentation() });
+        return new NotFoundResult();
+    }
+
     private void Log(string methodName, string stage, object? data)
     {
         this._logger.LogInformation($"{methodName}: {stage}", () => new { data });

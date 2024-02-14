@@ -1,5 +1,4 @@
-﻿using Amazon.Runtime.Internal.Endpoints.StandardLibrary;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Kanban.Integration.Tests.DatabaseMocks;
 using Kanban.Integration.Tests.Helper;
 using Kanban.Model.Dto.API.Board;
@@ -61,7 +60,7 @@ public class BoardsIntegrationTests : IntegrationTestsSetup
         content.Board.Columns.Length.Should().Be(0);
     }
     [Fact]
-    public async Task CreateCards_EndpointsReturnError()
+    public async Task CreateCard_EndpointsReturnError()
     {
         // Arrange
         var payload = new CreateBoardRequest { Name = "AB" };
@@ -76,6 +75,43 @@ public class BoardsIntegrationTests : IntegrationTestsSetup
         var content = JsonConvert.DeserializeObject<CreateBoardResponse>(response.Content.ReadAsStringAsync().Result);
         content.Should().NotBeNull();
         content.Board.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task UpdateCard_EndpointsReturnsCorrectContent()
+    {
+        // Arrange
+        var payload = JsonConvert.DeserializeObject<UpdateBoardRequest>(Mocks.UpdateBoardRequest);
+        using StringContent jsonContent = new(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
+        AuthenticationHelper.SetupAuthenticationHeader(_client, this.GetCredentials());
+
+        // Act
+        var response = await _client.PutAsync("boards", jsonContent);
+
+        // Assert
+        response.IsSuccessStatusCode.Should().BeTrue();
+        var content = JsonConvert.DeserializeObject<UpdateBoardResponse>(response.Content.ReadAsStringAsync().Result);
+        content.Should().NotBeNull();
+        content.Board.Should().NotBeNull();
+        content.Board.Name.Should().Be(payload.Name);
+        content.Board.Id.Should().Be(payload.Id);
+        content.Board.Columns.Length.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task UpdateCard_EndpointsReturnError()
+    {
+        // Arrange
+        var payload = JsonConvert.DeserializeObject<UpdateBoardRequest>(Mocks.NonexistingUpdateBoardRequest);
+        using StringContent jsonContent = new(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
+        AuthenticationHelper.SetupAuthenticationHeader(_client, this.GetCredentials());
+
+        // Act
+        var response = await _client.PutAsync("boards", jsonContent);
+
+        // Assert
+        response.IsSuccessStatusCode.Should().BeFalse();
+        response.StatusCode.Should().Be(System.Net.HttpStatusCode.NotFound);
     }
 
     private static IEnumerable<object[]> GetGetParameters() => new List<object[]>

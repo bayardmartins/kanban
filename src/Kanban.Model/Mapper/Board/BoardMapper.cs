@@ -115,4 +115,13 @@ public static class BoardMapper
             Board = board.ToPresentation(),
         };
     }
+
+    public static App.BoardDto ToApplicationUpdate(this UpdateBoardRequest request)
+    {
+        return new App.BoardDto
+        {
+            Id = request.Id,
+            Name = request.Name,
+        };
+    }
 }

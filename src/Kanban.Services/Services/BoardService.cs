@@ -25,4 +25,10 @@ public class BoardService : IBoardService
         var repoBoard = await this._boardDatabaseWorker.InsertBoard(board.ToDatabase());
         return repoBoard.ToApplication();
     }
+
+    public async Task<BoardDto?> UpdateBoard(BoardDto board)
+    {
+        var result = await this._boardDatabaseWorker.UpdateBoard(board.ToDatabase());
+        return result?.ToApplication();
+    }
 }
