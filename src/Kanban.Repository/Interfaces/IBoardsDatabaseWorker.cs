@@ -8,4 +8,5 @@ public interface IBoardsDatabaseWorker
     public Task<BoardDto> InsertBoard(BoardDto board);
     public Task<BoardDto?> UpdateBoard(BoardDto board);
     public Task<bool> DeleteById(string id);
+    public Task<bool> UpdateBoardColumns(BoardDto board, int index);
 }

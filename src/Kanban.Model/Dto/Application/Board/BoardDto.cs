@@ -4,5 +4,5 @@ public class BoardDto
 {
     public string Id { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
-    public ColumnDto[] Columns { get; set; } = new ColumnDto[0];
+    public List<ColumnDto> Columns { get; set; } = new List<ColumnDto>();
 }

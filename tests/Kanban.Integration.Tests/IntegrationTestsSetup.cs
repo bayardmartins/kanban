@@ -65,8 +65,9 @@ public class IntegrationTestsSetup : IClassFixture<ApiWebApplicationFactory>
         var client = JsonConvert.DeserializeObject<ClientDto>(Mocks.ClientMock);
         clientCollection.InsertOne(client);
         var boardCollection = _clients.ElementAt(_setting.KanbanHost.ClusterId).GetDatabase(_setting.KanbanHost.Database).GetCollection<BoardDto>(_setting.Collections.Boards);
-        var board = JsonConvert.DeserializeObject<BoardDto>(Mocks.BoardMock);
-        boardCollection.InsertOne(board);
+        var boardOne = JsonConvert.DeserializeObject<BoardDto>(Mocks.BoardMock);
+        var boardTwo = JsonConvert.DeserializeObject<BoardDto>(Mocks.SecondBoardMock);
+        boardCollection.InsertMany(new List<BoardDto> { boardOne, boardTwo });
     }
 
     internal string GetCredentials()

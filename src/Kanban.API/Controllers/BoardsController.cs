@@ -1,4 +1,4 @@
-﻿using Amazon.Runtime.Internal;
+﻿using Kanban.CrossCutting;
 using Kanban.Model.Dto.API.Board;
 using Kanban.Model.Mapper.Board;
 
@@ -7,7 +7,7 @@ namespace Kanban.API.Controllers;
 [ApiController]
 [Authorize]
 [Route("[controller]")]
-public class BoardsController
+public partial class BoardsController
 {
     private readonly ILogger<BoardsController> _logger;
     private readonly IBoardService _boardService;
@@ -56,8 +56,8 @@ public class BoardsController
         bool result = await _boardService.DeleteBoard(id);
         this.Log(nameof(DeleteBoard), "Result", result);
         if (result)
-            return new OkObjectResult("message");
-        return new NotFoundObjectResult("message");
+            return new OkObjectResult(Constants.BoardDeleted);
+        return new NotFoundObjectResult(Constants.BoardNotFound);
     }
 
     private void Log(string methodName, string stage, object? data)

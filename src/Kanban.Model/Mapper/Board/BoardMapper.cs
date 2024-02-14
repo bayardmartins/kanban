@@ -1,7 +1,5 @@
 ﻿using Kanban.Model.Dto.API.Board;
-using System.Data.Common;
-using System.Net.NetworkInformation;
-using Api = Kanban.Model.Dto.API.Board;
+using Api = Kanban.Model.Dto.API;
 using App = Kanban.Model.Dto.Application.Board;
 using Repo = Kanban.Model.Dto.Repository.Board;
 namespace Kanban.Model.Mapper.Board;
@@ -18,12 +16,9 @@ public static class BoardMapper
         };
     }
 
-    public static App.ColumnDto[] ToApplication(this Repo.ColumnDto[] columns)
+    public static List<App.ColumnDto> ToApplication(this Repo.ColumnDto[] columns)
     {
-        var appColumns = new App.ColumnDto[columns.Length];
-        for (int i = 0; i < appColumns.Length; i++)
-            appColumns[i] = columns[i].ToApplication();
-        return appColumns;
+        return columns.Select(col => col.ToApplication()).ToList();
     }
 
     public static App.ColumnDto ToApplication(this Repo.ColumnDto column)
@@ -32,13 +27,13 @@ public static class BoardMapper
         {
             Id = column._id,
             Name = column.Name,
-            Cards = column.Cards
+            Cards = column.Cards.ToList(),
         };
     }
 
-    public static Api.BoardDto ToPresentation(this App.BoardDto board)
+    public static Api.Board.BoardDto ToPresentation(this App.BoardDto board)
     {
-        return new Api.BoardDto
+        return new Api.Board.BoardDto
         {
             Id = board.Id,
             Name = board.Name,
@@ -46,17 +41,14 @@ public static class BoardMapper
         };
     }
 
-    public static Api.ColumnDto[] ToPresentation(this App.ColumnDto[] columns)
+    public static List<Api.Column.ColumnDto> ToPresentation(this List<App.ColumnDto> columns)
     {
-        var apiColumns = new Api.ColumnDto[columns.Length];
-        for (int i = 0; i < apiColumns.Length; i++)
-            apiColumns[i] = columns[i].ToPresentation();
-        return apiColumns;
+        return columns.Select(col => col.ToPresentation()).ToList();
     }
 
-    public static Api.ColumnDto ToPresentation(this App.ColumnDto column)
+    public static Api.Column.ColumnDto ToPresentation(this App.ColumnDto column)
     {
-        return new Api.ColumnDto
+        return new Api.Column.ColumnDto
         {
             Id = column.Id,
             Name = column.Name,
@@ -64,7 +56,7 @@ public static class BoardMapper
         };
     }
 
-    public static Api.GetBoardResponse ToPresentationGet(this App.BoardDto board)
+    public static Api.Board.GetBoardResponse ToPresentationGet(this App.BoardDto board)
     {
         return new GetBoardResponse
         {
@@ -72,7 +64,7 @@ public static class BoardMapper
         };
     }
 
-    public static App.BoardDto ToApplication(this Api.CreateBoardRequest request)
+    public static App.BoardDto ToApplication(this Api.Board.CreateBoardRequest request)
     {
         return new App.BoardDto
         {
@@ -90,12 +82,9 @@ public static class BoardMapper
         };
     }
 
-    public static Repo.ColumnDto[] ToDatabase(this App.ColumnDto[] columns)
+    public static Repo.ColumnDto[] ToDatabase(this List<App.ColumnDto> columns)
     {
-        var repoColumn = new Repo.ColumnDto[columns.Length];
-        for (int i = 0; i < repoColumn.Length; i++)
-            repoColumn[i] = columns[i].ToDatabase();
-        return repoColumn;
+        return columns.ConvertAll(col => col.ToDatabase()).ToArray();
     }
 
     public static Repo.ColumnDto ToDatabase(this App.ColumnDto column)
@@ -104,13 +93,13 @@ public static class BoardMapper
         {
             _id = column.Id,
             Name = column.Name,
-            Cards = column.Cards
+            Cards = column.Cards.ToArray(),
         };
     }
 
-    public static Api.CreateBoardResponse ToPresentationCreate(this App.BoardDto board)
+    public static Api.Board.CreateBoardResponse ToPresentationCreate(this App.BoardDto board)
     {
-        return new Api.CreateBoardResponse
+        return new Api.Board.CreateBoardResponse
         {
             Board = board.ToPresentation(),
         };
@@ -122,6 +111,19 @@ public static class BoardMapper
         {
             Id = request.Id,
             Name = request.Name,
+        };
+    }
+
+    public static App.ColumnAddRequest ToApplicationAdd(this Api.Column.AddColumnRequest request, string boardId)
+    {
+        return new App.ColumnAddRequest
+        {
+            BoardId = boardId,
+            Index = request.Position,
+            Column = new App.ColumnDto
+            {
+                Name = request.ColumnName,
+            },
         };
     }
 }

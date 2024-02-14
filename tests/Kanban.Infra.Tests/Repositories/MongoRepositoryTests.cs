@@ -1,4 +1,6 @@
-﻿namespace Kanban.Infra.Tests.Repositories;
+﻿using System.Linq;
+
+namespace Kanban.Infra.Tests.Repositories;
 
 public class ClientRepositoryTests : MongoRepositoryTestsSetup
 {
@@ -301,6 +303,43 @@ public class ClientRepositoryTests : MongoRepositoryTestsSetup
         response.Should().BeFalse();
         deletedCard.Should().BeNull();
     }
+    #endregion
 
+    #region Columns
+
+    [Fact]
+    public async Task AddColumn_ShouldAddColumnToBoard_WhenValidBoardIsGiven()
+    {
+        // Arrange
+        var boardMock = JsonConvert.DeserializeObject<BoardDto>(Mocks.SecondBoardMock);
+        var columnCount = boardMock.Columns.Length;
+        var column = JsonConvert.DeserializeObject<ColumnDto>(Mocks.ColumnAddMock);
+        boardMock.Columns = boardMock.Columns.Append(column).ToArray();
+
+        // Act
+        var response = await this.boardWorker.UpdateBoardColumns(boardMock, boardMock.Columns.Length-1);
+        var newBoard = await this.boardWorker.GetBoardById(boardMock._id);
+
+        // Assert
+        response.Should().BeTrue();
+        newBoard.Columns.Length.Should().Be(columnCount + 1);
+    }
+
+    [Theory]
+    [InlineData(Mocks.NonexistingBoardMockObject)]
+    [InlineData(Mocks.InvalidUpdateBoardMockObject)]
+    public async Task AddColumn(string mock)
+    {
+        // Arrange
+        var boardMock = JsonConvert.DeserializeObject<BoardDto>(mock);
+        var column = JsonConvert.DeserializeObject<ColumnDto>(Mocks.ColumnAddMock);
+        boardMock.Columns = boardMock.Columns.Append(column).ToArray();
+
+        // Act
+        var response = await this.boardWorker.UpdateBoardColumns(boardMock, 0);
+
+        // Assert
+        response.Should().BeFalse();
+    }
     #endregion
 }

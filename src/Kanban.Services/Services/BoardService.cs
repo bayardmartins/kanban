@@ -36,4 +36,29 @@ public class BoardService : IBoardService
     {
         return await this._boardDatabaseWorker.DeleteById(id);
     }
+
+    public async Task<ColumnUpdateResponse> AddColumn(ColumnAddRequest request)
+    {
+        var response = new ColumnUpdateResponse();
+        var board = await this._boardDatabaseWorker.GetBoardById(request.BoardId);
+        if (board == null)
+        {
+            response.Error = "Board not found";
+            return response;
+        }
+        if (request.Index > board.Columns.Length)
+        {
+            response.Error = "Index out of boundary";
+            return response;
+        }
+        var appBoard = board.ToApplication();
+        appBoard.Columns.Insert(request.Index, request.Column);
+        var successUpdade = await this._boardDatabaseWorker.UpdateBoardColumns(appBoard.ToDatabase(), request.Index);
+        if (!successUpdade)
+        {
+            response.Error = "Invalid board id";
+            return response;
+        }
+        return response;
+    }
 }
