@@ -1,4 +1,6 @@
-﻿using System.Net.NetworkInformation;
+﻿using Kanban.Model.Dto.API.Board;
+using System.Data.Common;
+using System.Net.NetworkInformation;
 using Api = Kanban.Model.Dto.API.Board;
 using App = Kanban.Model.Dto.Application.Board;
 using Repo = Kanban.Model.Dto.Repository.Board;
@@ -59,6 +61,58 @@ public static class BoardMapper
             Id = column.Id,
             Name = column.Name,
             Cards = column.Cards
+        };
+    }
+
+    public static Api.GetBoardResponse ToPresentationGet(this App.BoardDto board)
+    {
+        return new GetBoardResponse
+        {
+            Board = board.ToPresentation(),
+        };
+    }
+
+    public static App.BoardDto ToApplication(this Api.CreateBoardRequest request)
+    {
+        return new App.BoardDto
+        {
+            Name = request.Name,
+        };
+    }
+
+    public static Repo.BoardDto ToDatabase(this App.BoardDto board)
+    {
+        return new Repo.BoardDto
+        {
+            _id = board.Id,
+            Name = board.Name,
+            Columns = board.Columns.ToDatabase(),
+        };
+    }
+
+    public static Repo.ColumnDto[] ToDatabase(this App.ColumnDto[] columns)
+    {
+        var repoColumn = new Repo.ColumnDto[columns.Length];
+        for (int i = 0; i < repoColumn.Length; i++)
+            repoColumn[i] = columns[i].ToDatabase();
+        return repoColumn;
+    }
+
+    public static Repo.ColumnDto ToDatabase(this App.ColumnDto column)
+    {
+        return new Repo.ColumnDto
+        {
+            _id = column.Id,
+            Name = column.Name,
+            Cards = column.Cards
+        };
+    }
+
+    public static Api.CreateBoardResponse ToPresentationCreate(this App.BoardDto board)
+    {
+        return new Api.CreateBoardResponse
+        {
+            Board = board.ToPresentation(),
         };
     }
 }

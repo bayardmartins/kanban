@@ -1,6 +1,4 @@
-﻿using Kanban.Model.Dto.Repository.Client;
-
-namespace Kanban.Infra.Tests.Repositories;
+﻿namespace Kanban.Infra.Tests.Repositories;
 
 public class ClientRepositoryTests : MongoRepositoryTestsSetup
 {
@@ -220,5 +218,22 @@ public class ClientRepositoryTests : MongoRepositoryTestsSetup
         // Assert
         response.Should().BeNull();
     }
+
+    [Fact]
+    public async Task Insert_ShouldInsertBoard_WhenBoardIsGiven()
+    {
+        // Arrange
+        var board = JsonConvert.DeserializeObject<BoardDto>(Mocks.InsertBoardMockObject);
+
+        // Act
+        var response = await this.boardWorker.InsertBoard(board);
+
+        // Assert
+        response.Should().NotBeNull();
+        response.Name.Should().Be(board.Name);
+        response._id.Should().NotBe(board._id);
+        response.Columns.Length.Should().Be(0);
+    }
+
     #endregion
 }

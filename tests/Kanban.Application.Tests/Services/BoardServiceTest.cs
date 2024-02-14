@@ -1,5 +1,6 @@
 ﻿using Repo = Kanban.Model.Dto.Repository.Board;
 using App = Kanban.Model.Dto.Application.Board;
+using Api = Kanban.Model.Dto.API.Board;
 
 namespace Kanban.Application.Tests.Services;
 
@@ -39,5 +40,32 @@ public class BoardServiceTest
             result.Columns[i].Name.Should().Be(board.Columns[i].Name);
             result.Columns[i].Cards.Should().BeEquivalentTo(board.Columns[i].Cards);
         }
+    }
+
+    [Fact]
+    public async void CreateBoard_ShouldCreateBoard_WhenValidRequestIsMade()
+    {
+        // Arrange
+        var board = this.fixture.Build<Repo.BoardDto>()
+            .With(x => x.Columns, new Repo.ColumnDto[0])
+            .Create();
+
+        var appBoard = new App.BoardDto
+        {
+            Name = board.Name,
+        };
+
+        this.worker.Setup(x => x.InsertBoard(It.Is<Repo.BoardDto>(x => x.Name == board.Name)))
+            .ReturnsAsync(board)
+            .Verifiable();
+        // Act
+        var result = await this.boardService.CreateBoard(appBoard);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Id.Should().Be(board._id);
+        result.Name.Should().Be(board.Name);
+        result.Columns.Should().NotBeNull();
+        result.Columns.Length.Should().Be(0);
     }
 }

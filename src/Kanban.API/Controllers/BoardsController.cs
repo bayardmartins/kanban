@@ -18,14 +18,23 @@ public class BoardsController
     }
 
     [HttpGet("{id}"), CustomAuthentication]
-    public async Task<ActionResult> GetBoard(string id)
+    public async Task<ActionResult<GetBoardResponse>> GetBoard(string id)
     {
         this.Log(nameof(GetBoard), "Start", id);
         var board = await _boardService.GetBoard(id);
         this.Log(nameof(GetBoard), "Result", board);
         if (board is null)
             return new NotFoundResult();
-        return new OkObjectResult(new GetBoardResponse { Board = board.ToPresentation() });
+        return new OkObjectResult(board.ToPresentationGet());
+    }
+
+    [HttpPost, CustomAuthentication]
+    public async Task<ActionResult<CreateBoardResponse>> CreateBoard(CreateBoardRequest request)
+    {
+        this.Log(nameof(CreateBoard), "Start", request);
+        var board = await _boardService.CreateBoard(request.ToApplication());
+        this.Log(nameof(CreateBoard), "Result", board);
+        return new OkObjectResult(board.ToPresentationCreate());
     }
 
     private void Log(string methodName, string stage, object? data)

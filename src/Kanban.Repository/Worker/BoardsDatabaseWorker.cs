@@ -30,4 +30,11 @@ public class BoardsDatabaseWorker : IBoardsDatabaseWorker
 
         return board == null ? null : BsonSerializer.Deserialize<BoardDto>(board.ToJson());
     }
+
+    public async Task<BoardDto> InsertBoard(BoardDto board)
+    {
+        board._id = new ObjectId().ToString();
+        var document = await _boardRepository.Insert(_mongoSettings.KanbanHost.ClusterId, _mongoSettings.KanbanHost.Database, _mongoSettings.Collections.Boards, board.ToBsonDocument());
+        return BsonSerializer.Deserialize<BoardDto>(document.ToJson());
+    }
 }

@@ -19,4 +19,10 @@ public class BoardService : IBoardService
         var board = await this._boardDatabaseWorker.GetBoardById(boardId);
         return board?.ToApplication();
     }
+
+    public async Task<BoardDto> CreateBoard(BoardDto board)
+    {
+        var repoBoard = await this._boardDatabaseWorker.InsertBoard(board.ToDatabase());
+        return repoBoard.ToApplication();
+    }
 }
