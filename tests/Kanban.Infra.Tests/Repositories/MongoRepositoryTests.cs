@@ -82,11 +82,13 @@ public class ClientRepositoryTests : MongoRepositoryTestsSetup
         updatedCard.Name.Should().Be("New Name");
     }
 
-    [Fact]
-    public async Task Update_ShouldNotUpdateCard_WhenNonExistingCardIsGiven()
+    [Theory]
+    [InlineData(Mocks.NonexistingMockObject)]
+    [InlineData(Mocks.InvalidMockObject)]
+    public async Task Update_ShouldNotUpdateCard_WhenNonExistingCardIsGiven(string mock)
     {
         // Arrange
-        var card = JsonConvert.DeserializeObject<CardDto>(Mocks.NonexistingMockObject);
+        var card = JsonConvert.DeserializeObject<CardDto>(mock);
 
         // Act
         var response = await this.cardWorker.UpdateCard(card);
@@ -110,6 +112,20 @@ public class ClientRepositoryTests : MongoRepositoryTestsSetup
     }
 
     [Fact]
+    public async Task UpdateMany_ShouldNotUpdateAnyCardDescriptions_WhenAnInvalidValidCardIdsIsGiven()
+    {
+        // Arrange
+        var ids = new List<string> { Mocks.SampleMockOneId, Mocks.SampleMockTwoId, Mocks.NonexistingMockObject };
+        var newDescription = "New Description";
+
+        // Act
+        var response = await this.cardWorker.UpdateManyDescriptions(ids, newDescription);
+
+        // Assert
+        response.Should().Be(0);
+    }
+
+    [Fact]
     public async Task Delete_ShouldDeleteCard_WhenValidCardIdIsGiven()
     {
         // Arrange
@@ -127,12 +143,11 @@ public class ClientRepositoryTests : MongoRepositoryTestsSetup
         await this.cardWorker.InsertCard(card);
     }
 
-    [Fact]
-    public async Task Delete_ShouldNotDeleteCard_WhenUnexistingCardIdIsGiven()
+    [Theory]
+    [InlineData(Mocks.NonExistingCardId)]
+    [InlineData(Mocks.InvalidId)]
+    public async Task Delete_ShouldNotDeleteCard_WhenInvalidCardIdIsGiven(string id)
     {
-        // Arrange
-        var id = Mocks.NonExistingCardId;
-
         // Act
         var response = await this.cardWorker.DeleteById(id);
         var deletedCard = await this.cardWorker.GetCardById(id);
