@@ -30,6 +30,8 @@ public static class Mocks
     public const string NonexistingBoardId = "65ccad2765a3b4fbed6945b0";
     public const string InvalidBoardId = "65ccad2765a3b4fbed6945";
 
+    public const string ColumnOneId = "65cbec6d65a3b4fbed6945ab";
+
     public const string InsertBoardMockObject = "{\"_id\":\"\", \"name\":\"Boardmock\", \"columns\":[]}";
     public const string UpdateBoardMockObject = "{\"_id\":\"65cbec3865a3b4fbed6945aa\", \"name\":\"Boardmock Updated\", \"columns\":[]}";
     public const string InvalidUpdateBoardMockObject = "{\"_id\":\"65cbec3865a3b4fbed6945\", \"name\":\"Boardmock Updated\", \"columns\":[]}";

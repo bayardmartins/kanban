@@ -8,7 +8,7 @@ public interface IMongoRepository
     Task<BsonDocument> FindOne(int host, string database, string collectionName,
         FilterDefinition<BsonDocument> filter);
 
-    Task<List<BsonDocument>> FindMany(int host, string database, string collectionName);
+    Task<List<BsonDocument>> FindMany(int host, string database, string collectionName, FilterDefinition<BsonDocument> filter);
 
     Task<BsonDocument> Insert(int host, string database, string collectionName, BsonDocument document);
 

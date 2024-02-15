@@ -29,26 +29,23 @@ public class ClientRepositoryTests : MongoRepositoryTestsSetup
     public async Task GetAll_ShouldReturnCards_WhenThereAreCardsInDatabase()
     {
         // Act
-        var response = await this.cardWorker.GetAllCards();
+        var response = await this.cardWorker.GetAllCards(new string[] { Mocks.SampleMockOneId, Mocks.SampleMockTwoId });
 
         // Assert
         response.Should().NotBeNull();
-        response.Count.Should().Be(3);
+        response.Count.Should().Be(2);
         response.First(x => x._id == Mocks.SampleMockOneId).Should().NotBeNull();
+        response.First(x => x._id == Mocks.SampleMockTwoId).Should().NotBeNull();
     }
 
     [Fact]
-    public async Task GetAll_ShouldReturnNoCards_WhenThereAreNoCardsInDatabase()
+    public async Task GetAll_ShouldNotReturnCards_WhenThereAreInvalidCardsInList()
     {
-        // Assert
-        this.Dispose();
-
         // Act
-        var response = await this.cardWorker.GetAllCards();
+        var response = await this.cardWorker.GetAllCards(new string[] { Mocks.SampleMockOneId, Mocks.InvalidId });
 
         // Assert
-        response.Should().NotBeNull();
-        response.Count.Should().Be(0);
+        response.Should().BeNull();
     }
 
     [Fact]
@@ -150,13 +147,14 @@ public class ClientRepositoryTests : MongoRepositoryTestsSetup
     public async Task Delete_ShouldNotDeleteCard_WhenInvalidCardIdIsGiven(string id)
     {
         // Act
+        var preDelete = await this.cardWorker.GetCardById(id);
         var response = await this.cardWorker.DeleteById(id);
         var deletedCard = await this.cardWorker.GetCardById(id);
-        var remainingCards = await this.cardWorker.GetAllCards();
+
         // Assert
+        preDelete.Should().BeNull();
         response.Should().BeFalse();
         deletedCard.Should().BeNull();
-        remainingCards.Count.Should().Be(3);
     }
 
     #endregion

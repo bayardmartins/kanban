@@ -6,39 +6,60 @@ using Kanban.Repository.Interfaces;
 namespace Kanban.Application.Services;
 public class CardService : ICardService
 {
-    private readonly ICardsDatabaseWorker _kanbanDatabaseWorker;
+    private readonly ICardsDatabaseWorker _cardsDatabaseWorker;
+    private readonly IBoardsDatabaseWorker _boardsDatabaseWorker;
 
-    public CardService(ICardsDatabaseWorker kanbanDatabaseWorker)
+    public CardService(ICardsDatabaseWorker kanbanDatabaseWorker, IBoardsDatabaseWorker boardsDatabaseWorker)
     {
-        this._kanbanDatabaseWorker = kanbanDatabaseWorker;
+        this._cardsDatabaseWorker = kanbanDatabaseWorker;
+        this._boardsDatabaseWorker = boardsDatabaseWorker;
     }
 
     public async Task<CardDto?> GetCardById(string id)
     {
-        var card = await this._kanbanDatabaseWorker.GetCardById(id);
+        var card = await this._cardsDatabaseWorker.GetCardById(id);
         return card?.ToApplication();
     }
 
-    public async Task<List<CardDto>> GetCards()
+    public async Task<GetCardResponse> GetCards(string boardId, string columnId)
     {
-        var cards = await this._kanbanDatabaseWorker.GetAllCards();
-        return cards is null ? new List<CardDto>() : cards.ToApplication();
+        var response = new GetCardResponse();
+        var board = await this._boardsDatabaseWorker.GetBoardById(boardId);
+        if (board is null)
+        {
+            response.Error = "Board not found";
+            return response;
+        }
+        var column = board.Columns.FirstOrDefault(x => x._id == columnId);
+        if (column is null)
+        {
+            response.Error = "Column not found";
+            return response;
+        }
+
+        var cards = await this._cardsDatabaseWorker.GetAllCards(column.Cards);
+        if (cards is null || cards.Count == 0)
+        {
+            response.Error = "Cards not found";
+            return response;
+        }
+        return new GetCardResponse { CardList = cards.ToApplication() };
     }
 
     public async Task<CardDto> CreateCard(CardDto card)
     {
-        var createdCard = await this._kanbanDatabaseWorker.InsertCard(card.ToDatabaseInsert());
+        var createdCard = await this._cardsDatabaseWorker.InsertCard(card.ToDatabaseInsert());
         return createdCard.ToApplication();
     }
 
     public async Task<bool> DeleteCard(string id)
     {
-        return await this._kanbanDatabaseWorker.DeleteById(id);
+        return await this._cardsDatabaseWorker.DeleteById(id);
     }
 
     public async Task<CardDto?> UpdateCard(CardDto card)
     {
-        var result = await this._kanbanDatabaseWorker.UpdateCard(card.ToDatabaseUpdate());
+        var result = await this._cardsDatabaseWorker.UpdateCard(card.ToDatabaseUpdate());
         return result?.ToApplication();
     }
 }

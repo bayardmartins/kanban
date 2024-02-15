@@ -48,7 +48,7 @@ public class AuthIntegrationTests : IntegrationTestsSetup
 
         // Act
         AuthenticationHelper.SetupAuthenticationHeader(_client, $"{client.Id}:{client.Secret}");
-        var getResponse = await _client.GetAsync("Boards/65c6e255a03db52a8056230f/Column/65c6e255a03db52a8056230f/Cards");
+        var getResponse = await _client.GetAsync("Boards/65cbec3865a3b4fbed6945aa/Column/65cbec6d65a3b4fbed6945ab/Cards");
 
         // Assert
         getResponse.IsSuccessStatusCode.Should().BeTrue();
@@ -72,7 +72,7 @@ public class AuthIntegrationTests : IntegrationTestsSetup
         // Act
         var registerResponse = await _client.PostAsync("auth/register", jsonContent);
         AuthenticationHelper.SetupAuthenticationHeader(_client, $"{clientRequest.Client.Id}:{clientRequest.Client.Secret}");
-        var getResponse = await _client.GetAsync("Boards/65c6e255a03db52a8056230f/Column/65c6e255a03db52a8056230f/Cards");
+        var getResponse = await _client.GetAsync("Boards/65cbec3865a3b4fbed6945aa/Column/65cbec6d65a3b4fbed6945ab/Cards");
 
         // Assert
         registerResponse.IsSuccessStatusCode.Should().BeTrue();
@@ -83,10 +83,10 @@ public class AuthIntegrationTests : IntegrationTestsSetup
     {
         return new List<object[]>
         {
-            new object[] { "GET", "Boards/65c6e255a03db52a8056230f/Column/65c6e255a03db52a8056230f/Cards" },
-            new object[] { "POST","Boards/65c6e255a03db52a8056230f/Column/65c6e255a03db52a8056230f/Cards" },
-            new object[] { "DELETE", "Boards/65c6e255a03db52a8056230f/Column/65c6e255a03db52a8056230f/Cards/65c6e255a03db52a8056230f" },
-            new object[] { "PUT", "Boards/65c6e255a03db52a8056230f/Column/65c6e255a03db52a8056230f/Cards" },
+            new object[] { "GET", "Boards/65cbec3865a3b4fbed6945aa/Column/65cbec6d65a3b4fbed6945ab/Cards" },
+            new object[] { "POST","Boards/65cbec3865a3b4fbed6945aa/Column/65cbec6d65a3b4fbed6945ab/Cards" },
+            new object[] { "DELETE", "Cards/65c6e255a03db52a8056230f" },
+            new object[] { "PUT", "Cards/65c6e255a03db52a8056230f" },
         };
     }
 }
