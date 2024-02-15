@@ -8,10 +8,12 @@ namespace Kanban.Application.Services;
 public class BoardService : IBoardService
 {
     private readonly IBoardsDatabaseWorker _boardDatabaseWorker;
+    private readonly ICardsDatabaseWorker _cardDatabaseWorker;
 
-    public BoardService(IBoardsDatabaseWorker boardsDatabaseWorker)
+    public BoardService(IBoardsDatabaseWorker boardsDatabaseWorker, ICardsDatabaseWorker cardDatabaseWorker)
     {
         _boardDatabaseWorker = boardsDatabaseWorker;
+        _cardDatabaseWorker = cardDatabaseWorker;
     }
 
     public async Task<BoardDto?> GetBoard(string boardId)
@@ -34,6 +36,25 @@ public class BoardService : IBoardService
 
     public async Task<bool> DeleteBoard(string id)
     {
-        return await this._boardDatabaseWorker.DeleteById(id);
+        var board = await this._boardDatabaseWorker.GetBoardById(id);
+        if (board == null)
+        {
+            return false;
+        }
+        var result = await this._boardDatabaseWorker.DeleteById(id);
+        if (result)
+        {
+            var cards = board.Columns.SelectMany(column => column.Cards).ToList();
+            if (cards is null || cards.Count == 0)
+            {
+                return true;
+            }
+            return await this._cardDatabaseWorker.DeleteMany(cards);
+        }
+        else
+        {
+            await this._boardDatabaseWorker.InsertBoard(board);
+            return false;
+        }
     }
 }

@@ -65,4 +65,12 @@ public class MongoRepository : IMongoRepository
         return await collection.DeleteOneAsync(filter)
             .ConfigureAwait(false);
     }
+
+    public async Task<DeleteResult> DeleteMany(int host, string database, string collectionName, FilterDefinition<BsonDocument> filter)
+    {
+        IMongoCollection<BsonDocument> collection = _mongoClients.ElementAt(host).GetDatabase(database).GetCollection<BsonDocument>(collectionName);
+
+        return await collection.DeleteManyAsync(filter)
+            .ConfigureAwait(false);
+    }
 }

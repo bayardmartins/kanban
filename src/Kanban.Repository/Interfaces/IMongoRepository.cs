@@ -17,4 +17,6 @@ public interface IMongoRepository
     Task<UpdateResult> UpdateMany(int host, string database, string collectionName, FilterDefinition<BsonDocument> filter, UpdateDefinition<BsonDocument> update, UpdateOptions options);
 
     Task<DeleteResult> Delete(int host, string database, string collectionName, FilterDefinition<BsonDocument> filter);
+
+    Task<DeleteResult> DeleteMany(int host, string database, string collectionName, FilterDefinition<BsonDocument> filter);
 }

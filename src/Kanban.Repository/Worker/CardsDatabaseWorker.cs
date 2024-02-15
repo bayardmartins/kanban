@@ -93,4 +93,14 @@ public class CardsDatabaseWorker : ICardsDatabaseWorker
         var result = await _cardRepository.Delete(_mongoSettings.KanbanHost.ClusterId, _mongoSettings.KanbanHost.Database, _mongoSettings.Collections.Cards, filter);
         return result.DeletedCount == 1;
     }
+
+    public async Task<bool> DeleteMany(List<string> ids)
+    {
+        var validList = ids.ConvertAll(x => ObjectId.TryParse(x, out _));
+        if (validList.Any(x => x.Equals(false)))
+            return false;
+        var filter = Builders<BsonDocument>.Filter.In(Constants.MongoDbId, ids.ConvertAll(x => ObjectId.Parse(x)));
+        var result = await _cardRepository.DeleteMany(_mongoSettings.KanbanHost.ClusterId, _mongoSettings.KanbanHost.Database, _mongoSettings.Collections.Cards, filter);
+        return result.DeletedCount == ids.Count;
+    }
 }
