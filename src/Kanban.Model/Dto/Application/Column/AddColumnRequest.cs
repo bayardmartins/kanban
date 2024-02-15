@@ -1,6 +1,6 @@
-﻿namespace Kanban.Model.Dto.Application.Board;
+﻿namespace Kanban.Model.Dto.Application.Column;
 
-public class ColumnAddRequest
+public class AddColumnRequest
 {
     public string BoardId { get; set; }
     public ColumnDto Column { get; set; }

@@ -49,6 +49,7 @@ public class BoardsController : ControllerBase
         return new NotFoundResult();
     }
 
+    //todo: delete all cards related
     [HttpDelete("{id}"), CustomAuthentication]
     public async Task<ActionResult> DeleteBoard([FromRoute] string id)
     {

@@ -38,4 +38,9 @@ public static class Mocks
     public const string NonexistingBoardMockObject = "{\"_id\":\"65cca89665a3b4fbed6945ae\", \"name\":\"Boardmock Updated\", \"columns\":[]}";
 
     public const string ColumnAddMock = "{\"_id\":\"65ccca5e65a3b4fbed6945bb\",\"name\":\"column new\",\"cards\":[]}";
+
+    public const string UpdColumnReqInvalidBoard = "{\"boardId\":\"65cbec3865a3b4fbed6945\",\"columnId\":\"65cbec6d65a3b4fbed6945ab\",\"columnName\":\"new name update\"}";
+    public const string UpdColumnReqInvalidColumn = "{\"boardId\":\"65cbec3865a3b4fbed6945aa\",\"columnId\":\"65cbec6d65a3b4fbed6945\",\"columnName\":\"new name update\"}";
+    public const string UpdColumnReqNotFoundBoard = "{\"boardId\":\"65ccad2765a3b4fbed6945b0\",\"columnId\":\"65cbec6d65a3b4fbed6945ab\",\"columnName\":\"new name update\"}";
+    public const string UpdColumnReqSuccess = "{\"boardId\":\"65cbec3865a3b4fbed6945aa\",\"columnId\":\"65cbec6d65a3b4fbed6945ab\",\"columnName\":\"new name update\"}";
 }

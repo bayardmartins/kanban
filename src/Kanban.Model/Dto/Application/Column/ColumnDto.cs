@@ -1,4 +1,4 @@
-﻿namespace Kanban.Model.Dto.Application.Board;
+﻿namespace Kanban.Model.Dto.Application.Column;
 
 public class ColumnDto
 {

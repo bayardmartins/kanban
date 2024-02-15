@@ -29,4 +29,7 @@ public class Mocks
     public const string AddColumnRequestOne = "{\"columnName\":\"column added one\",\"position\":0}";
     public const string AddColumnRequestTwo = "{\"columnName\":\"column added two\",\"position\":1}";
     public const string AddColumnRequestThree = "{\"columnName\":\"column added three\",\"position\":3}";
+
+    public const string UpdColumnReqSuccess = "{\"columnName\":\"new name update\"}";
+    public const string ExistingColumn = "65cbec6d65a3b4fbed6945ab";
 }

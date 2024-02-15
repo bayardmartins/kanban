@@ -1,5 +1,6 @@
 ﻿using Kanban.CrossCutting;
 using Kanban.Model.Dto.Repository.Board;
+using Kanban.Model.Dto.Repository.Column;
 using Kanban.Repository.Interfaces;
 using Kanban.Repository.Settings;
 using MongoDB.Bson;
@@ -64,12 +65,12 @@ public class BoardsDatabaseWorker : IBoardsDatabaseWorker
         return result.DeletedCount == 1;
     }
 
-    public async Task<bool> UpdateBoardColumns(BoardDto board, int index)
+    public async Task<string?> UpdateBoardColumns(BoardDto board, int index)
     {
         var validId = ObjectId.TryParse(board._id, out var parsedId);
         if (!validId)
-            return false;
-        board.Columns[index]._id = new ObjectId().ToString();
+            return null;
+        board.Columns[index]._id = Guid.NewGuid().ToString();
         var filter = Builders<BsonDocument>.Filter.Eq(Constants.MongoDbId, parsedId);
         var update = Builders<BsonDocument>.Update
                     .Set(Constants.Columns, board.Columns);
@@ -78,6 +79,26 @@ public class BoardsDatabaseWorker : IBoardsDatabaseWorker
             IsUpsert = false
         };
         var response = await _boardRepository.Update(_mongoSettings.KanbanHost.ClusterId, _mongoSettings.KanbanHost.Database, _mongoSettings.Collections.Boards, filter, update, options);
-        return response.ModifiedCount == 1;
+        return response.ModifiedCount == 1 ? board.Columns[index]._id : string.Empty;
+    }
+
+    public async Task<bool?> UpdateBoardColumnName(UpdateColumnRequest request)
+    {
+        var validBoardId = ObjectId.TryParse(request.BoardId, out var parseBoarddId);
+        if (!validBoardId)
+            return null;
+
+        var filter = Builders<BsonDocument>.Filter.And(
+            Builders<BsonDocument>.Filter.Eq(Constants.MongoDbId, parseBoarddId),
+            Builders<BsonDocument>.Filter.Eq("Columns._id", request.ColumnId));
+
+        var update = Builders<BsonDocument>.Update.Set("Columns.$.Name", request.ColumnName);
+
+        var options = new UpdateOptions
+        {
+            IsUpsert = false
+        };
+        var response = await _boardRepository.Update(_mongoSettings.KanbanHost.ClusterId, _mongoSettings.KanbanHost.Database, _mongoSettings.Collections.Boards, filter, update, options);
+        return response.ModifiedCount > 0;
     }
 }

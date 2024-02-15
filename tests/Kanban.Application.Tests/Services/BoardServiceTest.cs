@@ -1,6 +1,7 @@
 ﻿using Repo = Kanban.Model.Dto.Repository.Board;
 using App = Kanban.Model.Dto.Application.Board;
 using Api = Kanban.Model.Dto.API.Board;
+using Kanban.Model.Dto.Repository.Column;
 
 namespace Kanban.Application.Tests.Services;
 
@@ -47,7 +48,7 @@ public class BoardServiceTest
     {
         // Arrange
         var board = this.fixture.Build<Repo.BoardDto>()
-            .With(x => x.Columns, new Repo.ColumnDto[0])
+            .With(x => x.Columns, new ColumnDto[0])
             .Create();
 
         var appBoard = new App.BoardDto
@@ -74,7 +75,7 @@ public class BoardServiceTest
     {
         // Arrange
         var board = this.fixture.Build<Repo.BoardDto>()
-            .With(x => x.Columns, new Repo.ColumnDto[0])
+            .With(x => x.Columns, new ColumnDto[0])
             .Create();
 
         var appBoard = new App.BoardDto
@@ -103,7 +104,7 @@ public class BoardServiceTest
     {
         // Arrange
         var board = this.fixture.Build<Repo.BoardDto>()
-            .With(x => x.Columns, new Repo.ColumnDto[0])
+            .With(x => x.Columns, new ColumnDto[0])
             .Create();
 
         var appBoard = new App.BoardDto

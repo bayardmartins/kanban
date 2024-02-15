@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Kanban.Model.Dto.Repository.Column;
 
 namespace Kanban.Infra.Tests.Repositories;
 
@@ -319,7 +320,7 @@ public class ClientRepositoryTests : MongoRepositoryTestsSetup
         var newBoard = await this.boardWorker.GetBoardById(boardMock._id);
 
         // Assert
-        response.Should().BeTrue();
+        response.Should().NotBeNullOrEmpty();
         newBoard.Columns.Length.Should().Be(columnCount + 1);
     }
 
@@ -337,7 +338,29 @@ public class ClientRepositoryTests : MongoRepositoryTestsSetup
         var response = await this.boardWorker.UpdateBoardColumns(boardMock, 0);
 
         // Assert
-        response.Should().BeFalse();
+        response.Should().BeNullOrEmpty();
     }
+
+    [Theory]
+    [MemberData(nameof(GetUpdateBoardColumn))]
+    public async Task UpdateBoardColumnName(string mock, bool? result)
+    {
+        // Arrange
+        var request = JsonConvert.DeserializeObject<UpdateColumnRequest>(mock);
+
+        // Act
+        var response = await this.boardWorker.UpdateBoardColumnName(request);
+
+        // Assert
+        response.Should().Be(result);
+    }
+
+
+    private static IEnumerable<object[]> GetUpdateBoardColumn() => new List<object[]>
+    {
+        new object[] { Mocks.UpdColumnReqInvalidBoard, null },
+        new object[] { Mocks.UpdColumnReqNotFoundBoard, false },
+        new object[] { Mocks.UpdColumnReqSuccess, true },
+    };
     #endregion
 }
