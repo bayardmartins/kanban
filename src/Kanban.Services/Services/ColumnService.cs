@@ -42,6 +42,7 @@ public class ColumnService : IColumnService
             response.Error = "Failed to update";
             return response;
         }
+        response.ColumnId = update;
         return response;
     }
 

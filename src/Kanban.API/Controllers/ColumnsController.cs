@@ -18,7 +18,6 @@ public class ColumnsController : ControllerBase
         _logger = logger;
     }
 
-    //TODO add id in response
     [HttpPost, CustomAuthentication]
     public async Task<ActionResult> AddColumn([FromRoute] string boardId, AddColumnRequest request)
     {
@@ -26,8 +25,8 @@ public class ColumnsController : ControllerBase
         var result = await _columnService.AddColumn(request.ToApplication(boardId));
         this.Log(nameof(AddColumn), "Result", new { result });
         if (!string.IsNullOrEmpty(result.Error))
-            return new BadRequestObjectResult(result.Error);
-        return new OkResult();
+            return new BadRequestObjectResult(new ColumnActionResponse { Error = result.Error });
+        return new OkObjectResult(new ColumnActionResponse { ColumnId = result.ColumnId});
     }
 
     [HttpPut("{id}"), CustomAuthentication]
