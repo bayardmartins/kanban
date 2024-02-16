@@ -31,9 +31,15 @@ public class CardsDatabaseWorker : ICardsDatabaseWorker
         return card == null ? null : BsonSerializer.Deserialize<CardDto>(card.ToJson());
     }
 
-    public async Task<List<CardDto>> GetAllCards()
+    public async Task<List<CardDto>?> GetAllCards(string[] cardList)
     {
-        var cards = await _cardRepository.FindMany(_mongoSettings.KanbanHost.ClusterId, _mongoSettings.KanbanHost.Database, _mongoSettings.Collections.Cards).ConfigureAwait(false);
+        var validList = cardList.ToList().ConvertAll(x => ObjectId.TryParse(x, out _));
+        if (validList.Any(x => x.Equals(false)))
+            return null;
+
+        var filter = Builders<BsonDocument>.Filter.In(Constants.MongoDbId, cardList.ToList().ConvertAll(x => ObjectId.Parse(x)));
+
+        var cards = await _cardRepository.FindMany(_mongoSettings.KanbanHost.ClusterId, _mongoSettings.KanbanHost.Database, _mongoSettings.Collections.Cards, filter).ConfigureAwait(false);
 
         return BsonSerializer.Deserialize<List<CardDto>>(cards.ToJson());
     }

@@ -8,10 +8,12 @@ namespace Kanban.Application.Services;
 public class BoardService : IBoardService
 {
     private readonly IBoardsDatabaseWorker _boardDatabaseWorker;
+    private readonly ICardsDatabaseWorker _cardDatabaseWorker;
 
-    public BoardService(IBoardsDatabaseWorker boardsDatabaseWorker)
+    public BoardService(IBoardsDatabaseWorker boardsDatabaseWorker, ICardsDatabaseWorker cardDatabaseWorker)
     {
         _boardDatabaseWorker = boardsDatabaseWorker;
+        _cardDatabaseWorker = cardDatabaseWorker;
     }
 
     public async Task<BoardDto?> GetBoard(string boardId)
@@ -32,8 +34,26 @@ public class BoardService : IBoardService
         return result?.ToApplication();
     }
 
-    public async Task<bool> DeleteBoard(string id)
+    public async Task<BoardActionResult> DeleteBoard(string id)
     {
-        return await this._boardDatabaseWorker.DeleteById(id);
+        var result = new BoardActionResult();
+        var board = await this._boardDatabaseWorker.GetBoardById(id);
+        if (board == null)
+        {
+            result.Error = "BoardId invalid";
+            return result;
+        }
+        if (board.Columns.Length > 0)
+        {
+            result.Error = $"Board with columns can't be deleted. Board has {board.Columns.Length} columns. Delete all columns before deleting board";
+        }
+        var response = await this._boardDatabaseWorker.DeleteById(id);
+        if (response)
+        {
+            result.BoardId = id;
+            return result;
+        }
+        result.Error = "Failed to delete board";
+        return result;
     }
 }

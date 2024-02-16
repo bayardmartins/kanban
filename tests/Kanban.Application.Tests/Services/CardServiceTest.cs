@@ -1,4 +1,4 @@
-﻿using Repo = Kanban.Model.Dto.Repository.Card;
+﻿using Repo = Kanban.Model.Dto.Repository;
 using App = Kanban.Model.Dto.Application.Card;
 
 namespace Kanban.Application.Tests.Services;
@@ -7,20 +7,22 @@ public class CardServiceTest
 {
     private readonly Fixture fixture;
     private readonly Mock<ICardsDatabaseWorker> worker;
+    private readonly Mock<IBoardsDatabaseWorker> boardWorker;
     private readonly CardService cardService;
 
     public CardServiceTest() 
     {
         this.fixture = new Fixture();
         this.worker = new Mock<ICardsDatabaseWorker>();
-        this.cardService = new CardService(this.worker.Object);
+        this.boardWorker = new Mock<IBoardsDatabaseWorker>();
+        this.cardService = new CardService(this.worker.Object, this.boardWorker.Object);
     }
 
     [Fact]
     public async void GetCardById_ShouldReturnCard_WhenThereIsACardInDatabase()
     {
         // Arrange
-        var card = this.fixture.Create<Repo.CardDto>();
+        var card = this.fixture.Create<Repo.Card.CardDto>();
         this.worker.Setup(x => x.GetCardById(card._id))
             .ReturnsAsync(card)
             .Verifiable();
@@ -39,7 +41,7 @@ public class CardServiceTest
     public async void GetCardById_ShouldNotReturnCard_WhenThereIsNoCardInDatabase()
     {
         // Arrange
-        var card = this.fixture.Create<Repo.CardDto>();
+        var card = this.fixture.Create<Repo.Card.CardDto>();
         this.worker.Setup(x => x.GetCardById(card._id))
             .ReturnsAsync(card)
             .Verifiable();
@@ -56,44 +58,83 @@ public class CardServiceTest
     public async void GetAllCards_ShouldReturnCards_WhenThereAreCardsInDatabase()
     {
         // Arrange
-        var cards = this.fixture.Create<List<Repo.CardDto>>();
-        this.worker.Setup(x => x.GetAllCards())
+        var boardId = this.fixture.Create<string>();
+        var board = this.fixture.Build<Repo.Board.BoardDto>()
+            .With(x => x._id, boardId)
+            .Create();
+        var columnId = board.Columns.First()._id;
+        var cards = this.fixture.Create<List<Repo.Card.CardDto>>();
+        
+        this.boardWorker.Setup(x => x.GetBoardById(board._id))
+            .ReturnsAsync(board)
+            .Verifiable();
+
+        this.worker.Setup(x => x.GetAllCards(board.Columns.First().Cards))
             .ReturnsAsync(cards)
             .Verifiable();
 
         // Act
-        var result = await this.cardService.GetCards();
+        var result = await this.cardService.GetCards(boardId,columnId);
 
         // Assert
         result.Should().NotBeNull();
-        result.Count.Should().Be(3);
-        result.Select(r => r.Id).Should().Equal(cards.Select(c => c._id));
-        result.Select(r => r.Name).Should().Equal(cards.Select(c => c.Name));
-        result.Select(r => r.Description).Should().Equal(cards.Select(c => c.Description));
+        result.Error.Should().BeNull();
+        result.CardList.Count.Should().Be(3);
+        result.CardList.Select(r => r.Id).Should().Equal(cards.Select(c => c._id));
+        result.CardList.Select(r => r.Name).Should().Equal(cards.Select(c => c.Name));
+        result.CardList.Select(r => r.Description).Should().Equal(cards.Select(c => c.Description));
     }
 
     [Fact]
-    public async void GetAllCards_ShouldNotReturnCards_WhenThereAreNoCardsInDatabase()
+    public async void GetAllCards_ShouldNotReturnCards_WhenBoardIsNotFound()
     {
         // Arrange
-        this.worker.Setup(x => x.GetAllCards())
+        var boardId = this.fixture.Create<string>();
+        var columnId = this.fixture.Create<string>();
+
+        this.boardWorker.Setup(x => x.GetBoardById(boardId))
             .Verifiable();
 
         // Act
-        var result = await this.cardService.GetCards();
+        var result = await this.cardService.GetCards(boardId, columnId);
 
         // Assert
         result.Should().NotBeNull();
-        result.Count.Should().Be(0);
+        result.Error.Should().Be("Board not found");
+    }
+
+    [Fact]
+    public async void GetAllCards_ShouldNotReturnCards_WhenBoardIsEmpty()
+    {
+        // Arrange
+        var boardId = this.fixture.Create<string>();
+        var board = this.fixture.Build<Repo.Board.BoardDto>()
+            .With(x => x._id, boardId)
+            .Create();
+        var columnId = board.Columns.First()._id;
+
+        this.boardWorker.Setup(x => x.GetBoardById(board._id))
+            .ReturnsAsync(board)
+            .Verifiable();
+
+        this.worker.Setup(x => x.GetAllCards(board.Columns.First().Cards))
+            .Verifiable();
+
+        // Act
+        var result = await this.cardService.GetCards(boardId, columnId);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Error.Should().Be("Cards not found");
     }
 
     [Fact]
     public async void CreateCard_ShouldCreateCard_WhenAValidCardIsGiven()
     {
         // Arrange
-        var card = this.fixture.Create<Repo.CardDto>();
+        var card = this.fixture.Create<Repo.Card.CardDto>();
 
-        this.worker.Setup(x => x.InsertCard(It.Is<Repo.CardDto>
+        this.worker.Setup(x => x.InsertCard(It.Is<Repo.Card.CardDto>
             (x => x.Name == card.Name && x.Description == card.Description)))
             .ReturnsAsync(card)
             .Verifiable();
@@ -134,9 +175,9 @@ public class CardServiceTest
     public async void UpdateCard_ShouldUpdateCard_WhenAValidCardIsGiven()
     {
         // Arrange
-        var card = this.fixture.Create<Repo.CardDto>();
+        var card = this.fixture.Create<Repo.Card.CardDto>();
 
-        this.worker.Setup(x => x.UpdateCard(It.Is<Repo.CardDto>
+        this.worker.Setup(x => x.UpdateCard(It.Is<Repo.Card.CardDto>
             (x => x._id == card._id && x.Name == card.Name && x.Description == card.Description)))
             .ReturnsAsync(card)
             .Verifiable();
@@ -162,9 +203,9 @@ public class CardServiceTest
     public async void UpdateCard_ShouldNotUpdateCard_WhenAnInvalidCardIsGiven()
     {
         // Arrange
-        var card = this.fixture.Create<Repo.CardDto>();
+        var card = this.fixture.Create<Repo.Card.CardDto>();
 
-        this.worker.Setup(x => x.UpdateCard(It.Is<Repo.CardDto>
+        this.worker.Setup(x => x.UpdateCard(It.Is<Repo.Card.CardDto>
             (x => x._id == card._id && x.Name == card.Name && x.Description == card.Description)))
             .ReturnsAsync(card)
             .Verifiable();

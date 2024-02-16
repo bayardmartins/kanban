@@ -1,6 +1,7 @@
 ﻿using Repo = Kanban.Model.Dto.Repository.Board;
 using App = Kanban.Model.Dto.Application.Board;
 using Api = Kanban.Model.Dto.API.Board;
+using Kanban.Model.Dto.Repository.Column;
 
 namespace Kanban.Application.Tests.Services;
 
@@ -8,13 +9,15 @@ public class BoardServiceTest
 {
     private readonly Fixture fixture;
     private readonly Mock<IBoardsDatabaseWorker> worker;
+    private readonly Mock<ICardsDatabaseWorker> cardWorker;
     private readonly BoardService boardService;
 
     public BoardServiceTest()
     {
         this.fixture = new Fixture();
         this.worker = new Mock<IBoardsDatabaseWorker>();
-        this.boardService = new BoardService(this.worker.Object);
+        this.cardWorker = new Mock<ICardsDatabaseWorker>();
+        this.boardService = new BoardService(this.worker.Object, this.cardWorker.Object);
     }
 
     [Fact]
@@ -33,8 +36,8 @@ public class BoardServiceTest
         result.Should().NotBeNull();
         result.Id.Should().Be(board._id);
         result.Name.Should().Be(board.Name);
-        result.Columns.Length.Should().Be(board.Columns.Length);
-        for(int i = 0; i > result.Columns.Length; i++)
+        result.Columns.Count.Should().Be(board.Columns.Length);
+        for(int i = 0; i > result.Columns.Count; i++)
         {
             result.Columns[i].Id.Should().Be(board.Columns[i]._id);
             result.Columns[i].Name.Should().Be(board.Columns[i].Name);
@@ -47,7 +50,7 @@ public class BoardServiceTest
     {
         // Arrange
         var board = this.fixture.Build<Repo.BoardDto>()
-            .With(x => x.Columns, new Repo.ColumnDto[0])
+            .With(x => x.Columns, new ColumnDto[0])
             .Create();
 
         var appBoard = new App.BoardDto
@@ -66,7 +69,7 @@ public class BoardServiceTest
         result.Id.Should().Be(board._id);
         result.Name.Should().Be(board.Name);
         result.Columns.Should().NotBeNull();
-        result.Columns.Length.Should().Be(0);
+        result.Columns.Count.Should().Be(0);
     }
 
     [Fact]
@@ -74,7 +77,7 @@ public class BoardServiceTest
     {
         // Arrange
         var board = this.fixture.Build<Repo.BoardDto>()
-            .With(x => x.Columns, new Repo.ColumnDto[0])
+            .With(x => x.Columns, new ColumnDto[0])
             .Create();
 
         var appBoard = new App.BoardDto
@@ -95,7 +98,7 @@ public class BoardServiceTest
         result.Id.Should().Be(board._id);
         result.Name.Should().Be(board.Name);
         result.Columns.Should().NotBeNull();
-        result.Columns.Length.Should().Be(0);
+        result.Columns.Count.Should().Be(0);
     }
 
     [Fact]
@@ -103,7 +106,7 @@ public class BoardServiceTest
     {
         // Arrange
         var board = this.fixture.Build<Repo.BoardDto>()
-            .With(x => x.Columns, new Repo.ColumnDto[0])
+            .With(x => x.Columns, new ColumnDto[0])
             .Create();
 
         var appBoard = new App.BoardDto
@@ -124,18 +127,70 @@ public class BoardServiceTest
     }
 
     [Fact]
-    public async void DeleteBoard_ShouldDeleteCard_WhenValidBoardIsGiven()
+    public async void DeleteBoard_ShouldDeleteBoard_WhenValidBoardWithoutCardsIsGiven()
     {
         // Arrange
         var id = this.fixture.Create<string>();
         this.worker.Setup(x => x.DeleteById(id))
             .ReturnsAsync(true)
             .Verifiable();
+        var board = this.fixture.Build<Repo.BoardDto>()
+            .With(x => x._id, id)
+            .Without(x => x.Columns)
+            .Create();
+        this.worker.Setup(x => x.GetBoardById(id))
+            .ReturnsAsync(board);
+        this.worker.Setup(x => x.InsertBoard(board))
+            .Verifiable();
 
         // Act
         var result = await this.boardService.DeleteBoard(id);
 
         // Assert
-        result.Should().BeTrue();
+        result.Error.Should().BeNull();
+    }
+
+    [Fact]
+    public async void DeleteBoard_ShouldNotDeleteBoard_WhenBoardIsInvalid()
+    {
+        // Arrange
+        var id = this.fixture.Create<string>();
+        this.worker.Setup(x => x.GetBoardById(id))
+            .Verifiable();
+
+        // Act
+        var result = await this.boardService.DeleteBoard(id);
+
+        // Assert
+        result.Error.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async void DeleteBoard_ShouldNotDeleteBoard_WhenFilterIsWrong()
+    {
+        // Arrange
+        var id = this.fixture.Create<string>();
+        this.worker.Setup(x => x.DeleteById(id))
+            .Verifiable();
+        var board = this.fixture.Build<Repo.BoardDto>()
+            .With(x => x._id, id)
+            .Create();
+        this.worker.Setup(x => x.GetBoardById(id))
+            .ReturnsAsync(board);
+        this.worker.Setup(x => x.InsertBoard(board))
+            .Verifiable();
+
+        // Act
+        var result = await this.boardService.DeleteBoard(id);
+
+        // Assert
+        result.Error.Should().NotBeNull();
+    }
+
+    private static bool AreListsEqual(List<string> list1, List<string> list2)
+    {
+        bool AllListContainOne = list1.All(item => list2.Contains(item));
+        bool AllListContainTwo = list2.All(item => list1.Contains(item));
+        return AllListContainOne && AllListContainTwo;
     }
 }
