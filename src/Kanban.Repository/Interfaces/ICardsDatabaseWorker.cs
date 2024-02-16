@@ -15,7 +15,5 @@ namespace Kanban.Repository.Interfaces
         public Task<long> UpdateManyDescriptions(List<string> ids, string description);
 
         public Task<bool> DeleteById(string id);
-
-        public Task<bool> DeleteMany(List<string> ids);
     }
 }

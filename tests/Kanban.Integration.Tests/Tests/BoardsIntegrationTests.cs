@@ -139,7 +139,7 @@ public class BoardsIntegrationTests : IntegrationTestsSetup
 
     private static IEnumerable<object[]> GetDeleteParameters() => new List<object[]>
     {
-        new object[] { $"Boards/{Mocks.BoardTwoId}", true },
-        new object[] { $"Boards/{Mocks.NonexistingBoardId}", false },
+        new object[] { $"Boards/{Mocks.BoardTwoId}", false },
+        new object[] { $"Boards/{Mocks.EmptyBoardId}", true },
     };
 }

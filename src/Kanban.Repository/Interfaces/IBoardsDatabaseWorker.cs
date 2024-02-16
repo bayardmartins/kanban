@@ -11,4 +11,5 @@ public interface IBoardsDatabaseWorker
     public Task<bool> DeleteById(string id);
     public Task<string?> UpdateBoardColumns(BoardDto board, int index);
     Task<bool?> UpdateBoardColumnName(UpdateColumnRequest updateColumnRequest);
+    Task<bool?> DeleteColumn(string boardId, string columnId);
 }

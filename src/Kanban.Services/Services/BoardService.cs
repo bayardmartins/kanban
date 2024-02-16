@@ -34,27 +34,26 @@ public class BoardService : IBoardService
         return result?.ToApplication();
     }
 
-    public async Task<bool> DeleteBoard(string id)
+    public async Task<BoardActionResult> DeleteBoard(string id)
     {
+        var result = new BoardActionResult();
         var board = await this._boardDatabaseWorker.GetBoardById(id);
         if (board == null)
         {
-            return false;
+            result.Error = "BoardId invalid";
+            return result;
         }
-        var result = await this._boardDatabaseWorker.DeleteById(id);
-        if (result)
+        if (board.Columns.Length > 0)
         {
-            var cards = board.Columns.SelectMany(column => column.Cards).ToList();
-            if (cards is null || cards.Count == 0)
-            {
-                return true;
-            }
-            return await this._cardDatabaseWorker.DeleteMany(cards);
+            result.Error = $"Board with columns can't be deleted. Board has {board.Columns.Length} columns. Delete all columns before deleting board";
         }
-        else
+        var response = await this._boardDatabaseWorker.DeleteById(id);
+        if (response)
         {
-            await this._boardDatabaseWorker.InsertBoard(board);
-            return false;
+            result.BoardId = id;
+            return result;
         }
+        result.Error = "Failed to delete board";
+        return result;
     }
 }

@@ -26,7 +26,7 @@ public class ColumnsController : ControllerBase
         this.Log(nameof(AddColumn), "Result", new { result });
         if (!string.IsNullOrEmpty(result.Error))
             return new BadRequestObjectResult(new ColumnActionResponse { Error = result.Error });
-        return new OkObjectResult(new ColumnActionResponse { ColumnId = result.ColumnId});
+        return new OkObjectResult(new ColumnActionResponse { ColumnId = result.ColumnId });
     }
 
     [HttpPut("{id}"), CustomAuthentication]
@@ -38,6 +38,17 @@ public class ColumnsController : ControllerBase
         if (!string.IsNullOrEmpty(result.Error))
             return new BadRequestObjectResult(result.Error);
         return new OkResult();
+    }
+
+    [HttpDelete("{id}"), CustomAuthentication]
+    public async Task<ActionResult> DeleteColumns(string boardId, string id)
+    {
+        this.Log(nameof(DeleteColumns), "Start", new { boardId, id });
+        var result = await _columnService.DeleteColumn(boardId, id);
+        this.Log(nameof(DeleteColumns), "Result", result );
+        if (result.Error is not null)
+            return new BadRequestObjectResult(result.Error);
+        return new OkObjectResult(result.ColumnId);
     }
 
     private void Log(string methodName, string stage, object? data)

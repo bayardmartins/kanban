@@ -355,12 +355,29 @@ public class ClientRepositoryTests : MongoRepositoryTestsSetup
         response.Should().Be(result);
     }
 
+    [Theory]
+    [MemberData(nameof(GetColumnDeleteParams))]
+    public async Task DeleteColumn(string boardId, string columnId, bool? result)
+    {
+        // Act
+        var response = await this.boardWorker.DeleteColumn(boardId, columnId);
+
+        // Assert
+        response.Should().Be(result);
+    }
 
     private static IEnumerable<object[]> GetUpdateBoardColumn() => new List<object[]>
     {
         new object[] { Mocks.UpdColumnReqInvalidBoard, null },
         new object[] { Mocks.UpdColumnReqNotFoundBoard, false },
         new object[] { Mocks.UpdColumnReqSuccess, true },
+    };
+
+    private static IEnumerable<object[]> GetColumnDeleteParams() => new List<object[]>
+    {
+        new object[] { Mocks.BoardTwoId, Mocks.ColumnToDelete, true },
+        new object[] { Mocks.BoardOneId, Mocks.ColumnToDelete, false },
+        new object[] { Mocks.InvalidBoardId, Mocks.ColumnToDelete, null },
     };
     #endregion
 }

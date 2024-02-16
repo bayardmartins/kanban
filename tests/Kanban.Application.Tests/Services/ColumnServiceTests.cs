@@ -1,6 +1,8 @@
 ﻿using Repo = Kanban.Model.Dto.Repository;
 using App = Kanban.Model.Dto.Application;
 using Kanban.Model.Dto.Application.Column;
+using Moq;
+using System.Runtime.CompilerServices;
 
 namespace Kanban.Application.Tests.Services;
 
@@ -101,13 +103,52 @@ public class ColumnServiceTests
         }
     }
 
-    private static IEnumerable<object[]> GetAddColumnRequest() => new List<object[]>
+    [Fact]
+    public async void DeleteColumn_ShouldDelete_WhenValidRequestIsGiven()
     {
-        new object[] { 4, "Index out of boundary", "boardIdOk", "d329cada-fe7f-4378-82df-56dea642627a" },
-        new object[] { 3, "Board not found", "boardIdNotFound", "d329cada-fe7f-4378-82df-56dea642627a" },
-        new object[] { 3, "Invalid board id", "boardIdInvalid", "d329cada-fe7f-4378-82df-56dea642627a" },
-        new object[] { 3, "Failed to update", "boardIdOk", "" },
-    };
+        // Arrange
+        var board = this.fixture.Create<Repo.Board.BoardDto>();
+        board.Columns.First().Cards = new string[] { };
+
+        var boardId = board._id;
+        var columnId = board.Columns.First()._id;
+
+        this.worker.Setup(x => x.GetBoardById(boardId))
+            .ReturnsAsync(board)
+            .Verifiable();
+
+        this.worker.Setup(x => x.DeleteColumn(boardId, columnId))
+            .ReturnsAsync(true)
+            .Verifiable();
+
+        // Act
+        var response = await this.columnService.DeleteColumn(boardId, columnId);
+
+        // Assert
+        response.Error.Should().BeNull();
+        response.ColumnId.Should().Be(columnId);
+    }
+
+    [Theory]
+    [MemberData(nameof(GetDeleteColumnParams))]
+    public async void DeleteColumn_ShouldNotDelete_WhenInvalidRequestIsGiven(Repo.Board.BoardDto board, string boardId, string columnId, string error, bool? deleteResponse)
+    {
+        // Arrange
+        this.worker.Setup(x => x.GetBoardById(board._id))
+            .ReturnsAsync(board)
+            .Verifiable();
+
+        this.worker.Setup(x => x.DeleteColumn(boardId, columnId))
+            .ReturnsAsync(deleteResponse)
+            .Verifiable();
+
+        // Act
+        var response = await this.columnService.DeleteColumn(boardId, columnId);
+
+        // Assert
+        response.Error.Should().Be(error);
+        response.ColumnId.Should().BeNull();
+    }
 
     private static IEnumerable<object[]> UpdateColumnData()
     {
@@ -132,6 +173,38 @@ public class ColumnServiceTests
             new object[] { board, request, "Column not found", false },
             new object[] { board, request, "Invalid Id", null },
             new object[] { board, request, null, true },
+        };
+    }
+    private static IEnumerable<object[]> GetAddColumnRequest() => new List<object[]>
+    {
+        new object[] { 4, "Index out of boundary", "boardIdOk", "d329cada-fe7f-4378-82df-56dea642627a" },
+        new object[] { 3, "Board not found", "boardIdNotFound", "d329cada-fe7f-4378-82df-56dea642627a" },
+        new object[] { 3, "Invalid board id", "boardIdInvalid", "d329cada-fe7f-4378-82df-56dea642627a" },
+        new object[] { 3, "Failed to update", "boardIdOk", "" },
+    };
+
+    private static IEnumerable<object[]> GetDeleteColumnParams()
+    {
+        var fix = new Fixture();
+
+        var board = fix.Create<Repo.Board.BoardDto>();
+        var columnWithoutCard = fix.Build<Repo.Column.ColumnDto>()
+            .With(x => x.Cards, new string[0])
+            .Create();
+        var columnsWithoutCard = new Repo.Column.ColumnDto[] { columnWithoutCard };
+        var boardWithNoCards = fix.Build<Repo.Board.BoardDto>()
+            .With(x => x.Columns, columnsWithoutCard)
+            .Create();
+
+        var invalidId = fix.Create<string>();
+
+        return new List<object[]>
+        {
+            new object[] { board, invalidId, board.Columns.First()._id, "Board not found", false },
+            new object[] { board, board._id, invalidId, "Column not found", false },
+            new object[] { board, board._id, board.Columns.First()._id, "Column with cards can't be deleted. Column has 3 cards. Delete all cards before deleting column", false },
+            new object[] { boardWithNoCards, boardWithNoCards._id, boardWithNoCards.Columns.First()._id, "BoardId invalid", null },
+            new object[] { boardWithNoCards, boardWithNoCards._id, boardWithNoCards.Columns.First()._id, "Failed to delete column", false },
         };
     }
 }

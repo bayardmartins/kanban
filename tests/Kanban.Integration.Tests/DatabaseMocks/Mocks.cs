@@ -20,12 +20,16 @@ public class Mocks
 
     public const string InsertMockObject = "{\"Name\":\"Card Test Insert\", \"Description\":\"Card Insert Description\"}";
 
-    public const string BoardMock = "{\"_id\":\"65cbec3865a3b4fbed6945aa\",\"name\":\"Boardmock\",\"columns\":[{\"_id\":\"65cbec6d65a3b4fbed6945ab\",\"name\":\"column1\",\"cards\":[\"65c6e255a03db52a8056230f\",\"65c77ba67d5a911ae3d662db\"]},{\"_id\":\"65cbed1365a3b4fbed6945ac\",\"name\":\"column2\",\"cards\":[\"65c77bbb7d5a911ae3d662dc\",\"65c89bcd3adb8be079b61e88\"]}]}";
+    public const string BoardMock = "{\"_id\":\"65cbec3865a3b4fbed6945aa\",\"name\":\"Boardmock\",\"columns\":[{\"_id\":\"65cbec6d65a3b4fbed6945ab\",\"name\":\"column1\",\"cards\":[\"65c6e255a03db52a8056230f\",\"65c77ba67d5a911ae3d662db\"]},{\"_id\":\"65cbed1365a3b4fbed6945ac\",\"name\":\"column2\",\"cards\":[\"65c77bbb7d5a911ae3d662dc\",\"65c89bcd3adb8be079b61e88\"]},{\"_id\":\"65cfafb85550509ebdc7f82c\",\"name\":\"column empty\",\"cards\":[]}]}";
 
-    public const string SecondBoardMock = "{\"_id\":\"65ccabdb65a3b4fbed6945af\",\"name\":\"Boardmock number two\",\"columns\":[{\"_id\":\"65cbec6d65a3b4fbed6945ab\",\"name\":\"column1\",\"cards\":[\"65ce9af265a3b4fbed694612\",\"65ce9af765a3b4fbed694613\"]},{\"_id\":\"65cbed1365a3b4fbed6945ac\",\"name\":\"column2\",\"cards\":[\"65ce9afd65a3b4fbed694614\",\"65ce9b0265a3b4fbed694615\"]}]}";
-    
+    public const string SecondBoardMock = "{\"_id\":\"65ccabdb65a3b4fbed6945af\",\"name\":\"Boardmock number two\",\"columns\":[{\"_id\":\"65cbec6d65a3b4fbed6945ab\",\"name\":\"column1\",\"cards\":[\"65ce9af265a3b4fbed694612\",\"65ce9af765a3b4fbed694613\"]},{\"_id\":\"65cbed1365a3b4fbed6945ac\",\"name\":\"column2\",\"cards\":[]}]}";
+
+    public const string EmptyBoardMock = "{\"_id\":\"65cf4e805550509ebdc7f82a\",\"name\":\"Boardmock empty\",\"columns\":[]}";
+
+
     public const string BoardOneId = "65cbec3865a3b4fbed6945aa";
     public const string BoardTwoId = "65ccabdb65a3b4fbed6945af";
+    public const string EmptyBoardId = "65cf4e805550509ebdc7f82a";
     public const string NonexistingBoardId = "65ccad2765a3b4fbed6945b0";
 
     public const string CreateBoardRequest = "{\"name\":\"Create Board\"}";
@@ -38,4 +42,5 @@ public class Mocks
 
     public const string UpdColumnReqSuccess = "{\"columnName\":\"new name update\"}";
     public const string ExistingColumn = "65cbec6d65a3b4fbed6945ab";
+    public const string ColumnWithoutCards = "65cfafb85550509ebdc7f82c";
 }

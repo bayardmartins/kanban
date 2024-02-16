@@ -14,14 +14,17 @@ public class ColumnsIntegrationTests : IntegrationTestsSetup
 
     [Theory]
     [MemberData(nameof(GetUpdateParameters))]
-    public async Task AddColumn_EndpointsReturnCorrectContent(string mock, int index, int count)
+    public async Task AddColumn_EndpointsReturnCorrectContent(string mock, int index)
     {
         // Arrange
         AuthenticationHelper.SetupAuthenticationHeader(_client, this.GetCredentials());
         var payload = JsonConvert.DeserializeObject<AddColumnRequest>(mock);
 
         using StringContent jsonContent = new(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
-
+        var boardPre = await _client.GetAsync($"boards/{Mocks.BoardOneId}");
+        var contentPre = JsonConvert.DeserializeObject<GetBoardResponse>(boardPre.Content.ReadAsStringAsync().Result);
+        AuthenticationHelper.SetupAuthenticationHeader(_client, this.GetCredentials());
+        
         // Act
         var response = await _client.PostAsync($"boards/{Mocks.BoardOneId}/columns", jsonContent);
 
@@ -29,10 +32,10 @@ public class ColumnsIntegrationTests : IntegrationTestsSetup
         response.IsSuccessStatusCode.Should().BeTrue();
 
         AuthenticationHelper.SetupAuthenticationHeader(_client, this.GetCredentials());
-        var board = await _client.GetAsync($"boards/{Mocks.BoardOneId}");
-        var content = JsonConvert.DeserializeObject<GetBoardResponse>(board.Content.ReadAsStringAsync().Result);
-        content.Board.Columns.Count.Should().Be(count);
-        content.Board.Columns.FindIndex(x => x.Name == payload.ColumnName).Should().Be(index);
+        var boardPost = await _client.GetAsync($"boards/{Mocks.BoardOneId}");
+        var contentPost = JsonConvert.DeserializeObject<GetBoardResponse>(boardPost.Content.ReadAsStringAsync().Result);
+        contentPost.Board.Columns.Count.Should().Be(contentPre.Board.Columns.Count+1);
+        contentPost.Board.Columns.FindIndex(x => x.Name == payload.ColumnName).Should().Be(index);
     }
 
     [Fact]
@@ -69,15 +72,34 @@ public class ColumnsIntegrationTests : IntegrationTestsSetup
         response.IsSuccessStatusCode.Should().Be(result);
     }
 
+    [Theory]
+    [MemberData(nameof(GetDeleteColumnParameters))]
+    public async Task DeleteColumn_EndpointReturnSuccess(string boardId, string columnId, bool result)
+    {
+        // Arrange
+        AuthenticationHelper.SetupAuthenticationHeader(_client, this.GetCredentials());
+
+        // Act
+        var response = await _client.DeleteAsync($"boards/{boardId}/columns/{columnId}");
+
+        // Assert
+        response.IsSuccessStatusCode.Should().Be(result);
+    }
+
     private static IEnumerable<object[]> GetUpdateParameters() => new List<object[]>
     {
-        new object[] { Mocks.AddColumnRequestOne, 0, 3 },
-        new object[] { Mocks.AddColumnRequestTwo, 1, 4 },
-        new object[] { Mocks.AddColumnRequestThree, 3, 5 },
+        new object[] { Mocks.AddColumnRequestOne, 0 },
+        new object[] { Mocks.AddColumnRequestTwo, 1 },
+        new object[] { Mocks.AddColumnRequestThree, 3 },
     };
     private static IEnumerable<object[]> GetUpdateColumnParameters() => new List<object[]>
     {
         new object[] { Mocks.BoardOneId, true },
         new object[] { Mocks.NonexistingBoardId, false },
+    };
+    private static IEnumerable<object[]> GetDeleteColumnParameters() => new List<object[]>
+    {
+        new object[] { Mocks.BoardOneId, Mocks.ExistingColumn, false },
+        new object[] { Mocks.BoardOneId, Mocks.ColumnWithoutCards, true },
     };
 }

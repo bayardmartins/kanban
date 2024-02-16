@@ -1,4 +1,5 @@
-﻿using Kanban.CrossCutting;
+﻿using Amazon.Runtime.Internal;
+using Kanban.CrossCutting;
 using Kanban.Model.Dto.Repository.Board;
 using Kanban.Model.Dto.Repository.Column;
 using Kanban.Repository.Interfaces;
@@ -100,5 +101,25 @@ public class BoardsDatabaseWorker : IBoardsDatabaseWorker
         };
         var response = await _boardRepository.Update(_mongoSettings.KanbanHost.ClusterId, _mongoSettings.KanbanHost.Database, _mongoSettings.Collections.Boards, filter, update, options);
         return response.ModifiedCount > 0;
+    }
+
+    public async Task<bool?> DeleteColumn(string boardId, string columnId)
+    {
+        var validBoardId = ObjectId.TryParse(boardId, out var parseBoarddId);
+        if (!validBoardId)
+            return null;
+        var filter = Builders<BsonDocument>.Filter.And(
+            Builders<BsonDocument>.Filter.Eq(Constants.MongoDbId, parseBoarddId),
+            Builders<BsonDocument>.Filter.Eq("Columns._id", columnId));
+
+        var update = Builders<BsonDocument>.Update.PullFilter(Constants.Columns, Builders<ColumnDto>.Filter.Eq(Constants.MongoDbId, columnId));
+
+        var options = new UpdateOptions
+        {
+            IsUpsert = false
+        };
+
+        var response = await _boardRepository.Update(_mongoSettings.KanbanHost.ClusterId, _mongoSettings.KanbanHost.Database, _mongoSettings.Collections.Boards, filter, update, options);
+        return response.ModifiedCount == 1;
     }
 }

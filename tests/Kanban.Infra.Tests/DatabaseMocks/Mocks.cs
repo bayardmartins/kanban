@@ -23,7 +23,7 @@ public static class Mocks
 
     public const string BoardMock = "{\"_id\":\"65cbec3865a3b4fbed6945aa\",\"name\":\"Boardmock\",\"columns\":[{\"_id\":\"65cbec6d65a3b4fbed6945ab\",\"name\":\"column1\",\"cards\":[\"65c6e255a03db52a8056230f\",\"65c77ba67d5a911ae3d662db\"]},{\"_id\":\"65cbed1365a3b4fbed6945ac\",\"name\":\"column2\",\"cards\":[\"65c77bbb7d5a911ae3d662dc\",\"65c89bcd3adb8be079b61e88\"]}]}";
 
-    public const string SecondBoardMock = "{\"_id\":\"65ccabdb65a3b4fbed6945af\",\"name\":\"Boardmock number two\",\"columns\":[{\"_id\":\"65cbec6d65a3b4fbed6945ab\",\"name\":\"column1\",\"cards\":[\"65c6e255a03db52a8056230f\",\"65c77ba67d5a911ae3d662db\"]},{\"_id\":\"65cbed1365a3b4fbed6945ac\",\"name\":\"column2\",\"cards\":[\"65c77bbb7d5a911ae3d662dc\",\"65c89bcd3adb8be079b61e88\"]}]}";
+    public const string SecondBoardMock = "{\"_id\":\"65ccabdb65a3b4fbed6945af\",\"name\":\"Boardmock number two\",\"columns\":[{\"_id\":\"65cbec6d65a3b4fbed6945ab\",\"name\":\"column1\",\"cards\":[\"65c6e255a03db52a8056230f\",\"65c77ba67d5a911ae3d662db\"]},{\"_id\":\"65cbed1365a3b4fbed6945ac\",\"name\":\"column2\",\"cards\":[\"65c77bbb7d5a911ae3d662dc\",\"65c89bcd3adb8be079b61e88\"]},{\"_id\":\"65cf50e85550509ebdc7f82b\", \"name\":\"columnToDelete\",\"cards\":[]}]}";
 
     public const string BoardOneId = "65cbec3865a3b4fbed6945aa";
     public const string BoardTwoId = "65ccabdb65a3b4fbed6945af";
@@ -31,6 +31,7 @@ public static class Mocks
     public const string InvalidBoardId = "65ccad2765a3b4fbed6945";
 
     public const string ColumnOneId = "65cbec6d65a3b4fbed6945ab";
+    public const string ColumnToDelete = "65cf50e85550509ebdc7f82b";
 
     public const string InsertBoardMockObject = "{\"_id\":\"\", \"name\":\"Boardmock\", \"columns\":[]}";
     public const string UpdateBoardMockObject = "{\"_id\":\"65cbec3865a3b4fbed6945aa\", \"name\":\"Boardmock Updated\", \"columns\":[]}";

@@ -49,16 +49,15 @@ public class BoardsController : ControllerBase
         return new NotFoundResult();
     }
 
-    //todo: delete all cards related
     [HttpDelete("{id}"), CustomAuthentication]
     public async Task<ActionResult> DeleteBoard([FromRoute] string id)
     {
         this.Log(nameof(DeleteBoard), "Start", id);
-        bool result = await _boardService.DeleteBoard(id);
+        var result = await _boardService.DeleteBoard(id);
         this.Log(nameof(DeleteBoard), "Result", result);
-        if (result)
+        if (result.Error is null)
             return new OkObjectResult(Constants.BoardDeleted);
-        return new NotFoundObjectResult(Constants.BoardNotFound);
+        return new NotFoundObjectResult(result.Error);
     }
 
     private void Log(string methodName, string stage, object? data)

@@ -127,31 +127,6 @@ public class BoardServiceTest
     }
 
     [Fact]
-    public async void DeleteBoard_ShouldDeleteBoard_WhenValidBoardIsGiven()
-    {
-        // Arrange
-        var id = this.fixture.Create<string>();
-        this.worker.Setup(x => x.DeleteById(id))
-            .ReturnsAsync(true)
-            .Verifiable();
-        var board = this.fixture.Build<Repo.BoardDto>()
-            .With(x => x._id, id)
-            .Create();
-        this.worker.Setup(x => x.GetBoardById(id))
-            .ReturnsAsync(board);
-        var cards = board.Columns.SelectMany(column => column.Cards).ToList();
-        this.cardWorker.Setup(x => x.DeleteMany(It.Is<List<string>>(param => AreListsEqual(param, cards))))
-            .ReturnsAsync(true)
-            .Verifiable();
-
-        // Act
-        var result = await this.boardService.DeleteBoard(id);
-
-        // Assert
-        result.Should().BeTrue();
-    }
-
-    [Fact]
     public async void DeleteBoard_ShouldDeleteBoard_WhenValidBoardWithoutCardsIsGiven()
     {
         // Arrange
@@ -172,7 +147,7 @@ public class BoardServiceTest
         var result = await this.boardService.DeleteBoard(id);
 
         // Assert
-        result.Should().BeTrue();
+        result.Error.Should().BeNull();
     }
 
     [Fact]
@@ -187,7 +162,7 @@ public class BoardServiceTest
         var result = await this.boardService.DeleteBoard(id);
 
         // Assert
-        result.Should().BeFalse();
+        result.Error.Should().NotBeNull();
     }
 
     [Fact]
@@ -209,7 +184,7 @@ public class BoardServiceTest
         var result = await this.boardService.DeleteBoard(id);
 
         // Assert
-        result.Should().BeFalse();
+        result.Error.Should().NotBeNull();
     }
 
     private static bool AreListsEqual(List<string> list1, List<string> list2)

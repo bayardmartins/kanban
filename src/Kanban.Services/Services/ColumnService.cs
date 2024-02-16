@@ -72,4 +72,40 @@ public class ColumnService : IColumnService
 
         return response;
     }
+
+    public async Task<ColumnActionResponse> DeleteColumn(string boardId, string columnId)
+    {
+        var response = new ColumnActionResponse();
+        var board = await this._boardDatabaseWorker.GetBoardById(boardId);
+        if (board == null)
+        {
+            response.Error = "Board not found";
+            return response;
+        }
+        var column = board.Columns.FirstOrDefault(x => x._id == columnId);
+        if (column == null)
+        {
+            response.Error = "Column not found";
+            return response;
+        }
+        if (column.Cards.Length > 0)
+        {
+            response.Error = $"Column with cards can't be deleted. Column has {column.Cards.Length} cards. Delete all cards before deleting column";
+            return response;
+        }
+
+        bool? res = await this._boardDatabaseWorker.DeleteColumn(boardId, columnId);
+        if (res is not null && res == true)
+        {
+            response.ColumnId = columnId;
+            return response;
+        }
+        else if (res is null)
+        {
+            response.Error = "BoardId invalid";
+            return response;
+        }
+        response.Error = "Failed to delete column";
+        return response;
+    }
 }
