@@ -7,10 +7,12 @@ namespace Kanban.Application.Services;
 public class CardService : ICardService
 {
     private readonly ICardsDatabaseWorker _cardsDatabaseWorker;
+    private readonly IBoardsDatabaseWorker _boardsDatabaseWorker;
 
-    public CardService(ICardsDatabaseWorker kanbanDatabaseWorker)
+    public CardService(ICardsDatabaseWorker kanbanDatabaseWorker, IBoardsDatabaseWorker boardsDatabaseWorker)
     {
         this._cardsDatabaseWorker = kanbanDatabaseWorker;
+        this._boardsDatabaseWorker = boardsDatabaseWorker;
     }
 
     public async Task<CardDto?> GetCardById(string id)
@@ -19,10 +21,29 @@ public class CardService : ICardService
         return card?.ToApplication();
     }
 
-    public async Task<List<CardDto>> GetCards()
+    public async Task<GetCardResponse> GetCards(string boardId, string columnId)
     {
-        var cards = await this._cardsDatabaseWorker.GetAllCards();
-        return cards is null ? new List<CardDto>() : cards.ToApplication();
+        var response = new GetCardResponse();
+        var board = await this._boardsDatabaseWorker.GetBoardById(boardId);
+        if (board is null)
+        {
+            response.Error = "Board not found";
+            return response;
+        }
+        var column = board.Columns.FirstOrDefault(x => x._id == columnId);
+        if (column is null)
+        {
+            response.Error = "Column not found";
+            return response;
+        }
+
+        var cards = await this._cardsDatabaseWorker.GetAllCards(column.Cards);
+        if (cards is null || cards.Count == 0)
+        {
+            response.Error = "Cards not found";
+            return response;
+        }
+        return new GetCardResponse { CardList = cards.ToApplication() };
     }
 
     public async Task<CardDto> CreateCard(CardDto card)

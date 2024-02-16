@@ -6,7 +6,6 @@ namespace Kanban.API.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("[controller]")]
 public class CardsController : ControllerBase
 {
     private readonly ILogger<CardsController> _logger;
@@ -18,28 +17,30 @@ public class CardsController : ControllerBase
         _cardService = cardService;
     }
 
-    [HttpGet, CustomAuthentication]
-    public async Task<ActionResult<GetCardResponse>> GetAllCards()
+    [HttpGet("boards/{boardId}/column/{columnId}/cards"), CustomAuthentication]
+    public async Task<ActionResult<GetCardResponse>> GetAllCards([FromRoute] string boardId, string columnId)
     {
         this.Log(nameof(GetAllCards),"Start", null);
-        var cards = await _cardService.GetCards();
-        this.Log(nameof(GetAllCards),"Result", cards);
-        return new OkObjectResult(cards.ToPresentationGet());
+        var getCardResponse = await _cardService.GetCards(boardId, columnId);
+        this.Log(nameof(GetAllCards),"Result", getCardResponse);
+        if (!string.IsNullOrEmpty(getCardResponse.Error))
+            return new NotFoundObjectResult(new GetCardResponse { Error = getCardResponse.Error });
+        return new OkObjectResult(getCardResponse.CardList.ToPresentationGet());
     }
 
-    [HttpGet("{id}"), CustomAuthentication]
+    [HttpGet("cards/{id}"), CustomAuthentication]
     public async Task<ActionResult<GetCardResponse>> GetCard([FromRoute] string id)
     {
         this.Log(nameof(GetCard), "Start",id);
         var card = await _cardService.GetCardById(id);
         this.Log(nameof(GetCard),"Result", card);
         if(card is null)
-            return new NotFoundResult();
+            return new NotFoundObjectResult(new GetCardResponse { Error = "Card not found" });
         return new OkObjectResult(card.ToPresentationGet());
     }
 
-    [HttpPost, CustomAuthentication]
-    public async Task<ActionResult<CreateCardResponse>> CreateCard(CreateCardRequest cardRequest)
+    [HttpPost("boards/{boardId}/column/{columnId}/cards"), CustomAuthentication]
+    public async Task<ActionResult<CreateCardResponse>> CreateCard([FromRoute] string boardId, string columnId, CreateCardRequest cardRequest)
     {
         this.Log(nameof(CreateCard), "Start", cardRequest);
         var createdCard = await _cardService.CreateCard(cardRequest.ToApplication());
@@ -47,7 +48,7 @@ public class CardsController : ControllerBase
         return new OkObjectResult(createdCard.ToPresentationCreate());
     }
 
-    [HttpDelete("{id}"), CustomAuthentication]
+    [HttpDelete("cards/{id}"), CustomAuthentication]
     public async Task<ActionResult> DeleteCard([FromRoute] string id)
     {
         this.Log(nameof(CreateCard), "Start", id);
@@ -58,10 +59,12 @@ public class CardsController : ControllerBase
         return new NotFoundObjectResult(Constants.CardNotFound);
     }
 
-    [HttpPut, CustomAuthentication]
-    public async Task<ActionResult> UpdateCard(UpdateCardRequest cardRequest)
+    [HttpPut("cards/{id}"), CustomAuthentication]
+    public async Task<ActionResult> UpdateCard([FromRoute] string id, UpdateCardRequest cardRequest)
     {
         this.Log(nameof(UpdateCard), "Start", cardRequest.Card);
+        if (id != cardRequest.Card.Id)
+            return new BadRequestObjectResult(Constants.CardIdMissmatch);
         var result = await _cardService.UpdateCard(cardRequest.Card.ToApplication());
         this.Log(nameof(UpdateCard), "Result", result);
         if (result is not null)

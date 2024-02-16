@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
+using Kanban.Model.Dto.Repository.Column;
 
 namespace Kanban.Model.Dto.Repository.Board;
 

@@ -23,11 +23,11 @@ public class MongoRepository : IMongoRepository
             .ConfigureAwait(false);
     }
 
-    public async Task<List<BsonDocument>> FindMany(int host, string database, string collectionName)
+    public async Task<List<BsonDocument>> FindMany(int host, string database, string collectionName, FilterDefinition<BsonDocument> filter)
     {
         IMongoCollection<BsonDocument> collection = _mongoClients.ElementAt(host).GetDatabase(database).GetCollection<BsonDocument>(collectionName);
 
-        return await collection.Find(FilterDefinition<BsonDocument>.Empty)
+        return await collection.Find(filter)
             .ToListAsync()
             .ConfigureAwait(false);
     }

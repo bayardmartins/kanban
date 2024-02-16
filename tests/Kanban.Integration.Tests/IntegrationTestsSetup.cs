@@ -59,14 +59,21 @@ public class IntegrationTestsSetup : IClassFixture<ApiWebApplicationFactory>
         var cardOne = JsonConvert.DeserializeObject<CardDto>(Mocks.SampleMockOne);
         var cardTwo = JsonConvert.DeserializeObject<CardDto>(Mocks.SampleMockTwo);
         var cardThree = JsonConvert.DeserializeObject<CardDto>(Mocks.SampleMockThree);
-        var list = new List<CardDto> { cardOne, cardTwo, cardThree };
+        var cardFour = JsonConvert.DeserializeObject<CardDto>(Mocks.SampleMockFour);
+        var cardOneTwo = JsonConvert.DeserializeObject<CardDto>(Mocks.SampleMockOneTwo);
+        var cardTwoTwo = JsonConvert.DeserializeObject<CardDto>(Mocks.SampleMockTwoTwo);
+        var cardThreeTwo = JsonConvert.DeserializeObject<CardDto>(Mocks.SampleMockThreeTwo);
+        var cardFourTwo = JsonConvert.DeserializeObject<CardDto>(Mocks.SampleMockFourTwo);
+        var list = new List<CardDto> { cardOne, cardTwo, cardThree, cardFour, cardOneTwo, cardTwoTwo, cardThreeTwo, cardFourTwo };
         cardCollection.InsertMany(list);
         var clientCollection = _clients.ElementAt(_setting.KanbanHost.ClusterId).GetDatabase(_setting.KanbanHost.Database).GetCollection<ClientDto>(_setting.Collections.Clients);
         var client = JsonConvert.DeserializeObject<ClientDto>(Mocks.ClientMock);
         clientCollection.InsertOne(client);
         var boardCollection = _clients.ElementAt(_setting.KanbanHost.ClusterId).GetDatabase(_setting.KanbanHost.Database).GetCollection<BoardDto>(_setting.Collections.Boards);
-        var board = JsonConvert.DeserializeObject<BoardDto>(Mocks.BoardMock);
-        boardCollection.InsertOne(board);
+        var boardOne = JsonConvert.DeserializeObject<BoardDto>(Mocks.BoardMock);
+        var boardTwo = JsonConvert.DeserializeObject<BoardDto>(Mocks.SecondBoardMock);
+        var boardEmpty = JsonConvert.DeserializeObject<BoardDto>(Mocks.EmptyBoardMock); 
+        boardCollection.InsertMany(new List<BoardDto> { boardOne, boardTwo, boardEmpty });
     }
 
     internal string GetCredentials()

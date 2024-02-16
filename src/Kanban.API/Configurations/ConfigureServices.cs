@@ -15,6 +15,7 @@ public static class ConfigureServices
         services.AddScoped<IAuthDatabaseWorker, AuthDatabaseWorker>();
         services.AddScoped<IBoardService, BoardService>();
         services.AddScoped<IBoardsDatabaseWorker, BoardsDatabaseWorker>();
+        services.AddScoped<IColumnService, ColumnService>();
         return services;
     }
 }

@@ -6,7 +6,7 @@ namespace Kanban.Repository.Interfaces
     {
         public Task<CardDto?> GetCardById(string id);
         
-        public Task<List<CardDto>> GetAllCards();
+        public Task<List<CardDto>> GetAllCards(string[] cardList);
 
         public Task<CardDto> InsertCard(CardDto card);
 

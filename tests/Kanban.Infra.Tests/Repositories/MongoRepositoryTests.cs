@@ -1,4 +1,7 @@
-﻿namespace Kanban.Infra.Tests.Repositories;
+﻿using System.Linq;
+using Kanban.Model.Dto.Repository.Column;
+
+namespace Kanban.Infra.Tests.Repositories;
 
 public class ClientRepositoryTests : MongoRepositoryTestsSetup
 {
@@ -27,26 +30,23 @@ public class ClientRepositoryTests : MongoRepositoryTestsSetup
     public async Task GetAll_ShouldReturnCards_WhenThereAreCardsInDatabase()
     {
         // Act
-        var response = await this.cardWorker.GetAllCards();
+        var response = await this.cardWorker.GetAllCards(new string[] { Mocks.SampleMockOneId, Mocks.SampleMockTwoId });
 
         // Assert
         response.Should().NotBeNull();
-        response.Count.Should().Be(3);
+        response.Count.Should().Be(2);
         response.First(x => x._id == Mocks.SampleMockOneId).Should().NotBeNull();
+        response.First(x => x._id == Mocks.SampleMockTwoId).Should().NotBeNull();
     }
 
     [Fact]
-    public async Task GetAll_ShouldReturnNoCards_WhenThereAreNoCardsInDatabase()
+    public async Task GetAll_ShouldNotReturnCards_WhenThereAreInvalidCardsInList()
     {
-        // Assert
-        this.Dispose();
-
         // Act
-        var response = await this.cardWorker.GetAllCards();
+        var response = await this.cardWorker.GetAllCards(new string[] { Mocks.SampleMockOneId, Mocks.InvalidId });
 
         // Assert
-        response.Should().NotBeNull();
-        response.Count.Should().Be(0);
+        response.Should().BeNull();
     }
 
     [Fact]
@@ -148,13 +148,14 @@ public class ClientRepositoryTests : MongoRepositoryTestsSetup
     public async Task Delete_ShouldNotDeleteCard_WhenInvalidCardIdIsGiven(string id)
     {
         // Act
+        var preDelete = await this.cardWorker.GetCardById(id);
         var response = await this.cardWorker.DeleteById(id);
         var deletedCard = await this.cardWorker.GetCardById(id);
-        var remainingCards = await this.cardWorker.GetAllCards();
+
         // Assert
+        preDelete.Should().BeNull();
         response.Should().BeFalse();
         deletedCard.Should().BeNull();
-        remainingCards.Count.Should().Be(3);
     }
 
     #endregion
@@ -301,6 +302,82 @@ public class ClientRepositoryTests : MongoRepositoryTestsSetup
         response.Should().BeFalse();
         deletedCard.Should().BeNull();
     }
+    #endregion
 
+    #region Columns
+
+    [Fact]
+    public async Task AddColumn_ShouldAddColumnToBoard_WhenValidBoardIsGiven()
+    {
+        // Arrange
+        var boardMock = JsonConvert.DeserializeObject<BoardDto>(Mocks.SecondBoardMock);
+        var columnCount = boardMock.Columns.Length;
+        var column = JsonConvert.DeserializeObject<ColumnDto>(Mocks.ColumnAddMock);
+        boardMock.Columns = boardMock.Columns.Append(column).ToArray();
+
+        // Act
+        var response = await this.boardWorker.UpdateBoardColumns(boardMock, boardMock.Columns.Length-1);
+        var newBoard = await this.boardWorker.GetBoardById(boardMock._id);
+
+        // Assert
+        response.Should().NotBeNullOrEmpty();
+        newBoard.Columns.Length.Should().Be(columnCount + 1);
+    }
+
+    [Theory]
+    [InlineData(Mocks.NonexistingBoardMockObject)]
+    [InlineData(Mocks.InvalidUpdateBoardMockObject)]
+    public async Task AddColumn(string mock)
+    {
+        // Arrange
+        var boardMock = JsonConvert.DeserializeObject<BoardDto>(mock);
+        var column = JsonConvert.DeserializeObject<ColumnDto>(Mocks.ColumnAddMock);
+        boardMock.Columns = boardMock.Columns.Append(column).ToArray();
+
+        // Act
+        var response = await this.boardWorker.UpdateBoardColumns(boardMock, 0);
+
+        // Assert
+        response.Should().BeNullOrEmpty();
+    }
+
+    [Theory]
+    [MemberData(nameof(GetUpdateBoardColumn))]
+    public async Task UpdateBoardColumnName(string mock, bool? result)
+    {
+        // Arrange
+        var request = JsonConvert.DeserializeObject<UpdateColumnRequest>(mock);
+
+        // Act
+        var response = await this.boardWorker.UpdateBoardColumnName(request);
+
+        // Assert
+        response.Should().Be(result);
+    }
+
+    [Theory]
+    [MemberData(nameof(GetColumnDeleteParams))]
+    public async Task DeleteColumn(string boardId, string columnId, bool? result)
+    {
+        // Act
+        var response = await this.boardWorker.DeleteColumn(boardId, columnId);
+
+        // Assert
+        response.Should().Be(result);
+    }
+
+    private static IEnumerable<object[]> GetUpdateBoardColumn() => new List<object[]>
+    {
+        new object[] { Mocks.UpdColumnReqInvalidBoard, null },
+        new object[] { Mocks.UpdColumnReqNotFoundBoard, false },
+        new object[] { Mocks.UpdColumnReqSuccess, true },
+    };
+
+    private static IEnumerable<object[]> GetColumnDeleteParams() => new List<object[]>
+    {
+        new object[] { Mocks.BoardTwoId, Mocks.ColumnToDelete, true },
+        new object[] { Mocks.BoardOneId, Mocks.ColumnToDelete, false },
+        new object[] { Mocks.InvalidBoardId, Mocks.ColumnToDelete, null },
+    };
     #endregion
 }
