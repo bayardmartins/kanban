@@ -17,7 +17,7 @@ public class CardsController : ControllerBase
         _cardService = cardService;
     }
 
-    [HttpGet("boards/{boardId}/column/{columnId}/cards"), CustomAuthentication]
+    [HttpGet("boards/{boardId}/columns/{columnId}/cards"), CustomAuthentication]
     public async Task<ActionResult<GetCardResponse>> GetAllCards([FromRoute] string boardId, string columnId)
     {
         this.Log(nameof(GetAllCards),"Start", null);
@@ -39,7 +39,7 @@ public class CardsController : ControllerBase
         return new OkObjectResult(card.ToPresentationGet());
     }
 
-    [HttpPost("boards/{boardId}/column/{columnId}/cards"), CustomAuthentication]
+    [HttpPost("boards/{boardId}/columns/{columnId}/cards"), CustomAuthentication]
     public async Task<ActionResult<CreateCardResponse>> CreateCard([FromRoute] string boardId, string columnId, CreateCardRequest cardRequest)
     {
         this.Log(nameof(CreateCard), "Start", cardRequest);
@@ -48,15 +48,15 @@ public class CardsController : ControllerBase
         return new OkObjectResult(createdCard.ToPresentationCreate());
     }
 
-    [HttpDelete("cards/{id}"), CustomAuthentication]
-    public async Task<ActionResult> DeleteCard([FromRoute] string id)
+    [HttpDelete("boards/{boardId}/columns/{columnId}/cards/{id}"), CustomAuthentication]
+    public async Task<ActionResult> DeleteCard([FromRoute] string boardId, string columnId, string id)
     {
-        this.Log(nameof(CreateCard), "Start", id);
-        var result = await _cardService.DeleteCard(id);
-        this.Log(nameof(CreateCard), "Result", new { deleted = result });
-        if (result)
+        this.Log(nameof(DeleteCard), "Start", id);
+        var result = await _cardService.DeleteCard(boardId, columnId, id);
+        this.Log(nameof(DeleteCard), "Result", new { deleted = result });
+        if (string.IsNullOrEmpty(result.Error))
             return new OkObjectResult(Constants.CardDeleted);
-        return new NotFoundObjectResult(Constants.CardNotFound);
+        return new NotFoundObjectResult(result.Error);
     }
 
     [HttpPut("cards/{id}"), CustomAuthentication]

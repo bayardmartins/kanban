@@ -35,7 +35,7 @@ public class ColumnServiceTests
             .Verifiable();
 
         this.worker.Setup(x => x.UpdateBoardColumns(It.Is<Repo.Board.BoardDto>
-            (x => x._id == request.BoardId), 1))
+            (x => x._id == request.BoardId), 1, true))
             .ReturnsAsync(Guid.NewGuid().ToString())
             .Verifiable();
 
@@ -64,7 +64,7 @@ public class ColumnServiceTests
             .Verifiable();
 
         this.worker.Setup(x => x.UpdateBoardColumns(It.Is<Repo.Board.BoardDto>
-            (x => x._id == "boardIdOk"), index))
+            (x => x._id == "boardIdOk"), index, true))
             .ReturnsAsync(updateResponse)
             .Verifiable();
 

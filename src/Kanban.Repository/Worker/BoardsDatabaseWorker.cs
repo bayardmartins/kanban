@@ -66,12 +66,13 @@ public class BoardsDatabaseWorker : IBoardsDatabaseWorker
         return result.DeletedCount == 1;
     }
 
-    public async Task<string?> UpdateBoardColumns(BoardDto board, int index)
+    public async Task<string?> UpdateBoardColumns(BoardDto board, int index, bool newColumn = true)
     {
         var validId = ObjectId.TryParse(board._id, out var parsedId);
         if (!validId)
             return null;
-        board.Columns[index]._id = Guid.NewGuid().ToString();
+        if (newColumn)
+            board.Columns[index]._id = Guid.NewGuid().ToString();
         var filter = Builders<BsonDocument>.Filter.Eq(Constants.MongoDbId, parsedId);
         var update = Builders<BsonDocument>.Update
                     .Set(Constants.Columns, board.Columns);

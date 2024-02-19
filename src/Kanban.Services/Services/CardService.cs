@@ -52,9 +52,33 @@ public class CardService : ICardService
         return createdCard.ToApplication();
     }
 
-    public async Task<bool> DeleteCard(string id)
+    public async Task<CardActionResponse> DeleteCard(string boardId, string columnId, string id)
     {
-        return await this._cardsDatabaseWorker.DeleteById(id);
+        var response = new CardActionResponse();
+        var board = await this._boardsDatabaseWorker.GetBoardById(boardId);
+        if (board is null)
+        {
+            response.Error = "Board not found";
+            return response;
+        }
+        var column = board.Columns.FirstOrDefault(x => x._id == columnId);
+        if (column == null)
+        {
+            response.Error = "Column not found";
+            return response;
+        }
+        var result = await this._cardsDatabaseWorker.DeleteById(id);
+        if (result)
+        {
+            column.Cards = column.Cards.Where(cardId => cardId != id).ToArray();
+            var update = await this._boardsDatabaseWorker.UpdateBoardColumns(board, 0, false);
+            return response;
+        }
+        else
+        {
+            response.Error = "Unable to delete card";
+            return response;
+        }
     }
 
     public async Task<CardDto?> UpdateCard(CardDto card)

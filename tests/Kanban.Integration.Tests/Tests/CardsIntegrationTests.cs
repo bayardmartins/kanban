@@ -57,7 +57,7 @@ public class CardsIntegrationTests : IntegrationTestsSetup
         using StringContent jsonContent = new(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
 
         // Act
-        var response = await _client.PostAsync("Boards/65c6e255a03db52a8056230f/Column/65cbec3865a3b4fbed6945aa/Cards", jsonContent);
+        var response = await _client.PostAsync("Boards/65c6e255a03db52a8056230f/Columns/65cbec3865a3b4fbed6945aa/Cards", jsonContent);
 
         // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
@@ -102,9 +102,9 @@ public class CardsIntegrationTests : IntegrationTestsSetup
     }
     private static IEnumerable<object[]> GetAllParameters() => new List<object[]>
     {
-        new object[] { "Boards/65cbec3865a3b4fbed6945aa/Column/65cbec6d65a3b4fbed6945ab/Cards", "", true },
-        new object[] { "Boards/65cbec3865a3b4fbed6945aa/Column/65cbec3865a3b4fbed6945aa/Cards", "Column not found", false },
-        new object[] { "Boards/65ccad2765a3b4fbed6945b0/Column/65cbec3865a3b4fbed6945aa/Cards", "Board not found", false },
+        new object[] { "Boards/65cbec3865a3b4fbed6945aa/Columns/65cbec6d65a3b4fbed6945ab/Cards", "", true },
+        new object[] { "Boards/65cbec3865a3b4fbed6945aa/Columns/65cbec3865a3b4fbed6945aa/Cards", "Column not found", false },
+        new object[] { "Boards/65ccad2765a3b4fbed6945b0/Columns/65cbec3865a3b4fbed6945aa/Cards", "Board not found", false },
     };
 
     private static IEnumerable<object[]> GetByIdParameters() => new List<object[]>
@@ -115,8 +115,8 @@ public class CardsIntegrationTests : IntegrationTestsSetup
     };
     private static IEnumerable<object[]> GetDeleteParameters() => new List<object[]>
     {
-        new object[] { "Cards/65c6e255a03db52a8056230f", true },
-        new object[] { "Cards/65c7c4ea7d5a911ae3d662e4", false },
+        new object[] { "Boards/65cbec3865a3b4fbed6945aa/Columns/65cbec6d65a3b4fbed6945ab/Cards/65c6e255a03db52a8056230f", true },
+        new object[] { "Boards/65cbec3865a3b4fbed6945aa/Columns/65cbec6d65a3b4fbed6945ab/Cards/65c7c4ea7d5a911ae3d662e4", false },
     };
 
     private static IEnumerable<object[]> GetUpdateParameters() => new List<object[]>
