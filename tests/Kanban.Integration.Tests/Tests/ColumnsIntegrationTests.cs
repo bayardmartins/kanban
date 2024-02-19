@@ -4,6 +4,7 @@ using Kanban.Integration.Tests.Helper;
 using Kanban.Model.Dto.API.Board;
 using Kanban.Model.Dto.API.Column;
 using Newtonsoft.Json;
+using System;
 using System.Text;
 
 namespace Kanban.Integration.Tests.Tests;
@@ -85,6 +86,33 @@ public class ColumnsIntegrationTests : IntegrationTestsSetup
         response.IsSuccessStatusCode.Should().Be(result);
     }
 
+    [Theory]
+    [MemberData(nameof(GetMoveColumnInBoardParameters))]
+    public async Task MoveColumnInBoard_EndpointReturnSuccess(string url, bool result)
+    {
+        // Arrange
+        AuthenticationHelper.SetupAuthenticationHeader(_client, this.GetCredentials());
+
+        // Act
+        var response = await _client.PutAsync(url, null);
+
+        // Assert
+        if (result)
+        {
+            response.IsSuccessStatusCode.Should().BeTrue();
+        }
+        else
+        {
+            response.IsSuccessStatusCode.Should().BeFalse();
+            response.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
+        }
+    }
+
+    private static IEnumerable<object[]> GetMoveColumnInBoardParameters() => new List<object[]>
+    {
+        new object[] { $"boards/{Mocks.BoardOneId}/columns/{Mocks.ExistingColumn}/index/{1}", true },
+        new object[] { $"boards/{Mocks.BoardTwoId}/columns/{Mocks.ExistingColumn}/index/{0}", false },
+    };
     private static IEnumerable<object[]> GetUpdateParameters() => new List<object[]>
     {
         new object[] { Mocks.AddColumnRequestOne, 0 },

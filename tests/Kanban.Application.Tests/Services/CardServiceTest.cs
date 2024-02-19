@@ -270,30 +270,6 @@ public class CardServiceTest
         result.Should().BeNull();
     }
 
-    //[Fact]
-    //public async void MoveCard_ShouldMoveCard_WhenValidRequestIsGiven()
-    //{
-    //    // Arrange
-    //    var board = this.fixture.Create<Repo.Board.BoardDto>();
-    //    var column = board.Columns.First();
-    //    var card = board.Columns.First().Cards.First();
-    //    var index = 0;
-
-    //    this.boardWorker.Setup(x => x.GetBoardById(board._id))
-    //        .ReturnsAsync(board)
-    //        .Verifiable();
-
-    //    this.boardWorker.Setup(x => x.UpdateColumnCards(board._id, column))
-    //        .ReturnsAsync(true)
-    //        .Verifiable();
-
-    //    // Act
-    //    var result = await this.cardService.MoveCard(board._id, column._id, card, index);
-
-    //    // Assert
-    //    result.Error.Should().BeNull();
-    //}
-
     [Theory]
     [MemberData(nameof(GetMoveCardParams))]
     public async void MoveCard_ShouldMoveCard_WhenValidRequestIsGiven(Repo.Board.BoardDto board, string boardId, Repo.Column.ColumnDto column, string card, bool? response, int index, string error)
