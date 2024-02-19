@@ -123,4 +123,23 @@ public class BoardsDatabaseWorker : IBoardsDatabaseWorker
         var response = await _boardRepository.Update(_mongoSettings.KanbanHost.ClusterId, _mongoSettings.KanbanHost.Database, _mongoSettings.Collections.Boards, filter, update, options);
         return response.ModifiedCount == 1;
     }
+
+    public async Task<bool?> UpdateColumnCards(string boardId, ColumnDto column)
+    {
+        var validBoardId = ObjectId.TryParse(boardId, out var parseBoarddId);
+        if (!validBoardId)
+            return null;
+        var filter = Builders<BsonDocument>.Filter.And(
+            Builders<BsonDocument>.Filter.Eq(Constants.MongoDbId, parseBoarddId),
+            Builders<BsonDocument>.Filter.Eq("Columns._id", column._id));
+        var update = Builders<BsonDocument>.Update.Set(Constants.ColumnCards, column.Cards);
+
+        var options = new UpdateOptions
+        {
+            IsUpsert = false
+        };
+
+        var response = await _boardRepository.Update(_mongoSettings.KanbanHost.ClusterId, _mongoSettings.KanbanHost.Database, _mongoSettings.Collections.Boards, filter, update, options);
+        return response.ModifiedCount == 1;
+    }
 }

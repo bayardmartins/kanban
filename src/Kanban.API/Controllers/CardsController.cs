@@ -72,6 +72,17 @@ public class CardsController : ControllerBase
         return new NotFoundObjectResult(Constants.CardNotFound);
     }
 
+    [HttpPut("boards/{boardId}/columns/{columnId}/cards/{cardId}/move/{index}"), CustomAuthentication]
+    public async Task<ActionResult> MoveCardInColumn([FromRoute] string boardId, string columnId, string cardId, int index)
+    {
+        this.Log(nameof(MoveCardInColumn), "Stard", new { boardId, columnId, cardId, index });
+        var result = await _cardService.MoveCard(boardId, columnId, cardId, index);
+        this.Log(nameof(MoveCardInColumn), "Result", new { boardId, columnId, cardId, index, result });
+        if (result.Error is null)
+            return new OkResult();
+        return new BadRequestObjectResult(result.Error);
+    }
+
     private void Log(string methodName, string stage, object? data)
     {
         this._logger.LogInformation($"{methodName}: {stage}", () => new { data });

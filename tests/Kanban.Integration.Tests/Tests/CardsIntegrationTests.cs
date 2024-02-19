@@ -4,6 +4,7 @@ using Kanban.Integration.Tests.DatabaseMocks;
 using Kanban.Integration.Tests.Helper;
 using Newtonsoft.Json;
 using System.Text;
+using Kanban.Model.Dto.API.Board;
 
 namespace Kanban.Integration.Tests.Tests;
 
@@ -100,6 +101,31 @@ public class CardsIntegrationTests : IntegrationTestsSetup
         // Assert
         response.IsSuccessStatusCode.Should().Be(result);
     }
+
+    [Theory]
+    [MemberData(nameof(GetMoveCardInColumn))]
+    public async Task MoveCardInColumn_EndpointsReturnSuccessOrFail(string url, bool result)
+    {
+        // Arrange
+        AuthenticationHelper.SetupAuthenticationHeader(_client, this.GetCredentials());
+
+        // Act
+        var response = await _client.PutAsync(url, null);
+
+        // Assert
+        response.IsSuccessStatusCode.Should().Be(result);
+        if (!result)
+        {
+            response.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
+        }
+    }
+
+    private static IEnumerable<object[]> GetMoveCardInColumn() => new List<object[]>
+    {
+        new object[] { "Boards/65cbec3865a3b4fbed6945aa/Columns/65cbec6d65a3b4fbed6945ab/Cards/65d3b1bdd34d409353458cf5/move/0", true },
+        new object[] { "Boards/65cbec3865a3b4fbed6945aa/Columns/65cbec6d65a3b4fbed6945ab/Cards/65c77bbb7d5a911ae3d662dc/move/0", false },
+    };
+
     private static IEnumerable<object[]> GetAllParameters() => new List<object[]>
     {
         new object[] { "Boards/65cbec3865a3b4fbed6945aa/Columns/65cbec6d65a3b4fbed6945ab/Cards", "", true },
