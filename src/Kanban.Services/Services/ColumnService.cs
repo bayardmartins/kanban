@@ -108,4 +108,48 @@ public class ColumnService : IColumnService
         response.Error = "Failed to delete column";
         return response;
     }
+
+    public async Task<ColumnActionResponse> MoveColumn(string boardId, string id, int index)
+    {
+        var response = new ColumnActionResponse();
+        var board = await this._boardDatabaseWorker.GetBoardById(boardId);
+        if (board is null)
+        {
+            response.Error = "Board not found";
+            return response;
+        }
+        var column = board.Columns.FirstOrDefault(x => x._id ==  id);
+        if (column is null)
+        {
+            response.Error = "Column not found";
+            return response;
+        }
+        if(board.Columns.Length <= index) 
+        {
+            response.Error = "Index out of boundary";
+            return response;
+        }
+        var currentIndex = Array.IndexOf(board.Columns, column);
+        board.Columns = board.Columns.Where((column, index) => index != currentIndex).ToArray();
+        var newColumns = board.Columns.ToList();
+        newColumns.Insert(index, column);
+        board.Columns = newColumns.ToArray();
+
+        var result = await this._boardDatabaseWorker.UpdateBoardColumns(board, index, false);
+
+        if (result is null)
+        {
+            response.Error = "Invalid Board Id";
+            return response;
+        }
+        else if (string.Empty.Equals(result))
+        {
+            response.Error = "Failed to update";
+            return response;
+        }
+        else
+        {
+            return response;
+        }
+    }
 }

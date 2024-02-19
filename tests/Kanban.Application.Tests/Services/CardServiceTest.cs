@@ -1,5 +1,6 @@
 ﻿using Repo = Kanban.Model.Dto.Repository;
 using App = Kanban.Model.Dto.Application.Card;
+using MongoDB.Bson.Serialization.Conventions;
 
 namespace Kanban.Application.Tests.Services;
 
@@ -159,16 +160,61 @@ public class CardServiceTest
     public async void DeleteCard_ShouldDeleteCard_WhenAValidCardIdIsGiven()
     {
         // Arrange
+        var board = this.fixture.Create<Repo.Board.BoardDto>();
         var id = this.fixture.Create<string>();
+
+        this.boardWorker.Setup(x => x.GetBoardById(board._id))
+            .ReturnsAsync(board)
+            .Verifiable();
+
         this.worker.Setup(x => x.DeleteById(id))
             .ReturnsAsync(true)
             .Verifiable();
 
         // Act
-        var result = await this.cardService.DeleteCard(id);
+        var result = await this.cardService.DeleteCard(board._id, board.Columns.First()._id, id);
 
         // Assert
-        result.Should().BeTrue();
+        result.Error.Should().BeNull();
+    }
+
+    [Theory]
+    [MemberData(nameof(GetDeleteParameter))]
+    public async void DeleteCard_ShouldNotDeleteCard_WhenInvalidRequestIsGiven(Repo.Board.BoardDto board, string cardId, string error, string boardId, string columnId)
+    {
+        // Arrange
+        this.boardWorker.Setup(x => x.GetBoardById(board._id))
+            .ReturnsAsync(board)
+            .Verifiable();
+
+        this.worker.Setup(x => x.DeleteById(cardId))
+            .ReturnsAsync(false)
+            .Verifiable();
+
+        // Act
+        var result = await this.cardService.DeleteCard(boardId, columnId, cardId);
+
+        // Assert
+        result.Error.Should().Be(error);
+    }
+
+    private static IEnumerable<object[]> GetDeleteParameter()
+    {
+        var fix = new Fixture();
+        var board = fix.Create<Repo.Board.BoardDto>();
+        var id = fix.Create<string>();
+        var boardWithNoColumn = fix.Build<Repo.Board.BoardDto>()
+            .With(x => x.Columns, new Repo.Column.ColumnDto[0])
+            .Create();
+
+        var invalidId = fix.Create<string>();
+
+        return new List<object[]>
+        {
+            new object[] { board, id, "Board not found", id, id },
+            new object[] { boardWithNoColumn, boardWithNoColumn._id, "Column not found", boardWithNoColumn._id, id },
+            new object[] { board, id, "Unable to delete card", board._id, board.Columns.First()._id  },
+        };
     }
 
     [Fact]
@@ -222,5 +268,60 @@ public class CardServiceTest
 
         // Assert
         result.Should().BeNull();
+    }
+
+    [Theory]
+    [MemberData(nameof(GetMoveCardParams))]
+    public async void MoveCard_ShouldMoveCard_WhenValidRequestIsGiven(Repo.Board.BoardDto board, string boardId, Repo.Column.ColumnDto column, string card, bool? response, int index, string error)
+    {
+        // Arrange
+        this.boardWorker.Setup(x => x.GetBoardById(boardId))
+            .ReturnsAsync(board)
+            .Verifiable();
+
+        this.boardWorker.Setup(x => x.UpdateColumnCards(boardId, column))
+            .ReturnsAsync(response)
+            .Verifiable();
+
+        // Act
+        var result = await this.cardService.MoveCard(board._id, column._id, card, index);
+
+        // Assert
+        if (response is true)
+        {
+            result.Error.Should().BeNull();
+        }
+        else
+        {
+            result.Error.Should().NotBeNull();
+            result.Error.Should().Be(error);
+        }
+    }
+
+    private static IEnumerable<object[]> GetMoveCardParams()
+    {
+        var fix = new Fixture();
+        var id = fix.Create<string>();
+        var board = fix.Create<Repo.Board.BoardDto>();
+        var columnWithoutCard = fix.Build<Repo.Column.ColumnDto>()
+            .With(x => x.Cards, new string[0])
+            .Create();
+        var columnsWithoutCard = new Repo.Column.ColumnDto[] { columnWithoutCard };
+        var boardWithNoCards = fix.Build<Repo.Board.BoardDto>()
+            .With(x => x.Columns, columnsWithoutCard)
+            .Create();
+
+        var invalidId = fix.Create<string>();
+
+        return new List<object[]>
+        {
+            new object[] { board, board._id, board.Columns.First(), board.Columns.First().Cards.First(), true, 0, "" },
+            new object[] { board, id, board.Columns.First(), board.Columns.First().Cards.First(), false, 0, "Board not found" },
+            new object[] { board, board._id, columnWithoutCard, board.Columns.First().Cards.First(), false, 0, "Column not found" },
+            new object[] { board, board._id, board.Columns.First(), board.Columns.First().Cards.First(), false, 5, "Index out of boundary" },
+            new object[] { board, board._id, board.Columns.First(), id, false, 0, "Card not found" },
+            new object[] { board, board._id, board.Columns.First(), board.Columns.First().Cards.First(), null, 0, "Invalid BoardId" },
+            new object[] { board, board._id, board.Columns.First(), board.Columns.First().Cards.First(), false, 0, "Failed to update column" },
+        };
     }
 }

@@ -66,12 +66,13 @@ public class BoardsDatabaseWorker : IBoardsDatabaseWorker
         return result.DeletedCount == 1;
     }
 
-    public async Task<string?> UpdateBoardColumns(BoardDto board, int index)
+    public async Task<string?> UpdateBoardColumns(BoardDto board, int index, bool newColumn = true)
     {
         var validId = ObjectId.TryParse(board._id, out var parsedId);
         if (!validId)
             return null;
-        board.Columns[index]._id = Guid.NewGuid().ToString();
+        if (newColumn)
+            board.Columns[index]._id = Guid.NewGuid().ToString();
         var filter = Builders<BsonDocument>.Filter.Eq(Constants.MongoDbId, parsedId);
         var update = Builders<BsonDocument>.Update
                     .Set(Constants.Columns, board.Columns);
@@ -113,6 +114,25 @@ public class BoardsDatabaseWorker : IBoardsDatabaseWorker
             Builders<BsonDocument>.Filter.Eq("Columns._id", columnId));
 
         var update = Builders<BsonDocument>.Update.PullFilter(Constants.Columns, Builders<ColumnDto>.Filter.Eq(Constants.MongoDbId, columnId));
+
+        var options = new UpdateOptions
+        {
+            IsUpsert = false
+        };
+
+        var response = await _boardRepository.Update(_mongoSettings.KanbanHost.ClusterId, _mongoSettings.KanbanHost.Database, _mongoSettings.Collections.Boards, filter, update, options);
+        return response.ModifiedCount == 1;
+    }
+
+    public async Task<bool?> UpdateColumnCards(string boardId, ColumnDto column)
+    {
+        var validBoardId = ObjectId.TryParse(boardId, out var parseBoarddId);
+        if (!validBoardId)
+            return null;
+        var filter = Builders<BsonDocument>.Filter.And(
+            Builders<BsonDocument>.Filter.Eq(Constants.MongoDbId, parseBoarddId),
+            Builders<BsonDocument>.Filter.Eq("Columns._id", column._id));
+        var update = Builders<BsonDocument>.Update.Set(Constants.ColumnCards, column.Cards);
 
         var options = new UpdateOptions
         {

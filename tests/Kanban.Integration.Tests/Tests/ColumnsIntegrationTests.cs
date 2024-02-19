@@ -4,6 +4,7 @@ using Kanban.Integration.Tests.Helper;
 using Kanban.Model.Dto.API.Board;
 using Kanban.Model.Dto.API.Column;
 using Newtonsoft.Json;
+using System;
 using System.Text;
 
 namespace Kanban.Integration.Tests.Tests;
@@ -12,13 +13,12 @@ public class ColumnsIntegrationTests : IntegrationTestsSetup
 {
     public ColumnsIntegrationTests(ApiWebApplicationFactory fixture) : base(fixture) { }
 
-    [Theory]
-    [MemberData(nameof(GetUpdateParameters))]
-    public async Task AddColumn_EndpointsReturnCorrectContent(string mock, int index)
+    [Fact]
+    public async Task AddColumn_EndpointsReturnCorrectContent()
     {
         // Arrange
         AuthenticationHelper.SetupAuthenticationHeader(_client, this.GetCredentials());
-        var payload = JsonConvert.DeserializeObject<AddColumnRequest>(mock);
+        var payload = JsonConvert.DeserializeObject<AddColumnRequest>(Mocks.AddColumnRequestOne);
 
         using StringContent jsonContent = new(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
         var boardPre = await _client.GetAsync($"boards/{Mocks.BoardOneId}");
@@ -35,7 +35,7 @@ public class ColumnsIntegrationTests : IntegrationTestsSetup
         var boardPost = await _client.GetAsync($"boards/{Mocks.BoardOneId}");
         var contentPost = JsonConvert.DeserializeObject<GetBoardResponse>(boardPost.Content.ReadAsStringAsync().Result);
         contentPost.Board.Columns.Count.Should().Be(contentPre.Board.Columns.Count+1);
-        contentPost.Board.Columns.FindIndex(x => x.Name == payload.ColumnName).Should().Be(index);
+        contentPost.Board.Columns.FindIndex(x => x.Name == payload.ColumnName).Should().Be(0);
     }
 
     [Fact]
@@ -86,6 +86,33 @@ public class ColumnsIntegrationTests : IntegrationTestsSetup
         response.IsSuccessStatusCode.Should().Be(result);
     }
 
+    [Theory]
+    [MemberData(nameof(GetMoveColumnInBoardParameters))]
+    public async Task MoveColumnInBoard_EndpointReturnSuccess(string url, bool result)
+    {
+        // Arrange
+        AuthenticationHelper.SetupAuthenticationHeader(_client, this.GetCredentials());
+
+        // Act
+        var response = await _client.PutAsync(url, null);
+
+        // Assert
+        if (result)
+        {
+            response.IsSuccessStatusCode.Should().BeTrue();
+        }
+        else
+        {
+            response.IsSuccessStatusCode.Should().BeFalse();
+            response.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
+        }
+    }
+
+    private static IEnumerable<object[]> GetMoveColumnInBoardParameters() => new List<object[]>
+    {
+        new object[] { $"boards/{Mocks.BoardOneId}/columns/{Mocks.ExistingColumn}/index/{1}", true },
+        new object[] { $"boards/{Mocks.BoardTwoId}/columns/{Mocks.ExistingColumn}/index/{0}", false },
+    };
     private static IEnumerable<object[]> GetUpdateParameters() => new List<object[]>
     {
         new object[] { Mocks.AddColumnRequestOne, 0 },

@@ -36,7 +36,7 @@ public static class Mocks
     public const string InsertBoardMockObject = "{\"_id\":\"\", \"name\":\"Boardmock\", \"columns\":[]}";
     public const string UpdateBoardMockObject = "{\"_id\":\"65cbec3865a3b4fbed6945aa\", \"name\":\"Boardmock Updated\", \"columns\":[]}";
     public const string InvalidUpdateBoardMockObject = "{\"_id\":\"65cbec3865a3b4fbed6945\", \"name\":\"Boardmock Updated\", \"columns\":[]}";
-    public const string NonexistingBoardMockObject = "{\"_id\":\"65cca89665a3b4fbed6945ae\", \"name\":\"Boardmock Updated\", \"columns\":[]}";
+    public const string NonexistingBoardMockObject = "{\"_id\":\"65cca89665a3b4fbed6945ae\", \"name\":\"Boardmock Updated\", \"columns\":[{\"_id\":\"65d3605bd34d409353458cef\",\"name\":\"column1\",\"cards\":[\"65c6e255a03db52a8056230f\",\"65c77ba67d5a911ae3d662db\"]}]}";
 
     public const string ColumnAddMock = "{\"_id\":\"65ccca5e65a3b4fbed6945bb\",\"name\":\"column new\",\"cards\":[]}";
 
