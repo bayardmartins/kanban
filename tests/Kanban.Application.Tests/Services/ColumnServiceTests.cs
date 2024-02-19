@@ -35,7 +35,7 @@ public class ColumnServiceTests
             .Verifiable();
 
         this.worker.Setup(x => x.UpdateBoardColumns(It.Is<Repo.Board.BoardDto>
-            (x => x._id == request.BoardId), 1))
+            (x => x._id == request.BoardId), 1, true))
             .ReturnsAsync(Guid.NewGuid().ToString())
             .Verifiable();
 
@@ -64,7 +64,7 @@ public class ColumnServiceTests
             .Verifiable();
 
         this.worker.Setup(x => x.UpdateBoardColumns(It.Is<Repo.Board.BoardDto>
-            (x => x._id == "boardIdOk"), index))
+            (x => x._id == "boardIdOk"), index, true))
             .ReturnsAsync(updateResponse)
             .Verifiable();
 
@@ -148,6 +148,61 @@ public class ColumnServiceTests
         // Assert
         response.Error.Should().Be(error);
         response.ColumnId.Should().BeNull();
+    }
+
+
+    [Theory]
+    [MemberData(nameof(GetMoveColumnParams))]
+    public async void MoveColumn_ShouldMoveCard_WhenValidRequestIsGiven(Repo.Board.BoardDto board, string boardId, string columnId, string? response, int index, string error)
+    {
+        // Arrange
+        this.worker.Setup(x => x.GetBoardById(boardId))
+            .ReturnsAsync(board)
+            .Verifiable();
+
+        this.worker.Setup(x => x.UpdateBoardColumns(It.Is<Repo.Board.BoardDto>(x => x._id == board._id && x.Columns[index]._id == columnId), index, false))
+            .ReturnsAsync(response)
+            .Verifiable();
+
+        // Act
+        var result = await this.columnService.MoveColumn(board._id, columnId, index);
+
+        // Assert
+        if (string.IsNullOrEmpty(error))
+        {
+            result.Error.Should().BeNull();
+        }
+        else
+        {
+            result.Error.Should().NotBeNull();
+            result.Error.Should().Be(error);
+        }
+    }
+
+    private static IEnumerable<object[]> GetMoveColumnParams()
+    {
+        var fix = new Fixture();
+        var id = fix.Create<string>();
+        var board = fix.Create<Repo.Board.BoardDto>();
+        var columnWithoutCard = fix.Build<Repo.Column.ColumnDto>()
+            .With(x => x.Cards, new string[0])
+            .Create();
+        var columnsWithoutCard = new Repo.Column.ColumnDto[] { columnWithoutCard };
+        var boardWithNoCards = fix.Build<Repo.Board.BoardDto>()
+            .With(x => x.Columns, columnsWithoutCard)
+            .Create();
+
+        var invalidId = fix.Create<string>();
+
+        return new List<object[]>
+        {
+            new object[] { board, board._id, board.Columns.First()._id, board.Columns.First()._id, 0, "" },
+            new object[] { board, id, board.Columns.First()._id, board.Columns.First()._id, 0, "Board not found" },
+            new object[] { board, board._id, id, board.Columns.First()._id, 0, "Column not found" },
+            new object[] { board, board._id, board.Columns.First()._id, board.Columns.First()._id, 4, "Index out of boundary" },
+            new object[] { board, board._id, board.Columns.First()._id, null, 0, "Invalid Board Id" },
+            new object[] { board, board._id, board.Columns.First()._id, "", 0, "Failed to update" },
+        };
     }
 
     private static IEnumerable<object[]> UpdateColumnData()

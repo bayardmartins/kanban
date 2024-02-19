@@ -51,6 +51,17 @@ public class ColumnsController : ControllerBase
         return new OkObjectResult(result.ColumnId);
     }
 
+    [HttpPut("{id}/index/{index}"), CustomAuthentication]
+    public async Task<ActionResult> MoveColumnInBoard([FromRoute] string boardId, string id, int index)
+    {
+        this.Log(nameof(MoveColumnInBoard), "Start", new { boardId, columId = id, index });
+        var result = await _columnService.MoveColumn(boardId, id, index);
+        this.Log(nameof(MoveColumnInBoard), "Result", new { boardId, columId = id, result });
+        if (result.Error is null)
+            return new OkResult();
+        return new BadRequestObjectResult(result.Error);
+    }
+
     private void Log(string methodName, string stage, object? data)
     {
         this._logger.LogInformation($"{methodName}: {stage}", () => new { data });

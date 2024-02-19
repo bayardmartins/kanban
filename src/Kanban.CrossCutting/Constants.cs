@@ -10,6 +10,7 @@ namespace Kanban.CrossCutting
         public const string Name = "Name";
         public const string Description = "Description";
         public const string Columns = "Columns";
+        public const string ColumnCards = "Columns.$.Cards";
         public const string Authentication = "Basic";
         public const string Authorization = "Authorization";
 

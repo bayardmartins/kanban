@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Runtime.CompilerServices;
 using Kanban.Model.Dto.Repository.Column;
 
 namespace Kanban.Infra.Tests.Repositories;
@@ -366,6 +367,17 @@ public class ClientRepositoryTests : MongoRepositoryTestsSetup
         response.Should().Be(result);
     }
 
+    [Theory]
+    [MemberData(nameof(GetUpdateColumnCardsParams))]
+    public async Task UpdateColumnCards(string boardId, ColumnDto column, bool? result)
+    {
+        // Act
+        var response = await this.boardWorker.UpdateColumnCards(boardId, column);
+
+        // Assert
+        response.Should().Be(result);
+    }
+
     private static IEnumerable<object[]> GetUpdateBoardColumn() => new List<object[]>
     {
         new object[] { Mocks.UpdColumnReqInvalidBoard, null },
@@ -379,5 +391,23 @@ public class ClientRepositoryTests : MongoRepositoryTestsSetup
         new object[] { Mocks.BoardOneId, Mocks.ColumnToDelete, false },
         new object[] { Mocks.InvalidBoardId, Mocks.ColumnToDelete, null },
     };
+
+    private static IEnumerable<object[]> GetUpdateColumnCardsParams()
+    {
+        var board = JsonConvert.DeserializeObject<BoardDto>(Mocks.BoardMock);
+
+        var cardOne = board.Columns.First().Cards[0];
+        var cardTwo = board.Columns.First().Cards[1];
+
+        board.Columns.First().Cards = new string[] { cardTwo, cardOne };
+        var boardInvalid = JsonConvert.DeserializeObject<BoardDto>(Mocks.NonexistingBoardMockObject); 
+
+        return new List<object[]>
+        {
+            new object[] { Mocks.InvalidBoardId, board.Columns.First(), null },
+            new object[] { Mocks.BoardOneId, board.Columns.First(), true },
+            new object[] { Mocks.BoardOneId, boardInvalid.Columns.First(), false },
+        };
+    }
     #endregion
 }

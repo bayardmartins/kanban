@@ -7,6 +7,7 @@ public interface ICardService
     public Task<CardDto?> GetCardById(string id);
     public Task<GetCardResponse> GetCards(string boardId, string columnId);
     public Task<CardDto> CreateCard(CardDto card);
-    public Task<bool> DeleteCard(string id);
+    public Task<CardActionResponse> DeleteCard(string boardId, string columnId, string id);
     public Task<CardDto?> UpdateCard(CardDto card);
+    public Task<CardActionResponse> MoveCard(string boardId, string id, string cardId, int index);
 }
