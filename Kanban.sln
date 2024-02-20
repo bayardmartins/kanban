@@ -10,7 +10,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0 -Items", "0 -Items", "{E0
 		.gitignore = .gitignore
 		docker-compose.yaml = docker-compose.yaml
 		Dockerfile = Dockerfile
-		Kanban.postman_collection.json = Kanban.postman_collection.json
 		Makefile = Makefile
 		README.md = README.md
 	EndProjectSection
@@ -41,7 +40,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kanban.Presentation.Tests",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4 - Model", "4 - Model", "{9721A4D2-6BF8-4A73-B2D9-3C416D5A8458}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kanban.Model", "src\Kanban.Model\Kanban.Model.csproj", "{3A18D620-D1A6-4188-BF64-48CCF3A8E61D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kanban.Model", "src\Kanban.Model\Kanban.Model.csproj", "{3A18D620-D1A6-4188-BF64-48CCF3A8E61D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

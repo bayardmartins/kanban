@@ -35,6 +35,7 @@ namespace Kanban.CrossCutting
         public const string BoardInvalid = "BoardId invalid";
         public const string FailedToDeleteBoard = "Failed to delete board";
         public const string BoardWithColumns = "Board with columns can't be deleted. Board has {0} columns. Delete all columns before deleting board";
+        public const string BoardIdMissmatch = "Route Id don't match Card.Id";
 
         public const string ColumnNotFound = "Column not found";
         public const string FailedToUpdateColumn = "Failed to update column";

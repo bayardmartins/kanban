@@ -3,25 +3,28 @@ using Kanban.Model.Dto.Application.Board;
 using Kanban.Repository.Interfaces;
 using Kanban.Model.Mapper.Board;
 using Kanban.CrossCutting;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Kanban.Application.Services;
 
 public class BoardService : IBoardService
 {
     private readonly IBoardsDatabaseWorker _boardDatabaseWorker;
-    private readonly ICardsDatabaseWorker _cardDatabaseWorker;
 
-    public BoardService(IBoardsDatabaseWorker boardsDatabaseWorker, ICardsDatabaseWorker cardDatabaseWorker)
+    public BoardService(IBoardsDatabaseWorker boardsDatabaseWorker)
     {
         _boardDatabaseWorker = boardsDatabaseWorker;
-        _cardDatabaseWorker = cardDatabaseWorker;
     }
 
     public async Task<BoardDto?> GetBoard(string boardId)
     {
         var board = await this._boardDatabaseWorker.GetBoardById(boardId);
         return board?.ToApplication();
+    }
+
+    public async Task<List<BoardDto>> GetAllBoards()
+    {
+        var boards = await this._boardDatabaseWorker.GetAllBoards();
+        return boards.ToApplication();
     }
 
     public async Task<BoardDto> CreateBoard(BoardDto board)
