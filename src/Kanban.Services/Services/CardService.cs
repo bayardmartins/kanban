@@ -2,6 +2,7 @@
 using Kanban.Model.Mapper.Card;
 using Kanban.Model.Dto.Application.Card;
 using Kanban.Repository.Interfaces;
+using System;
 
 namespace Kanban.Application.Services;
 public class CardService : ICardService
@@ -87,7 +88,7 @@ public class CardService : ICardService
         return result?.ToApplication();
     }
 
-    public async Task<CardActionResponse> MoveCard(string boardId, string columnId, string cardId, int index)
+    public async Task<CardActionResponse> MoveCardInPriority(string boardId, string columnId, string cardId, int index)
     {
         var response = new CardActionResponse();
         var board = await this._boardsDatabaseWorker.GetBoardById(boardId);
@@ -132,6 +133,60 @@ public class CardService : ICardService
         else
         {
             response.Error = "Failed to update column";
+            return response;
+        }
+    }
+
+    public async Task<CardActionResponse> MoveCardInColumn(string boardId, string originColumnId, string cardId, string destinyColumnId)
+    {
+        var response = new CardActionResponse();
+        var board = await this._boardsDatabaseWorker.GetBoardById(boardId);
+        if (board is null)
+        {
+            response.Error = "Board not found";
+            return response;
+        }
+        var column = board.Columns.FirstOrDefault(x => x._id == originColumnId);
+        if (column is null)
+        {
+            response.Error = "Origin Column not found";
+            return response;
+        }
+        var destinyColumn = board.Columns.FirstOrDefault(x => x._id == destinyColumnId);
+        if (destinyColumn is null)
+        {
+            response.Error = "Destiny Column not found";
+            return response;
+        }
+        if (originColumnId == destinyColumnId)
+        {
+            response.Error = "Origin and Destiny column are the same";
+            return response;
+        }
+        var currentIndex = Array.IndexOf(column.Cards, cardId);
+        if (currentIndex == -1)
+        {
+            response.Error = "Card not found";
+            return response;
+        }
+
+        column.Cards = column.Cards.Where((card, index) => index != currentIndex).ToArray();
+        destinyColumn.Cards = destinyColumn.Cards.Append(cardId).ToArray();
+
+        bool? removeResult = await this._boardsDatabaseWorker.UpdateColumnCards(boardId, column);
+        bool? addResult = await this._boardsDatabaseWorker.UpdateColumnCards(boardId, destinyColumn);
+        if (addResult is not null && addResult == true && removeResult is not null && removeResult == true )
+        {
+            return response;
+        }
+        else if (removeResult is null || addResult is null)
+        {
+            response.Error = "Invalid BoardId";
+            return response;
+        }
+        else
+        {
+            response.Error = "Failed to move card";
             return response;
         }
     }

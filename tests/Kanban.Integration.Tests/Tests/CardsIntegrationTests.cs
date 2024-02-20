@@ -103,6 +103,24 @@ public class CardsIntegrationTests : IntegrationTestsSetup
     }
 
     [Theory]
+    [MemberData(nameof(GetMoveCardInPriority))]
+    public async Task MoveCardInPriority_EndpointsReturnSuccessOrFail(string url, bool result)
+    {
+        // Arrange
+        AuthenticationHelper.SetupAuthenticationHeader(_client, this.GetCredentials());
+
+        // Act
+        var response = await _client.PutAsync(url, null);
+
+        // Assert
+        response.IsSuccessStatusCode.Should().Be(result);
+        if (!result)
+        {
+            response.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
+        }
+    }
+
+    [Theory]
     [MemberData(nameof(GetMoveCardInColumn))]
     public async Task MoveCardInColumn_EndpointsReturnSuccessOrFail(string url, bool result)
     {
@@ -122,8 +140,14 @@ public class CardsIntegrationTests : IntegrationTestsSetup
 
     private static IEnumerable<object[]> GetMoveCardInColumn() => new List<object[]>
     {
-        new object[] { "Boards/65cbec3865a3b4fbed6945aa/Columns/65cbec6d65a3b4fbed6945ab/Cards/65d3b1bdd34d409353458cf5/move/0", true },
-        new object[] { "Boards/65cbec3865a3b4fbed6945aa/Columns/65cbec6d65a3b4fbed6945ab/Cards/65c77bbb7d5a911ae3d662dc/move/0", false },
+        new object[] { "Boards/65cbec3865a3b4fbed6945aa/Columns/65cbec6d65a3b4fbed6945ab/Cards/65d3b1bdd34d409353458cf5/move/65cbed1365a3b4fbed6945ac", true },
+        new object[] { "Boards/65cbec3865a3b4fbed6945aa/Columns/65cbec6d65a3b4fbed6945ab/Cards/65d3b1bdd34d409353458cf5/move/65cbec6d65a3b4fbed6945ab", false },
+    };
+
+    private static IEnumerable<object[]> GetMoveCardInPriority() => new List<object[]>
+    {
+        new object[] { "Boards/65cbec3865a3b4fbed6945aa/Columns/65cbec6d65a3b4fbed6945ab/Cards/65d3b1bdd34d409353458cf5/priority/0", true },
+        new object[] { "Boards/65cbec3865a3b4fbed6945aa/Columns/65cbec6d65a3b4fbed6945ab/Cards/65c77bbb7d5a911ae3d662dc/priority/0", false },
     };
 
     private static IEnumerable<object[]> GetAllParameters() => new List<object[]>
