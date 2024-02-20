@@ -271,8 +271,8 @@ public class CardServiceTest
     }
 
     [Theory]
-    [MemberData(nameof(GetMoveCardParams))]
-    public async void MoveCard_ShouldMoveCard_WhenValidRequestIsGiven(Repo.Board.BoardDto board, string boardId, Repo.Column.ColumnDto column, string card, bool? response, int index, string error)
+    [MemberData(nameof(GetMoveCardInPriorityParams))]
+    public async void MoveCardInPriority_ShouldMoveCard_WhenValidRequestIsGiven(Repo.Board.BoardDto board, string boardId, Repo.Column.ColumnDto column, string card, bool? response, int index, string error)
     {
         // Arrange
         this.boardWorker.Setup(x => x.GetBoardById(boardId))
@@ -284,7 +284,7 @@ public class CardServiceTest
             .Verifiable();
 
         // Act
-        var result = await this.cardService.MoveCard(board._id, column._id, card, index);
+        var result = await this.cardService.MoveCardInPriority(board._id, column._id, card, index);
 
         // Assert
         if (response is true)
@@ -298,7 +298,62 @@ public class CardServiceTest
         }
     }
 
-    private static IEnumerable<object[]> GetMoveCardParams()
+    [Theory]
+    [MemberData(nameof(GetMoveCardInColumnParams))]
+    public async void MoveCardInColumn_ShouldMoveCard_WhenValidRequestIsGiven(Repo.Board.BoardDto board, string boardId, string card, string columOriginId, string columnDestinyId, bool? response, string error )
+    {
+        // Arrange
+        this.boardWorker.Setup(x => x.GetBoardById(boardId))
+            .ReturnsAsync(board)
+            .Verifiable();
+
+        this.boardWorker.Setup(x => x.UpdateColumnCards(boardId, It.Is<Repo.Column.ColumnDto>(x => x._id == columOriginId || x._id == columnDestinyId)))
+            .ReturnsAsync(response)
+            .Verifiable();
+
+        // Act
+        var result = await this.cardService.MoveCardInColumn(board._id, columOriginId, card, columnDestinyId);
+
+        // Assert
+        if (response is true)
+        {
+            result.Error.Should().BeNull();
+        }
+        else
+        {
+            result.Error.Should().NotBeNull();
+            result.Error.Should().Be(error);
+        }
+    }
+    private static IEnumerable<object[]> GetMoveCardInColumnParams()
+    {
+        var fix = new Fixture();
+        var id = fix.Create<string>();
+        var board = fix.Create<Repo.Board.BoardDto>();
+        var columnWithoutCard = fix.Build<Repo.Column.ColumnDto>()
+            .With(x => x.Cards, new string[0])
+            .Create();
+        var columnsWithoutCard = new Repo.Column.ColumnDto[] { columnWithoutCard };
+        var boardWithNoCards = fix.Build<Repo.Board.BoardDto>()
+            .With(x => x.Columns, columnsWithoutCard)
+            .Create();
+
+        var invalidId = fix.Create<string>();
+
+        return new List<object[]>
+        {
+            new object[] { board, id, board.Columns.First().Cards[0], board.Columns[0]._id, board.Columns[1]._id, false, "Board not found"},
+            new object[] { board, board._id, board.Columns.First().Cards[0], id, board.Columns[1]._id, false, "Origin Column not found"},
+            new object[] { board, board._id, board.Columns.First().Cards[0], board.Columns[0]._id, id, false, "Destiny Column not found"},
+            new object[] { board, board._id, board.Columns.First().Cards[0], board.Columns[0]._id, board.Columns[0]._id, false, "Origin and Destiny column are the same"},
+            new object[] { board, board._id, id, board.Columns[0]._id, board.Columns[1]._id, false, "Card not found"},
+            new object[] { board, board._id, board.Columns.First().Cards[0], board.Columns[0]._id, board.Columns[1]._id, null, "Invalid BoardId"},
+            new object[] { board, board._id, board.Columns.First().Cards[1], board.Columns[0]._id, board.Columns[1]._id, false, "Failed to move card"},
+            new object[] { board, board._id, board.Columns.First().Cards[2], board.Columns[0]._id, board.Columns[1]._id, true, ""},
+        };
+    }
+
+    private static IEnumerable<object[]> GetMoveCardInPriorityParams()
     {
         var fix = new Fixture();
         var id = fix.Create<string>();
