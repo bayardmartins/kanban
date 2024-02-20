@@ -2,7 +2,6 @@
 using Kanban.Integration.Tests.DatabaseMocks;
 using Kanban.Integration.Tests.Helper;
 using Kanban.Model.Dto.API.Board;
-using Kanban.Model.Dto.API.Card;
 using Newtonsoft.Json;
 using System.Text;
 
@@ -36,6 +35,22 @@ public class BoardsIntegrationTests : IntegrationTestsSetup
             response.StatusCode.Should().Be(System.Net.HttpStatusCode.NotFound); 
         }
     }
+
+    [Fact]
+    public async Task GetAllBoards_EndpointReturnsCorrectContent()
+    {
+        // Arrange
+        AuthenticationHelper.SetupAuthenticationHeader(_client, this.GetCredentials());
+
+        // Act
+        var response = await _client.GetAsync("boards");
+
+        // Assert
+        response.IsSuccessStatusCode.Should().BeTrue();
+        var content = JsonConvert.DeserializeObject<List<BoardDto>>(response.Content.ReadAsStringAsync().Result);
+        content.Should().NotBeNull();
+    }
+
 
     [Fact]
     public async Task CreateCards_EndpointsReturnCorrectContent()
@@ -86,7 +101,7 @@ public class BoardsIntegrationTests : IntegrationTestsSetup
         AuthenticationHelper.SetupAuthenticationHeader(_client, this.GetCredentials());
 
         // Act
-        var response = await _client.PutAsync("boards", jsonContent);
+        var response = await _client.PutAsync($"boards/{Mocks.BoardOneId}", jsonContent);
 
         // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
@@ -107,7 +122,7 @@ public class BoardsIntegrationTests : IntegrationTestsSetup
         AuthenticationHelper.SetupAuthenticationHeader(_client, this.GetCredentials());
 
         // Act
-        var response = await _client.PutAsync("boards", jsonContent);
+        var response = await _client.PutAsync($"boards/{Mocks.NonexistingUpdateBoardId}", jsonContent);
 
         // Assert
         response.IsSuccessStatusCode.Should().BeFalse();

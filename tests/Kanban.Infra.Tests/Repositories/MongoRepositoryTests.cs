@@ -210,6 +210,17 @@ public class ClientRepositoryTests : MongoRepositoryTestsSetup
         response._id.Should().Be(Mocks.BoardOneId);
     }
 
+    [Fact]
+    public async Task GetAll_ShouldReturnBoards_WhereThereAreBoardsInDatabase()
+    {
+        // Act
+        var response = await this.boardWorker.GetAllBoards();
+
+        // Assert
+        response.Should().NotBeNull();
+        response.Count.Should().Be(2);
+    }
+
     [Theory]
     [InlineData("65c6e255a03db52a8056230f")]
     [InlineData("65c6e255a03db52a80562")]

@@ -70,4 +70,14 @@ public static class BoardMapper
             Name = request.Name,
         };
     }
+
+    public static List<App.BoardDto> ToApplication(this List<Repo.BoardDto> boards)
+    {
+        return boards.Select(board => board.ToApplication()).ToList();
+    }
+
+    public static List<Api.BoardDto>? ToPresentation(this List<App.BoardDto>? boards)
+    {
+        return boards?.Select(board => board.ToPresentation()).ToList();
+    }
 }

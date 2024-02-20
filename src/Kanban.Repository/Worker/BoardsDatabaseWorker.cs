@@ -21,6 +21,13 @@ public class BoardsDatabaseWorker : IBoardsDatabaseWorker
         this._mongoSettings = mongoSettings;
     }
 
+    public async Task<List<BoardDto>> GetAllBoards()
+    {
+        var boards = await _boardRepository.FindMany(_mongoSettings.KanbanHost.ClusterId, _mongoSettings.KanbanHost.Database, _mongoSettings.Collections.Boards, Builders<BsonDocument>.Filter.Empty).ConfigureAwait(false);
+        
+        return BsonSerializer.Deserialize<List<BoardDto>>(boards.ToJson());
+    }
+
     public async Task<BoardDto?> GetBoardById(string id)
     {
         var validId = ObjectId.TryParse(id, out var parsedId);

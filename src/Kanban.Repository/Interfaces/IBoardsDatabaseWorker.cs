@@ -13,4 +13,5 @@ public interface IBoardsDatabaseWorker
     public Task<bool?> UpdateBoardColumnName(UpdateColumnRequest updateColumnRequest);
     public Task<bool?> DeleteColumn(string boardId, string columnId);
     public Task<bool?> UpdateColumnCards(string boardId, ColumnDto column);
+    public Task<List<BoardDto>> GetAllBoards();
 }

@@ -17,7 +17,7 @@ public class BoardServiceTest
         this.fixture = new Fixture();
         this.worker = new Mock<IBoardsDatabaseWorker>();
         this.cardWorker = new Mock<ICardsDatabaseWorker>();
-        this.boardService = new BoardService(this.worker.Object, this.cardWorker.Object);
+        this.boardService = new BoardService(this.worker.Object);
     }
 
     [Fact]
@@ -43,6 +43,24 @@ public class BoardServiceTest
             result.Columns[i].Name.Should().Be(board.Columns[i].Name);
             result.Columns[i].Cards.Should().BeEquivalentTo(board.Columns[i].Cards);
         }
+    }
+
+    [Fact]
+    public async void GetAllBoards_ShouldReturnBoards_WhereThereAreBoardsInDatabase()
+    {
+        // Arrange
+        // GetAllBoards
+        var boards = this.fixture.Create<List<Repo.BoardDto>>();
+        this.worker.Setup(x => x.GetAllBoards())
+            .ReturnsAsync(boards)
+            .Verifiable();
+
+        // Act
+        var result = await this.boardService.GetAllBoards();
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Count.Should().Be(3);
     }
 
     [Fact]

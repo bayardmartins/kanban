@@ -46,7 +46,7 @@ public class CardServiceTest
         this.worker.Setup(x => x.GetCardById(card._id))
             .ReturnsAsync(card)
             .Verifiable();
-        var nonexistentCardId = "non-existent-card-id";
+        var nonexistentCardId = this.fixture.Create<string>();
 
         // Act
         var result = await this.cardService.GetCardById(nonexistentCardId);
@@ -126,7 +126,7 @@ public class CardServiceTest
 
         // Assert
         result.Should().NotBeNull();
-        result.Error.Should().Be("Cards not found");
+        result.Error.Should().Be("Card not found");
     }
 
     [Fact]
@@ -347,7 +347,7 @@ public class CardServiceTest
             new object[] { board, board._id, board.Columns.First().Cards[0], board.Columns[0]._id, id, false, "Destiny Column not found"},
             new object[] { board, board._id, board.Columns.First().Cards[0], board.Columns[0]._id, board.Columns[0]._id, false, "Origin and Destiny column are the same"},
             new object[] { board, board._id, id, board.Columns[0]._id, board.Columns[1]._id, false, "Card not found"},
-            new object[] { board, board._id, board.Columns.First().Cards[0], board.Columns[0]._id, board.Columns[1]._id, null, "Invalid BoardId"},
+            new object[] { board, board._id, board.Columns.First().Cards[0], board.Columns[0]._id, board.Columns[1]._id, null, "BoardId invalid"},
             new object[] { board, board._id, board.Columns.First().Cards[1], board.Columns[0]._id, board.Columns[1]._id, false, "Failed to move card"},
             new object[] { board, board._id, board.Columns.First().Cards[2], board.Columns[0]._id, board.Columns[1]._id, true, ""},
         };
@@ -375,7 +375,7 @@ public class CardServiceTest
             new object[] { board, board._id, columnWithoutCard, board.Columns.First().Cards.First(), false, 0, "Column not found" },
             new object[] { board, board._id, board.Columns.First(), board.Columns.First().Cards.First(), false, 5, "Index out of boundary" },
             new object[] { board, board._id, board.Columns.First(), id, false, 0, "Card not found" },
-            new object[] { board, board._id, board.Columns.First(), board.Columns.First().Cards.First(), null, 0, "Invalid BoardId" },
+            new object[] { board, board._id, board.Columns.First(), board.Columns.First().Cards.First(), null, 0, "BoardId invalid" },
             new object[] { board, board._id, board.Columns.First(), board.Columns.First().Cards.First(), false, 0, "Failed to update column" },
         };
     }
