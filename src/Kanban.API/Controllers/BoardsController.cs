@@ -18,6 +18,15 @@ public class BoardsController : ControllerBase
         _boardService = boardService;
     }
 
+    [HttpGet, CustomAuthentication]
+    public async Task<ActionResult> GetBoards()
+    {
+        this.Log(nameof(GetBoard), "Start", null);
+        var board = await _boardService.GetAllBoards();
+        this.Log(nameof(GetBoard), "Result", board);
+        return new OkObjectResult(board.ToPresentation());
+    }
+
     [HttpGet("{id}"), CustomAuthentication]
     public async Task<ActionResult<GetBoardResponse>> GetBoard(string id)
     {
@@ -38,10 +47,12 @@ public class BoardsController : ControllerBase
         return new OkObjectResult(board.ToPresentationCreate());
     }
 
-    [HttpPut, CustomAuthentication]
-    public async Task<ActionResult<UpdateBoardResponse>> UpdateBoard(UpdateBoardRequest request)
+    [HttpPut("{id}"), CustomAuthentication]
+    public async Task<ActionResult<UpdateBoardResponse>> UpdateBoard([FromRoute] string id, UpdateBoardRequest request)
     {
         this.Log(nameof(UpdateBoard), "Start", request);
+        if (id != request.Id)
+            return new BadRequestObjectResult(Constants.BoardIdMissmatch);
         var board = await _boardService.UpdateBoard(request.ToApplicationUpdate());
         this.Log(nameof(CreateBoard), "Result", board);
         if (board is not null)

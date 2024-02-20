@@ -35,6 +35,8 @@ public class Mocks
     public const string CreateBoardRequest = "{\"name\":\"Create Board\"}";
     public const string UpdateBoardRequest = "{\"Id\":\"65cbec3865a3b4fbed6945aa\",\"name\":\"Update Board\"}";
     public const string NonexistingUpdateBoardRequest = "{\"Id\":\"65cca89665a3b4fbed6945ae\",\"name\":\"Update Board\"}";
+    public const string NonexistingUpdateBoardId = "65cca89665a3b4fbed6945ae";
+
 
     public const string AddColumnRequestOne = "{\"columnName\":\"column added one\",\"position\":0}";
     public const string AddColumnRequestTwo = "{\"columnName\":\"column added two\",\"position\":1}";

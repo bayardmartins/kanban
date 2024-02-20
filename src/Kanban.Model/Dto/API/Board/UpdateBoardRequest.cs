@@ -7,7 +7,7 @@ public class UpdateBoardRequest
     [Required]
     public string Id { get; set; }
 
-    [Required(ErrorMessage = "This fields needs a value")]
-    [MinLength(3,ErrorMessage = "Invalid Length")]
+    [Required]
+    [MinLength(3)]
     public string Name { get; set; }
 }

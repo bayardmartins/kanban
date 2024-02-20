@@ -200,8 +200,8 @@ public class ColumnServiceTests
             new object[] { board, id, board.Columns.First()._id, board.Columns.First()._id, 0, "Board not found" },
             new object[] { board, board._id, id, board.Columns.First()._id, 0, "Column not found" },
             new object[] { board, board._id, board.Columns.First()._id, board.Columns.First()._id, 4, "Index out of boundary" },
-            new object[] { board, board._id, board.Columns.First()._id, null, 0, "Invalid Board Id" },
-            new object[] { board, board._id, board.Columns.First()._id, "", 0, "Failed to update" },
+            new object[] { board, board._id, board.Columns.First()._id, null, 0, "BoardId invalid" },
+            new object[] { board, board._id, board.Columns.First()._id, "", 0, "Failed to update column" },
         };
     }
 
@@ -226,7 +226,7 @@ public class ColumnServiceTests
             new object[] { board, boardNotFoundRequest, "Board not found", false },
             new object[] { board, columnNotFoundRequest, "Column not found", false },
             new object[] { board, request, "Column not found", false },
-            new object[] { board, request, "Invalid Id", null },
+            new object[] { board, request, "BoardId invalid", null },
             new object[] { board, request, null, true },
         };
     }
@@ -234,8 +234,8 @@ public class ColumnServiceTests
     {
         new object[] { 4, "Index out of boundary", "boardIdOk", "d329cada-fe7f-4378-82df-56dea642627a" },
         new object[] { 3, "Board not found", "boardIdNotFound", "d329cada-fe7f-4378-82df-56dea642627a" },
-        new object[] { 3, "Invalid board id", "boardIdInvalid", "d329cada-fe7f-4378-82df-56dea642627a" },
-        new object[] { 3, "Failed to update", "boardIdOk", "" },
+        new object[] { 3, "BoardId invalid", "boardIdInvalid", "d329cada-fe7f-4378-82df-56dea642627a" },
+        new object[] { 3, "Failed to update column", "boardIdOk", "" },
     };
 
     private static IEnumerable<object[]> GetDeleteColumnParams()

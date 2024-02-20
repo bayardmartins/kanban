@@ -4,7 +4,7 @@ namespace Kanban.Model.Dto.API.Board;
 
 public class CreateBoardRequest
 {
-    [Required(ErrorMessage = "This fields needs a value")]
-    [MinLength(3,ErrorMessage = "Invalid Length")]
+    [Required]
+    [MinLength(3)]
     public string Name { get; set; }
 }

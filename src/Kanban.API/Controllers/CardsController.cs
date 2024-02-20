@@ -35,7 +35,7 @@ public class CardsController : ControllerBase
         var card = await _cardService.GetCardById(id);
         this.Log(nameof(GetCard),"Result", card);
         if(card is null)
-            return new NotFoundObjectResult(new GetCardResponse { Error = "Card not found" });
+            return new NotFoundObjectResult(new GetCardResponse { Error = Constants.CardNotFound });
         return new OkObjectResult(card.ToPresentationGet());
     }
 
