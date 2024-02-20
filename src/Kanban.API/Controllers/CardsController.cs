@@ -72,16 +72,28 @@ public class CardsController : ControllerBase
         return new NotFoundObjectResult(Constants.CardNotFound);
     }
 
-    [HttpPut("boards/{boardId}/columns/{columnId}/cards/{cardId}/move/{index}"), CustomAuthentication]
-    public async Task<ActionResult> MoveCardInColumn([FromRoute] string boardId, string columnId, string cardId, int index)
+    [HttpPut("boards/{boardId}/columns/{columnId}/cards/{cardId}/priority/{index}"), CustomAuthentication]
+    public async Task<ActionResult> MoveCardInPriority([FromRoute] string boardId, string columnId, string cardId, int index)
     {
-        this.Log(nameof(MoveCardInColumn), "Stard", new { boardId, columnId, cardId, index });
-        var result = await _cardService.MoveCard(boardId, columnId, cardId, index);
-        this.Log(nameof(MoveCardInColumn), "Result", new { boardId, columnId, cardId, index, result });
+        this.Log(nameof(MoveCardInPriority), "Stard", new { boardId, columnId, cardId, index });
+        var result = await _cardService.MoveCardInPriority(boardId, columnId, cardId, index);
+        this.Log(nameof(MoveCardInPriority), "Result", new { boardId, columnId, cardId, index, result });
         if (result.Error is null)
             return new OkResult();
         return new BadRequestObjectResult(result.Error);
     }
+
+    [HttpPut("boards/{boardId}/columns/{originColumnId}/cards/{cardId}/move/{destinyColumnId}"), CustomAuthentication]
+    public async Task<ActionResult> MoveCardInColumn([FromRoute] string boardId, string originColumnId, string cardId, string destinyColumnId)
+    {
+        this.Log(nameof(MoveCardInColumn), "Stard", new { boardId, originColumnId, cardId, destinyColumnId });
+        var result = await _cardService.MoveCardInColumn(boardId, originColumnId, cardId, destinyColumnId);
+        this.Log(nameof(MoveCardInColumn), "Result", new { boardId, originColumnId, cardId, destinyColumnId, result });
+        if (result.Error is null)
+            return new OkResult();
+        return new BadRequestObjectResult(result.Error);
+    }
+
 
     private void Log(string methodName, string stage, object? data)
     {
