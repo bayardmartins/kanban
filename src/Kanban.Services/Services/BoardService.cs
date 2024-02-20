@@ -2,6 +2,8 @@
 using Kanban.Model.Dto.Application.Board;
 using Kanban.Repository.Interfaces;
 using Kanban.Model.Mapper.Board;
+using Kanban.CrossCutting;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Kanban.Application.Services;
 
@@ -40,12 +42,12 @@ public class BoardService : IBoardService
         var board = await this._boardDatabaseWorker.GetBoardById(id);
         if (board == null)
         {
-            result.Error = "BoardId invalid";
+            result.Error = Constants.BoardInvalid;
             return result;
         }
         if (board.Columns.Length > 0)
         {
-            result.Error = $"Board with columns can't be deleted. Board has {board.Columns.Length} columns. Delete all columns before deleting board";
+            result.Error = string.Format(Constants.BoardWithColumns, board.Columns.Length);
         }
         var response = await this._boardDatabaseWorker.DeleteById(id);
         if (response)
@@ -53,7 +55,7 @@ public class BoardService : IBoardService
             result.BoardId = id;
             return result;
         }
-        result.Error = "Failed to delete board";
+        result.Error = Constants.FailedToDeleteBoard;
         return result;
     }
 }

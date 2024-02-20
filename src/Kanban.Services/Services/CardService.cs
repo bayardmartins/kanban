@@ -3,6 +3,7 @@ using Kanban.Model.Mapper.Card;
 using Kanban.Model.Dto.Application.Card;
 using Kanban.Repository.Interfaces;
 using System;
+using Kanban.CrossCutting;
 
 namespace Kanban.Application.Services;
 public class CardService : ICardService
@@ -28,20 +29,20 @@ public class CardService : ICardService
         var board = await this._boardsDatabaseWorker.GetBoardById(boardId);
         if (board is null)
         {
-            response.Error = "Board not found";
+            response.Error = Constants.BoardNotFound;
             return response;
         }
         var column = board.Columns.FirstOrDefault(x => x._id == columnId);
         if (column is null)
         {
-            response.Error = "Column not found";
+            response.Error = Constants.ColumnNotFound;
             return response;
         }
 
         var cards = await this._cardsDatabaseWorker.GetAllCards(column.Cards);
         if (cards is null || cards.Count == 0)
         {
-            response.Error = "Cards not found";
+            response.Error = Constants.CardNotFound;
             return response;
         }
         return new GetCardResponse { CardList = cards.ToApplication() };
@@ -59,13 +60,13 @@ public class CardService : ICardService
         var board = await this._boardsDatabaseWorker.GetBoardById(boardId);
         if (board is null)
         {
-            response.Error = "Board not found";
+            response.Error = Constants.BoardNotFound;
             return response;
         }
         var column = board.Columns.FirstOrDefault(x => x._id == columnId);
         if (column == null)
         {
-            response.Error = "Column not found";
+            response.Error = Constants.ColumnNotFound;
             return response;
         }
         var result = await this._cardsDatabaseWorker.DeleteById(id);
@@ -77,7 +78,7 @@ public class CardService : ICardService
         }
         else
         {
-            response.Error = "Unable to delete card";
+            response.Error = Constants.UnableToDeleteCard;
             return response;
         }
     }
@@ -94,24 +95,24 @@ public class CardService : ICardService
         var board = await this._boardsDatabaseWorker.GetBoardById(boardId);
         if (board is null)
         {
-            response.Error = "Board not found";
+            response.Error = Constants.BoardNotFound;
             return response;
         }
         var column = board.Columns.FirstOrDefault(x => x._id == columnId);
         if (column is null)
         {
-            response.Error = "Column not found";
+            response.Error = Constants.ColumnNotFound;
             return response;
         }
         if (column.Cards.Length <= index)
         {
-            response.Error = "Index out of boundary";
+            response.Error = Constants.OutOfBoundary;
             return response;
         }
         var currentIndex = Array.IndexOf(column.Cards, cardId);
         if (currentIndex == -1)
         {
-            response.Error = "Card not found";
+            response.Error = Constants.CardNotFound;
             return response;
         }
 
@@ -127,12 +128,12 @@ public class CardService : ICardService
         }
         else if (result is null)
         {
-            response.Error = "Invalid BoardId";
+            response.Error = Constants.BoardInvalid;
             return response;
         }
         else
         {
-            response.Error = "Failed to update column";
+            response.Error = Constants.FailedToUpdateColumn;
             return response;
         }
     }
@@ -143,30 +144,30 @@ public class CardService : ICardService
         var board = await this._boardsDatabaseWorker.GetBoardById(boardId);
         if (board is null)
         {
-            response.Error = "Board not found";
+            response.Error = Constants.BoardNotFound;
             return response;
         }
         var column = board.Columns.FirstOrDefault(x => x._id == originColumnId);
         if (column is null)
         {
-            response.Error = "Origin Column not found";
+            response.Error = Constants.OriginNotFound;
             return response;
         }
         var destinyColumn = board.Columns.FirstOrDefault(x => x._id == destinyColumnId);
         if (destinyColumn is null)
         {
-            response.Error = "Destiny Column not found";
+            response.Error = Constants.DestinyNotFound;
             return response;
         }
         if (originColumnId == destinyColumnId)
         {
-            response.Error = "Origin and Destiny column are the same";
+            response.Error = Constants.OriginAndDestinyAreTheSame;
             return response;
         }
         var currentIndex = Array.IndexOf(column.Cards, cardId);
         if (currentIndex == -1)
         {
-            response.Error = "Card not found";
+            response.Error = Constants.CardNotFound;
             return response;
         }
 
@@ -181,12 +182,12 @@ public class CardService : ICardService
         }
         else if (removeResult is null || addResult is null)
         {
-            response.Error = "Invalid BoardId";
+            response.Error = Constants.BoardInvalid;
             return response;
         }
         else
         {
-            response.Error = "Failed to move card";
+            response.Error = Constants.FailedToMoveCard;
             return response;
         }
     }

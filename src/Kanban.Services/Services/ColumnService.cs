@@ -1,4 +1,5 @@
 ﻿using Kanban.Application.Interfaces;
+using Kanban.CrossCutting;
 using Kanban.Model.Dto.Application.Column;
 using Kanban.Model.Mapper.Board;
 using Kanban.Model.Mapper.Column;
@@ -21,12 +22,12 @@ public class ColumnService : IColumnService
         var board = await this._boardDatabaseWorker.GetBoardById(request.BoardId);
         if (board == null)
         {
-            response.Error = "Board not found";
+            response.Error = Constants.BoardNotFound;
             return response;
         }
         if (request.Index > board.Columns.Length)
         {
-            response.Error = "Index out of boundary";
+            response.Error = Constants.OutOfBoundary;
             return response;
         }
         var appBoard = board.ToApplication();
@@ -34,12 +35,12 @@ public class ColumnService : IColumnService
         var update = await this._boardDatabaseWorker.UpdateBoardColumns(appBoard.ToDatabase(), request.Index);
         if (update is null)
         {
-            response.Error = "Invalid board id";
+            response.Error = Constants.BoardInvalid;
             return response;
         }
         else if (string.Empty.Equals(update))
         {
-            response.Error = "Failed to update";
+            response.Error = Constants.FailedToUpdateColumn;
             return response;
         }
         response.ColumnId = update;
@@ -52,12 +53,12 @@ public class ColumnService : IColumnService
         var board = await this._boardDatabaseWorker.GetBoardById(request.BoardId);
         if (board == null)
         {
-            response.Error = "Board not found";
+            response.Error = Constants.BoardNotFound;
             return response;
         }
         if (board.Columns.FirstOrDefault(x => x._id == request.ColumnId) == null)
         {
-            response.Error = "Column not found";
+            response.Error = Constants.ColumnNotFound;
             return response;
         }
 
@@ -65,8 +66,8 @@ public class ColumnService : IColumnService
 
         switch (res) 
         {
-            case false: response.Error = "Column not found"; break;
-            case null: response.Error = "Invalid Id"; break;
+            case false: response.Error = Constants.ColumnNotFound; break;
+            case null: response.Error = Constants.BoardInvalid; break;
             case true: break;
         }
 
@@ -79,18 +80,18 @@ public class ColumnService : IColumnService
         var board = await this._boardDatabaseWorker.GetBoardById(boardId);
         if (board == null)
         {
-            response.Error = "Board not found";
+            response.Error = Constants.BoardNotFound;
             return response;
         }
         var column = board.Columns.FirstOrDefault(x => x._id == columnId);
         if (column == null)
         {
-            response.Error = "Column not found";
+            response.Error = Constants.ColumnNotFound;
             return response;
         }
         if (column.Cards.Length > 0)
         {
-            response.Error = $"Column with cards can't be deleted. Column has {column.Cards.Length} cards. Delete all cards before deleting column";
+            response.Error = string.Format(Constants.ColumnWithCards,column.Cards.Length);
             return response;
         }
 
@@ -102,10 +103,10 @@ public class ColumnService : IColumnService
         }
         else if (res is null)
         {
-            response.Error = "BoardId invalid";
+            response.Error = Constants.BoardInvalid;
             return response;
         }
-        response.Error = "Failed to delete column";
+        response.Error = Constants.FailedToDeleteColumn;
         return response;
     }
 
@@ -115,18 +116,18 @@ public class ColumnService : IColumnService
         var board = await this._boardDatabaseWorker.GetBoardById(boardId);
         if (board is null)
         {
-            response.Error = "Board not found";
+            response.Error = Constants.BoardNotFound;
             return response;
         }
         var column = board.Columns.FirstOrDefault(x => x._id ==  id);
         if (column is null)
         {
-            response.Error = "Column not found";
+            response.Error = Constants.ColumnNotFound;
             return response;
         }
         if(board.Columns.Length <= index) 
         {
-            response.Error = "Index out of boundary";
+            response.Error = Constants.OutOfBoundary;
             return response;
         }
         var currentIndex = Array.IndexOf(board.Columns, column);
@@ -139,12 +140,12 @@ public class ColumnService : IColumnService
 
         if (result is null)
         {
-            response.Error = "Invalid Board Id";
+            response.Error = Constants.BoardInvalid;
             return response;
         }
         else if (string.Empty.Equals(result))
         {
-            response.Error = "Failed to update";
+            response.Error = Constants.FailedToUpdateColumn;
             return response;
         }
         else
